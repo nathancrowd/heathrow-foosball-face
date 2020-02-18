@@ -1,11 +1,4 @@
 let THREECAMERA = null;
-let renderScene = null;
-let faceRenderer = null;
-let renderCamera = null;
-
-let cutter = null;
-let pasteCanvas = null;
-let paster = null;
 
 let video = null;
 
