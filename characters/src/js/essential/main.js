@@ -1,71 +1,88 @@
 import 'regenerator-runtime/runtime';
 import * as THREE from 'three';
-import {OBJLoader} from './OBJLoader';
-import {gsap} from 'gsap';
+import Character from './character';
+import * as posenet from '@tensorflow-models/posenet';
+import captureVideo from './video-capture';
+import {OrbitControls} from './OrbitControls';
+
+// const netArchitecture = 'MobileNetV1'; // Light but inaccurate
+const netArchitecture = 'ResNet50'; // Heavy but more accurate
+
+const maxPlayers = 1;
 
 let scene = null;
 let camera = null;
 let renderer = null;
+let controls = null;
 
-function moveH(char, h, duration, delay) {
-    gsap.to(char.position, {
-        duration: duration,
-        delay: delay,
-        x: h
+let videoEl = null;
+
+let net = null;
+let characters = [];
+let posePositions = [];
+
+const movementDuration = 0.5;
+
+function buildCharacters(index) {
+    let character = new Character(index, () => {
+        character.addToScene(scene);
     });
+    return character;
 }
 
-function spinChar(char, direction) {
-    let angle = null;
-    switch (direction) {
-        case 'forwards':
-            angle = 6.28319
-            break;
-        case 'backwards':
-            angle = -6.28319
-            break;
-        default:
-            break;
-    }
-    let tl = new gsap.timeline();
-    tl.to(char.rotation, {
-        duration: 1,
-        x: angle
-    }).to(char.rotation, {
-        duration: 0,
-        x: 0
-    })
-
-    tl.play();
+function getPoseXPos(pose) {
+    // let currentX = 0;
+    let left = pose.keypoints[5].position.x;
+    let right = pose.keypoints[6].position.x;
+    let currentX = (left + right) / 2;
+    
+    return currentX;
 }
 
-function buildCharacters() {
-    const loader = new OBJLoader();
-    let character = null;
-
-    loader.load('../../GamePeice.obj', o => {
-        let geo = new THREE.Geometry().fromBufferGeometry(o.children[0].geometry);
-        geo.translate( 0, -9, 0 );
-        let mat = new THREE.MeshLambertMaterial({
-            color: 0xedca91,
-        });
-        character = new THREE.Mesh(geo, mat);
-        character.scale.multiplyScalar(0.2);
-        character.position.set(0,0,0);
-        scene.add(character);
-        moveH(character, 1, 1, 0);
-        moveH(character, -1, 1, 1.5);
-        moveH(character, 0, 0.5, 2.5);
-        setTimeout(() => {
-            spinChar(character, 'backwards');
-        },3000)
-    });
-
-}
-
-function render() {
+async function render() {
     requestAnimationFrame( render );
     renderer.render( scene, camera );
+    // controls.update();
+    
+    const poses = await net.estimateMultiplePoses(videoEl, {
+        segmentationThreshold: 0.5,
+        flipHorizontal: true,
+        decodingMethod: 'multi-person',
+        maxDetections: maxPlayers
+    });
+
+    characters.forEach((c,i) => {
+        
+        if (i >= poses.length) {
+            c.hide();
+        } else {
+            c.show();
+        }
+    });
+    
+
+    poses.forEach((p,i) => {
+        if (!characters[i]) {
+            return;
+        }
+        let pos = getPoseXPos(p);
+        if (posePositions[i]) {
+            let diff = posePositions[i] - pos;
+            if (diff > 100) {
+                let relPos = pos/window.innerWidth;
+                characters[i].moveH((relPos * 3) - 1.5, movementDuration,0);
+
+                // if (relPos <= 0.33) {
+                //     characters[i].moveH(-1.5, movementDuration,0);
+                // } else if (0.33 < relPos && relPos < 0.66){
+                //     characters[i].moveH(0, movementDuration,0);
+                // } else if (0.66 <= relPos) {
+                //     characters[i].moveH(1.5, movementDuration,0);
+                // }
+            }
+        }
+        posePositions[i] = pos;
+    });
 }
 
 function createScene() {
@@ -73,8 +90,11 @@ function createScene() {
     scene.background = new THREE.Color(0xf0f0f0);
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000);
     renderer = new THREE.WebGLRenderer();
-
+    // controls = new OrbitControls(camera, renderer.domElement);
     camera.position.z = 5;
+    camera.position.x = -0.5;
+    camera.position.y = 1.5;
+    // controls.update();
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
@@ -83,11 +103,19 @@ function createScene() {
     let dirLight=new THREE.DirectionalLight(0xffffee, 0.7);
     dirLight.position.set(0,0.05,1);
     scene.add(ambientLight, dirLight);
-
+    for (let index = 0; index < maxPlayers; index++) {
+        characters[index] = buildCharacters(index);
+    }
     render();
 }
 
 export default function main() {
-    createScene();
-    buildCharacters();
+    videoEl = captureVideo();
+    videoEl.addEventListener('loadeddata', async () => {
+        net = await posenet.load({
+            architecture: netArchitecture,
+            outputStride: 16,
+        });
+        createScene();
+    }, false);
 }

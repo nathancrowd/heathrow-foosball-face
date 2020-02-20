@@ -1,0 +1,121 @@
+import * as THREE from 'three';
+import {OBJLoader} from './OBJLoader';
+import {gsap} from 'gsap';
+
+const errors = {
+    nomesh: 'ERROR: Character Mesh has not been created. Try calling load()'
+};
+
+export default class Character {
+    constructor(index = 0,callback = null) {
+        this.mesh = null;
+        this.geometry = null;
+        this.material = null;
+        if (callback) {
+            this.createCallback = callback;
+        }
+        this.index = index;
+
+        this.load();
+    }
+
+    load() {
+        const loader = new OBJLoader();
+        loader.load('../../GamePeice.obj', o => {
+            this.geometry = new THREE.Geometry().fromBufferGeometry(o.children[0].geometry);
+            this.geometry.translate( 0, -9, 0 );
+            this.material = new THREE.MeshLambertMaterial({
+                color: 0xedca91,
+            });
+            this.mesh = new THREE.Mesh(this.geometry, this.material);
+            this.mesh.scale.multiplyScalar(0.2);
+            switch (this.index) {
+                case 0:
+                    this.mesh.position.set(-0.75,0,0);
+                    break;
+                case 1:
+                    this.mesh.position.set(0.75,0,0);
+                    break;
+                case 2:
+                    this.mesh.position.set(-0.75,0,-1.5);
+                    break;
+                case 3:
+                    this.mesh.position.set(0.75,0,-1.5);
+                    break;
+                default:
+                    break;
+            }
+
+            this.basePosition = this.mesh.position;
+            console.log(this.basePosition);
+            
+
+            this.createCallback();
+        });
+    }
+
+    addToScene(scene) {
+        if (!this.mesh) {
+            console.error(errors.nomesh);
+            return;
+        }
+        scene.add(this.mesh);
+    }
+
+    moveH(h, duration, delay) {
+        if (!this.mesh) {
+            console.error(errors.nomesh);
+            return;
+        }
+        
+        gsap.to(this.mesh.position, {
+            duration: duration,
+            delay: delay,
+            x: h
+        });
+    }
+    
+    spinChar(direction) {
+        if (!this.mesh) {
+            console.error(errors.nomesh);
+            return;
+        }
+        let angle = null;
+        switch (direction) {
+            case 'forwards':
+                angle = 6.28319
+                break;
+            case 'backwards':
+                angle = -6.28319
+                break;
+            default:
+                break;
+        }
+        let tl = new gsap.timeline();
+        tl.to(this.mesh.rotation, {
+            duration: 1,
+            x: angle
+        }).to(this.mesh.rotation, {
+            duration: 0,
+            x: 0
+        })
+    
+        tl.play();
+    }
+
+    hide() {
+        if (!this.mesh){
+            console.error(errors.nomesh);
+            return;
+        }
+        this.mesh.visible = false;
+    }
+
+    show() {
+        if (!this.mesh){
+            console.error(errors.nomesh);
+            return;
+        }
+        this.mesh.visible = true;
+    }
+}
