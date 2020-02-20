@@ -62,11 +62,33 @@ export default class Character {
         scene.add(this.mesh);
     }
 
+    swing(duration, intensity) {
+        let tl = new gsap.timeline();
+        tl.to(this.mesh.rotation, {
+            duration: duration / 5,
+            x: -intensity
+        }).to(this.mesh.rotation, {
+            duration: duration / 5,
+            x: intensity * 0.75
+        }).to(this.mesh.rotation, {
+            duration: duration / 5,
+            x: -intensity * 0.5
+        }).to(this.mesh.rotation, {
+            duration: duration / 5,
+            x: intensity * 0.25
+        }).to(this.mesh.rotation, {
+            duration: duration / 5,
+            x: intensity * 0
+        });
+        tl.play();
+    }
+
     moveH(h, duration, delay) {
         if (!this.mesh) {
             console.error(errors.nomesh);
             return;
         }
+        
         
         gsap.to(this.mesh.position, {
             duration: duration,

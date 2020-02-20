@@ -9,6 +9,7 @@ import {OrbitControls} from './OrbitControls';
 const netArchitecture = 'ResNet50'; // Heavy but more accurate
 
 const maxPlayers = 1;
+const maxXMovement = 3;
 
 let scene = null;
 let camera = null;
@@ -22,6 +23,14 @@ let characters = [];
 let posePositions = [];
 
 const movementDuration = 0.5;
+
+const stages = [
+    'playerMovement',
+    'playerSpin',
+    'playerKick'
+];
+
+let currentStage = 0;
 
 function buildCharacters(index) {
     let character = new Character(index, () => {
@@ -37,6 +46,23 @@ function getPoseXPos(pose) {
     let currentX = (left + right) / 2;
     
     return currentX;
+}
+
+function followMovement(poses) {
+    poses.forEach((p,i) => {
+        if (!characters[i]) {
+            return;
+        }
+        let pos = getPoseXPos(p);
+        let relPos = pos/window.innerWidth;
+        characters[i].moveH((relPos * (2 * maxXMovement)) - maxXMovement, movementDuration,0);
+        if (posePositions[i]) {
+            let diff = posePositions[i] - relPos;
+            
+            characters[i].swing(movementDuration, diff);
+        }
+        posePositions[i] = relPos;
+    });
 }
 
 async function render() {
@@ -59,30 +85,21 @@ async function render() {
             c.show();
         }
     });
+
+    switch (stages[currentStage]) {
+        case 'playerMovement':
+            followMovement(poses);
+            break;
+        case 'playerSpin':
+            // TODO listen for a gesture that triggers a spin
+            break;
+        case 'playerKick':
+            // TODO listen for a gesture that triggers a ball kick
+            break;
+        default:
+            break;
+    }
     
-
-    poses.forEach((p,i) => {
-        if (!characters[i]) {
-            return;
-        }
-        let pos = getPoseXPos(p);
-        if (posePositions[i]) {
-            let diff = posePositions[i] - pos;
-            if (diff > 100) {
-                let relPos = pos/window.innerWidth;
-                characters[i].moveH((relPos * 3) - 1.5, movementDuration,0);
-
-                // if (relPos <= 0.33) {
-                //     characters[i].moveH(-1.5, movementDuration,0);
-                // } else if (0.33 < relPos && relPos < 0.66){
-                //     characters[i].moveH(0, movementDuration,0);
-                // } else if (0.66 <= relPos) {
-                //     characters[i].moveH(1.5, movementDuration,0);
-                // }
-            }
-        }
-        posePositions[i] = pos;
-    });
 }
 
 function createScene() {
