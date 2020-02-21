@@ -1,9 +1,13 @@
 import * as THREE from 'three';
 import {OBJLoader} from './OBJLoader';
 import {gsap} from 'gsap';
+import { CanvasTexture } from 'three';
+import { dispose } from '@tensorflow/tfjs-core';
 
 const errors = {
-    nomesh: 'ERROR: Character Mesh has not been created. Try calling load()'
+    nomesh: 'ERROR: Character Mesh has not been created. Try calling load()',
+    noface: 'ERROR: Character Face has not been created. Try calling load()',
+    nofacemap: 'WARNING: Character Face has no map.'
 };
 
 export default class Character {
@@ -11,10 +15,12 @@ export default class Character {
         this.mesh = null;
         this.geometry = null;
         this.material = null;
+        this.face = null;
         if (callback) {
             this.createCallback = callback;
         }
         this.index = index;
+        this.spinPlaying = false;
 
         this.load();
     }
@@ -47,8 +53,14 @@ export default class Character {
             }
 
             this.basePosition = this.mesh.position;
-            console.log(this.basePosition);
-            
+            let faceGeometry = new THREE.CircleGeometry(1,32);
+            let faceMat = new THREE.MeshPhongMaterial({
+                transparent: true,
+                opacity: 0.8
+            });
+            this.face = new THREE.Mesh(faceGeometry, faceMat);
+            this.face.position.set(0,3.5,1.25);
+            this.mesh.add(this.face);
 
             this.createCallback();
         });
@@ -63,6 +75,10 @@ export default class Character {
     }
 
     swing(duration, intensity) {
+        if (!this.mesh) {
+            console.error(errors.nomesh);
+            return;
+        }
         let tl = new gsap.timeline();
         tl.to(this.mesh.rotation, {
             duration: duration / 5,
@@ -96,6 +112,10 @@ export default class Character {
             x: h
         });
     }
+
+    isSpinning() {
+        return this.spinPlaying;
+    }
     
     spinChar(direction) {
         if (!this.mesh) {
@@ -113,16 +133,33 @@ export default class Character {
             default:
                 break;
         }
-        let tl = new gsap.timeline();
+        let tl = new gsap.timeline({
+            onComplete: () => {
+                this.spinPlaying = false;
+            }
+        });
         tl.to(this.mesh.rotation, {
-            duration: 1,
+            duration: 0.5,
             x: angle
         }).to(this.mesh.rotation, {
             duration: 0,
             x: 0
-        })
+        }).to(this.mesh.rotation, {
+            duration: 0.5,
+            x: angle
+        }).to(this.mesh.rotation, {
+            duration: 0,
+            x: 0
+        }).to(this.mesh.rotation, {
+            duration: 0.5,
+            x: angle
+        }).to(this.mesh.rotation, {
+            duration: 0,
+            x: 0
+        });
     
         tl.play();
+        this.spinPlaying = true;
     }
 
     hide() {
@@ -139,5 +176,19 @@ export default class Character {
             return;
         }
         this.mesh.visible = true;
+    }
+
+    giveFace(canvas) {
+        if (!this.face) {
+            console.error(errors.noface);
+            return;
+        }
+        if (this.face.material.map) {
+            this.face.material.map.dispose();
+        } else {
+            console.warn(errors.nofacemap);
+        }
+        this.face.material.map = new CanvasTexture(canvas[0]);
+        this.face.material.needsUpdate = true;
     }
 }
