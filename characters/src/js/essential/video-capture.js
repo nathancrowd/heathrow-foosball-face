@@ -4,12 +4,12 @@ export default function captureVideo() {
     videoEl.width = window.innerWidth;
     videoEl.height = window.innerHeight;
     
-    navigator.getUserMedia({video: {}},s => {
+    navigator.mediaDevices.getUserMedia({video: {}}).then(s => {
         videoEl.srcObject = s;
         videoEl.onloadedmetadata = () => {
              videoEl.play();
         };
-    }, e => {
+    }).catch(e => {
         console.error(e);
     });
 
