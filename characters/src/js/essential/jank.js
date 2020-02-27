@@ -5,7 +5,7 @@ export default function () {
     button.style.position = 'absolute';
     button.style.left = '100px';
     button.style.top = '100px';
-    button.innerHTML = "Do Something";
+    button.innerHTML = "START JANK";
     document.body.prepend(button);
 
     button.addEventListener('click', function () {

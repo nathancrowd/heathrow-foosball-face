@@ -42,11 +42,9 @@ self.addEventListener('message', async (message) => {
         case 'init':
             init(message.data.canvasSize);
             break;
-        case 'get_poses':
-            poses();
-            break;
         case 'send_video':
             receiveVideo(message.data.video);
+            poses();
             break;
         default:
             break;

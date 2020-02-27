@@ -41,9 +41,6 @@ function main() {
                 video: bitmap,
                 action: 'send_video'
             },[bitmap]);
-            posenet.postMessage({ 
-                action: 'get_poses'
-            });
             requestAnimationFrame(sendVideo);
         }
         sendVideo();
