@@ -15,7 +15,16 @@ let size = {
     height: null
 };
 let poses = null;
+let balls = null;
 let posePositions = [];
+
+const radius = 0.4;
+const range = 3 - radius;
+
+const clock = new THREE.Clock();
+const delta = clock.getDelta() * 0.8; // slow down simulation
+var normal = new THREE.Vector3();
+var relativeVelocity = new THREE.Vector3();
 
 let currentStage = 0;
 
@@ -77,6 +86,9 @@ let buildCharacters = (index) => {
     return character;
 }
 let render = () => {
+
+    var delta = clock.getDelta() * 0.8; // slow down simulation
+
     setTimeout(() => {
         requestAnimationFrame(render);
     }, 1000 / config.threeJsMaxFps);
@@ -109,6 +121,7 @@ let render = () => {
         }
     }
 
+    balls.render();
 }
 
 let buildPoles = () => {
@@ -125,31 +138,7 @@ let buildPoles = () => {
     let pole2 = pole1.clone();
     pole2.position.set(0, -0.04, -1.5);
     scene.add(pole2);
-}
-
-
-function toDataURL(src, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.responseType = 'blob';
-    xhr.onload = onLoadOfImg;
-    xhr.onerror = onErrorOfImg;
-    xhr.open('GET', src, true);
-    xhr.send();
-
-    function onLoadOfImg(rsp) {
-        if (rsp.target.status === 200) {
-            var reader = new FileReaderSync();
-            var blobdata = reader.readAsDataURL(rsp.target.response);
-            callback(blobdata)
-        } else {
-            throw('failed to download and process to base64: ' + src)
-        }
-    };
-
-    function onErrorOfImg() {
-        callback('');
-    };
-}
+};
 
 
 let init = (canvas) => {
@@ -167,16 +156,16 @@ let init = (canvas) => {
     loader.load('textures/grasslight-small.jpg', function (imageBitmap) {
         var groundTexture = new THREE.CanvasTexture(imageBitmap);
         groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
-        groundTexture.repeat.set( 25, 25 );
+        groundTexture.repeat.set(25, 25);
         groundTexture.anisotropy = 16;
         groundTexture.encoding = THREE.sRGBEncoding;
-        var groundMaterial = new THREE.MeshLambertMaterial( { map: groundTexture } );
+        var groundMaterial = new THREE.MeshLambertMaterial({map: groundTexture});
 
-        var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 20000, 20000 ), groundMaterial );
-        mesh.position.y = - 250;
-        mesh.rotation.x = - Math.PI / 3; // larger the divider, higher up the page the grass goes.
+        var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(20000, 20000), groundMaterial);
+        mesh.position.y = -250;
+        mesh.rotation.x = -Math.PI / 3; // larger the divider, higher up the page the grass goes.
         mesh.receiveShadow = true;
-        scene.add( mesh );
+        scene.add(mesh);
     });
 
     // controls = new OrbitControls(camera, renderer.domElement);
@@ -195,6 +184,7 @@ let init = (canvas) => {
     for (let index = 0; index < config.maxPlayers; index++) {
         characters[index] = buildCharacters(index);
     }
+    balls = new Balls(scene);
     render();
 }
 self.addEventListener('message', function (message) {
@@ -213,3 +203,98 @@ self.addEventListener('message', function (message) {
     }
 
 }, false);
+
+class Balls {
+    constructor(_scene, count = 10) {
+        this.myScene = _scene;
+        this.myBalls = [];
+        this.__build()
+    }
+
+    __build(count = 10) {
+        var geometry = new THREE.IcosahedronBufferGeometry(radius, 2);
+
+        var loader = new THREE.ImageBitmapLoader();
+
+        let _balls = this.myBalls; // scope borked because of call back function below, hence need ref to 'this' vars.
+        let _scene = this.myScene;
+
+        loader.load('textures/football.jpg', function (imageBitmap) {
+
+            var ballTexture = new THREE.CanvasTexture(imageBitmap);
+            var material = new THREE.MeshPhongMaterial({
+                map: ballTexture,
+                bumpMap: ballTexture,
+                bumpScale: 0.01,
+            });
+
+            var mesh = new THREE.Mesh(geometry, material);
+
+            for (let i = 0; i < count; i++) {
+
+                let ball = mesh.clone();
+
+                ball.geometry.center();
+
+                ball.position.x = Math.random() * 4 - 2;
+                ball.position.y = Math.random() * 4;
+                ball.position.z = Math.random() * 4 - 2;
+
+                ball.userData.velocity = new THREE.Vector3();
+                ball.userData.velocity.x = Math.random() * 0.5 - 0.005;
+                ball.userData.velocity.y = Math.random() * 0.5 - 0.005;
+                ball.userData.velocity.z = Math.random() * 0.5 - 0.005;
+
+
+                //below not working as expected. Assuming rotating not around center point.
+                ball.userData.rotation = new THREE.Vector2();
+                ball.userData.rotation.x = Math.random() * Math.PI * 2;
+                ball.userData.rotation.y = Math.random() * Math.PI * 2;
+
+                ball.rotation.x = ball.userData.rotation.x;
+                ball.rotation.y = ball.userData.rotation.y;
+
+                _scene.add(ball);
+                _balls.push(ball);
+            }
+        });
+    }
+
+    render() {
+        this.myBalls.forEach(ball => {
+
+            ball.userData.velocity.x *= .98;
+            ball.userData.velocity.y *= .98;
+            ball.userData.velocity.z *= .98;
+
+            ball.position.x += ball.userData.velocity.x;
+            ball.position.y += ball.userData.velocity.y ;
+            ball.position.z += ball.userData.velocity.z ;
+
+            ball.userData.rotation.x *= .9;
+            ball.userData.rotation.y *= .9;
+
+            ball.rotation.x += ball.userData.rotation.x;
+            ball.rotation.y += ball.userData.rotation.y;
+
+            if (ball.position.x < -range || ball.position.x > range) {
+                ball.position.x = THREE.MathUtils.clamp(ball.position.x, -range, range);
+                ball.userData.velocity.x = -ball.userData.velocity.x;
+            }
+
+            if (ball.position.y < radius || ball.position.y > 6) {
+                ball.position.y = Math.max(ball.position.y, radius);
+                ball.userData.velocity.x *= 0.98;
+                ball.userData.velocity.y = -ball.userData.velocity.y * 0.8;
+                ball.userData.velocity.z *= 0.98;
+            }
+
+            if (ball.position.z < -range || ball.position.z > range) {
+
+                ball.position.z = THREE.MathUtils.clamp(ball.position.z, -range, range);
+                ball.userData.velocity.z = -ball.userData.velocity.z;
+
+            }
+        });
+    }
+}
