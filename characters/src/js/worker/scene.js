@@ -24,7 +24,7 @@ let getPoseXPos = (pose) => {
     let left = pose.keypoints[5].position.x;
     let right = pose.keypoints[6].position.x;
     let currentX = (left + right) / 2;
-    
+
     return currentX;
 }
 
@@ -36,13 +36,13 @@ let getPoseArmPos = (pose) => {
 }
 
 let followMovement = (poses) => {
-    poses.forEach((p,i) => {
+    poses.forEach((p, i) => {
         if (!characters[i]) {
             return;
         }
         let pos = getPoseXPos(p);
-        let relPos = pos/size.width;
-        characters[i].moveH((relPos * (2 * config.maxXMovement)) - config.maxXMovement, config.movementDuration,0);
+        let relPos = pos / size.width;
+        characters[i].moveH((relPos * (2 * config.maxXMovement)) - config.maxXMovement, config.movementDuration, 0);
         if (posePositions[i]) {
             let diff = posePositions[i] - relPos;
             characters[i].swing(config.movementDuration, diff);
@@ -52,16 +52,16 @@ let followMovement = (poses) => {
 }
 
 let listenForSpin = (poses) => {
-    poses.forEach((p,i) => {
+    poses.forEach((p, i) => {
         if (!characters[i]) {
             return;
         }
         let currentArmPos = getPoseArmPos(p);
         let relArmPos = {
-            right: currentArmPos.right/size.height,
-            left: currentArmPos.left/size.height
+            right: currentArmPos.right / size.height,
+            left: currentArmPos.left / size.height
         };
-        
+
         if (relArmPos.right < 0.5 && relArmPos.left < 0.5) {
             if (!characters[i].isSpinning()) {
                 characters[i].spinChar('backwards');
@@ -78,13 +78,13 @@ let buildCharacters = (index) => {
 }
 let render = () => {
     setTimeout(() => {
-        requestAnimationFrame( render );
+        requestAnimationFrame(render);
     }, 1000 / config.threeJsMaxFps);
-    renderer.render( scene, camera );
+    renderer.render(scene, camera);
     // controls.update();
     if (poses) {
         let faceCanvases = faces.getFaces();
-        characters.forEach((c,i) => {
+        characters.forEach((c, i) => {
             if (faceCanvases[i]) {
                 c.giveFace(faceCanvases[i]);
             }
@@ -93,7 +93,7 @@ let render = () => {
             } else {
                 c.show();
             }
-        });    
+        });
         switch (config.stages[currentStage]) {
             case 'playerMovement':
                 followMovement(poses);
@@ -108,44 +108,88 @@ let render = () => {
                 break;
         }
     }
-    
+
 }
 
 let buildPoles = () => {
     let pole1 = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.2,0.2,100,32),
+        new THREE.CylinderGeometry(0.2, 0.2, 100, 32),
         new THREE.MeshPhongMaterial({
             color: new THREE.Color(0x858585)
         })
     );
-    pole1.position.set(0,-0.04,0);
-    pole1.rotation.set(0,0,1.5708);
+    pole1.position.set(0, -0.04, 0);
+    pole1.rotation.set(0, 0, 1.5708);
     scene.add(pole1);
 
     let pole2 = pole1.clone();
-    pole2.position.set(0,-0.04,-1.5);
+    pole2.position.set(0, -0.04, -1.5);
     scene.add(pole2);
 }
 
+
+function toDataURL(src, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.responseType = 'blob';
+    xhr.onload = onLoadOfImg;
+    xhr.onerror = onErrorOfImg;
+    xhr.open('GET', src, true);
+    xhr.send();
+
+    function onLoadOfImg(rsp) {
+        if (rsp.target.status === 200) {
+            var reader = new FileReaderSync();
+            var blobdata = reader.readAsDataURL(rsp.target.response);
+            callback(blobdata)
+        } else {
+            throw('failed to download and process to base64: ' + src)
+        }
+    };
+
+    function onErrorOfImg() {
+        callback('');
+    };
+}
+
+
 let init = (canvas) => {
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x476643);
-    camera = new THREE.PerspectiveCamera( 75, size.width / size.height, 0.1, 1000);
+
+    //scene.background = new THREE.Color(0x476643);
+    camera = new THREE.PerspectiveCamera(75, size.width / size.height, 0.1, 1000);
     renderer = new THREE.WebGLRenderer({
         antialias: true,
         canvas: canvas
     });
+
+
+    var loader = new THREE.ImageBitmapLoader();
+    loader.load('textures/grasslight-small.jpg', function (imageBitmap) {
+        var groundTexture = new THREE.CanvasTexture(imageBitmap);
+        groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
+        groundTexture.repeat.set( 25, 25 );
+        groundTexture.anisotropy = 16;
+        groundTexture.encoding = THREE.sRGBEncoding;
+        var groundMaterial = new THREE.MeshLambertMaterial( { map: groundTexture } );
+
+        var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 20000, 20000 ), groundMaterial );
+        mesh.position.y = - 250;
+        mesh.rotation.x = - Math.PI / 3; // larger the divider, higher up the page the grass goes.
+        mesh.receiveShadow = true;
+        scene.add( mesh );
+    });
+
     // controls = new OrbitControls(camera, renderer.domElement);
     camera.position.z = 5;
     camera.position.x = 0;
     camera.position.y = 1.5;
-    // controls.update();
+    //controls.update();
     renderer.setSize(size.width, size.height, false);
     // document.body.appendChild(renderer.domElement);
 
-    let ambientLight=new THREE.AmbientLight(0xffffff, 0.5);
-    let dirLight=new THREE.DirectionalLight(0xffffee, 0.7);
-    dirLight.position.set(0,0.05,1);
+    let ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    let dirLight = new THREE.DirectionalLight(0xffffee, 0.7);
+    dirLight.position.set(0, 0.05, 1);
     scene.add(ambientLight, dirLight);
     buildPoles();
     for (let index = 0; index < config.maxPlayers; index++) {
@@ -153,7 +197,7 @@ let init = (canvas) => {
     }
     render();
 }
-self.addEventListener('message', function(message) {
+self.addEventListener('message', function (message) {
     switch (message.data.action) {
         case 'init':
             size.width = message.data.width;
@@ -167,5 +211,5 @@ self.addEventListener('message', function(message) {
         default:
             break;
     }
-    
+
 }, false);
