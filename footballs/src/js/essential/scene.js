@@ -42,6 +42,7 @@ function setupObject(position) {
     let mesh = new Physijs.SphereMesh(geometry, material,0.3);
     mesh.setDamping(0.01,0.01);
     mesh.castShadow = true;
+    mesh.receiveShadow = true;
     mesh.position.x = position.x;
     mesh.position.y = position.y;
     scene.add(mesh);
@@ -51,7 +52,7 @@ function setupObject(position) {
 function setupFloor() {
     let table = new Physijs.BoxMesh(
         new THREE.CubeGeometry(50, 1, 50),
-        Physijs.createMaterial(new THREE.MeshLambertMaterial({
+        Physijs.createMaterial(new THREE.MeshPhongMaterial({
             color: new THREE.Color(0xdbd7bd)
         }),0.9,0.2),
         0, // mass
@@ -82,6 +83,7 @@ function init() {
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
     loader = new THREE.TextureLoader();
     renderer = new THREE.WebGLRenderer();
+    renderer.shadowMapEnabled = true;
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
 
