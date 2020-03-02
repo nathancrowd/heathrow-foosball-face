@@ -62,9 +62,11 @@ export default class FaceCapture {
 
         this.counter = document.querySelector('.counter');
         this.startTime = Date.now();
+        console.log('FaceCapture: Reading Faces...');
         this.loop = requestAnimationFrame(this.detect.bind(this));
         setTimeout(() => {
             cancelAnimationFrame(this.loop);
+            this.counter.innerHTML = 'Faces Captured';
             res(this);
         },config.countdown);
     }
@@ -74,8 +76,7 @@ export default class FaceCapture {
      * Any captured faces are added to a detections array as a HTMLCanvas.
      */
     async detect() {
-        this.counter.innerHTML = Math.floor((Date.now() - this.startTime) / 1000);
-        console.log('FaceCapture: Reading Faces...');
+        this.counter.innerHTML = (config.countdown / 1000) - Math.floor((Date.now() - this.startTime) / 1000);
         this.loop = requestAnimationFrame(this.detect.bind(this));
         let detections = await faceapi.detectAllFaces(this.videoEl);
         detections = faceapi.resizeResults(detections, {width: this.videoEl.width, height: this.videoEl.height});
