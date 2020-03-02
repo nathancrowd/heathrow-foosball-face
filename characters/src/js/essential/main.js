@@ -48,6 +48,11 @@ function main() {
         }
         sendVideo();
     }, false);
+
+    const haptics = new Worker('./dist/js/haptics.js');
+    haptics.postMessage({
+        action: 'init',
+    });
 }
 
 export {
