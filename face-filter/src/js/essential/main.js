@@ -10,10 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     videoEl.addEventListener('loadeddata', () => {
         setTimeout(() => {
-            new FaceCapture(videoEl).then((faces) => {                
-                faces.returnCanvases((canvases) => {
-                    addFace(canvases[0][0]);
-                });
+            new FaceCapture(videoEl).then((faces) => {
+                if (faces.detections.length) {
+                    faces.detections.forEach((c,i) => {
+                        addFace(c[0],i);
+                    });
+                }
             });
         }, 5000);
     }, false);

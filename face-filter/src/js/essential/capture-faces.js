@@ -1,4 +1,5 @@
 import * as faceapi from 'face-api.js';
+import * as config from './config';
 import 'regenerator-runtime/runtime';
 
 export default class FaceCapture {
@@ -12,38 +13,90 @@ export default class FaceCapture {
         });
     }
 
+    /**
+     * Adds DOM circles as acceptable areas for face capture
+     */
+    addFaceFrames() {
+        this.frames = [];
+        for (let index = 0; index < config.maxFaces; index++) {
+            let frame = document.createElement('div');
+            frame.classList.add('face-frame');
+            document.body.appendChild(frame);
+            this.frames.push(frame);
+        }
+    }
+
+    /**
+     * @param {*} face a detection returned by FaceApi
+     * Checks if a given face is within any of the face frames.
+     * Returns `false` if it isn't. Returns an object with the frame element and it's index if it is.
+     */
+    isFaceInFrame(face) {
+        let returnFrame = false;
+        this.frames.forEach((f,i) => {
+            let inTop = face.box.top > f.getBoundingClientRect().top && face.box.top < f.getBoundingClientRect().bottom;
+            let inBottom = (face.box.top + face.box.height) > f.getBoundingClientRect().top && (face.box.top + face.box.height) < f.getBoundingClientRect().bottom;
+            let inLeft = face.box.left > f.getBoundingClientRect().left && face.box.left < f.getBoundingClientRect().right;
+            let inRight = face.box.right > f.getBoundingClientRect().left && face.box.right < f.getBoundingClientRect().right;
+
+            if (inTop && inBottom && inLeft && inRight) {
+                returnFrame = {frameEl: f, frameIndex: i};
+            }
+        });
+        
+        return returnFrame;
+    }
+
+    /**
+     * Loads FaceApi and starts a loop listening for faces.
+     * @param {*} res Callback function on completion.
+     */
     async load(res) {
         console.log('FaceCapture: Loading models...');
         await faceapi.loadSsdMobilenetv1Model(this.MODEL_URL);
         await faceapi.loadFaceLandmarkModel(this.MODEL_URL);
         await faceapi.loadFaceRecognitionModel(this.MODEL_URL);
         await faceapi.loadAgeGenderModel(this.MODEL_URL);
+        this.addFaceFrames();
+        this.detections = [];
 
-        return this.detect(res);
+        this.counter = document.querySelector('.counter');
+        this.startTime = Date.now();
+        this.loop = requestAnimationFrame(this.detect.bind(this));
+        setTimeout(() => {
+            cancelAnimationFrame(this.loop);
+            res(this);
+        },config.countdown);
     }
 
-    async detect(res) {
+    /**
+     * Detect faces and check if they are in a frame.
+     * Any captured faces are added to a detections array as a HTMLCanvas.
+     */
+    async detect() {
+        this.counter.innerHTML = Math.floor((Date.now() - this.startTime) / 1000);
         console.log('FaceCapture: Reading Faces...');
+        this.loop = requestAnimationFrame(this.detect.bind(this));
         let detections = await faceapi.detectAllFaces(this.videoEl);
         detections = faceapi.resizeResults(detections, {width: this.videoEl.width, height: this.videoEl.height});
-        this.detections = detections;
-        console.log('FaceCapture: Faces Captured');
-        res(this);
-    }
-
-    returnCanvases(cb) {
-        let canvases = [];
-        new Promise((res,rej) => {
-            this.detections.forEach(async (d,i) => {
-                let c = await faceapi.extractFaces(this.videoEl, [d]);
-                canvases.push(c);
-                if (i == this.detections.length - 1) {
-                    res();
+        if (!detections) {
+            return;
+        }
+        
+        detections.forEach(d => {
+            let faceFrame = this.isFaceInFrame(d);
+            if (faceFrame) {
+                if (faceFrame.frameEl.classList.contains('wait')) {
+                    return;
+                } else {
+                    faceFrame.frameEl.classList.add('wait');
+                    faceapi.extractFaces(this.videoEl, [d]).then((c) => {
+                        faceFrame.frameEl.classList.add('active');
+                        this.detections[faceFrame.frameIndex] = c;
+                        console.log('FaceCapture: Face Captured');
+                    });
                 }
-            });
-        }).then(() => {
-            cb(canvases);
+            }
         });
-
     }
 }
