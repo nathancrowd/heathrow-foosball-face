@@ -1,0 +1,29 @@
+html {
+    background: linear-gradient(to bottom,  #fff 0%,#000 100%);
+    height: 100vh;
+    width: 100vw;
+}
+body {
+    margin: 0;
+}
+
+video, canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+video {
+    z-index: 1;
+    pointer-events: none;
+
+    &.hide {
+        opacity: 0;
+    }
+}
+
+@import './counter';
+@import './frame';
+@import './idle';
