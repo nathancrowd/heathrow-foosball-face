@@ -12,7 +12,7 @@ export default {
         {},
         {},
     ],
-    faceCountdown: 20000,
+    faceCountdown: 10000, // milliseconds
     poles: [
         {
             x: -8,
@@ -41,5 +41,20 @@ export default {
             y: -3.3,
             z: 0
         },
-    ]
+    ],
+    posenetArchitecture: 'MobileNetV1',
+    outputStride: 8,
+    maxPlayers: 3,
+    scoreThreshold: 0.1,
+    maxXMovement: 8,
+    ballFriction: 0.4,
+    ballBounce: 0.5,
+    ballMass: 0.6,
+    ballFrequency: 1000, // milliseconds
+    ballSpeed: 25,
+    ballDecay: 15000, // milliseconds
+    preGameTimer: 10000, // milliseconds
+    gameTime: 20000, // milliseconds
+    postGameTime: 5000,
+    idleTime: 5000 // milliseconds
 }

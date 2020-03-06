@@ -3,6 +3,8 @@ import {GLTFLoader} from '../helper/gltfLoader.js';
 import {OrbitControls} from '../helper/OrbitControls.js';
 import Character from './character.js';
 import CONFIG from '../helper/config.js';
+import getRandomInt from '../helper/randomInt';
+import * as Posenet from './posenet';
 require('../helper/physi');
 
 let scene = null;
@@ -12,6 +14,15 @@ let controls = null;
 let renderLoop = null;
 let gltfLoader = null;
 let characters = [];
+let activePlayers = [];
+
+function relativeXToWindowMiddle(x) {
+    let relX = x / window.innerWidth;
+
+    let diff = relX - 0.5;
+    
+    return diff;
+}
 
 function animate() {
     scene.simulate();
@@ -20,11 +31,40 @@ function animate() {
     if (CONFIG.enableControls) {
         controls.update();
     }
+    Posenet.getPoses().then((poses) => {
+        if (!poses.length) {
+            return;
+        }
+        let xPos = Posenet.getGroupMidPoint(poses);
+        userPosition.style.left = `${(xPos/window.innerWidth) * 100}vw`;
+        let relX = relativeXToWindowMiddle(xPos);
+        if (!relX) {
+            return;
+        }
+        activePlayers.forEach(p => {
+            p.moveH((relX * (2 * CONFIG.maxXMovement)), 0,0);
+            // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
+        });
+    }).catch(error => { console.error(error) });
+    activePlayers.forEach(p => {
+        p.mesh.__dirtyPosition = true;
+        p.mesh.__dirtyRotation = true;
+    });
 }
 
 function pause() {
     cancelAnimationFrame(renderLoop);
     renderLoop = null;
+}
+
+function reset() {
+    renderer.domElement.style.display = 'none';
+    clearCharacters();
+    scene.dispose();
+    pause();
+    characters = [];
+    activePlayers = [];
+    buildCharacters();
 }
 
 function setupLight() {
@@ -130,6 +170,12 @@ function buildPoles() {
     });
 }
 
+function clearCharacters() {
+    characters.forEach(c => {
+        scene.remove(c.mesh);
+    });
+}
+
 function buildCharacters() {
     CONFIG.characters.forEach((c,i) => {
         let character = new Character(i,() => {
@@ -174,6 +220,7 @@ function init() {
 }
 
 function start() {
+    renderer.domElement.style.display = 'block';
     animate();
 }
 
@@ -182,4 +229,7 @@ export {
     start,
     pause,
     characters,
+    activePlayers,
+    scene,
+    reset
 }

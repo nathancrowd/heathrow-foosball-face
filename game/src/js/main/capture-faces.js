@@ -1,14 +1,14 @@
 import * as faceapi from 'face-api.js';
 import CONFIG from '../helper/config';
 import 'regenerator-runtime/runtime';
+import * as message from './message';
+
 
 export default class FaceCapture {
-    constructor(videoEl, callback) {
+    constructor(videoEl) {
         this.videoEl = videoEl;
 
         this.MODEL_URL = '/facemodels';
-        this.res = callback;
-        this.load();
 
         this.idle = true;
     }
@@ -59,20 +59,19 @@ export default class FaceCapture {
     /**
      * Loads FaceApi and starts a loop listening for faces.
      */
-    async load() {
+    async load(callback) {
         console.log('FaceCapture: Loading models...');
         await faceapi.loadSsdMobilenetv1Model(this.MODEL_URL);
         await faceapi.loadFaceLandmarkModel(this.MODEL_URL);
         await faceapi.loadFaceRecognitionModel(this.MODEL_URL);
         await faceapi.loadAgeGenderModel(this.MODEL_URL);
         this.detections = [];
-
-        this.counter = document.querySelector('.counter');
         console.log('FaceCapture: Reading Faces...');
-        this.startDetection();
+        callback();
     }
 
-    startDetection() {
+    startDetection(callback) {
+        this.res = callback;
         this.loop = requestAnimationFrame(this.detect.bind(this));
     }
 
@@ -87,10 +86,23 @@ export default class FaceCapture {
     startTimer() {
         this.startTime = Date.now();
         setTimeout(() => {
-            this.counter.innerHTML = 'Faces Captured';
             this.deleteFaceFrames();
+            this.endDetection();
             this.res(this);
         },CONFIG.faceCountdown);
+    }
+
+    showDetection() {
+        this.idle = false;
+        this.addFaceFrames();
+        videoEl.classList.remove('hide');
+        idleScreen.style.display = 'none';
+        message.show();
+        this.startTimer();
+    }
+
+    clear() {
+        this.detections = [];
     }
 
     /**
@@ -99,7 +111,9 @@ export default class FaceCapture {
      */
     async detect() {
         if (!this.idle) {
-            this.counter.innerHTML = (CONFIG.faceCountdown / 1000) - Math.floor((Date.now() - this.startTime) / 1000);
+            // calulate time
+            message.add(`${this.detections.length} faces captured. ${(CONFIG.faceCountdown / 1000) - Math.floor((Date.now() - this.startTime) / 1000)} seconds left`);
+            // this.counter.innerHTML = (CONFIG.faceCountdown / 1000) - Math.floor((Date.now() - this.startTime) / 1000);
         }
         this.loop = requestAnimationFrame(this.detect.bind(this));
         let detections = await faceapi.detectAllFaces(this.videoEl);
@@ -108,10 +122,7 @@ export default class FaceCapture {
             return;
         }
         if (this.idle) {
-            idleScreen.style.display = 'none';
-            this.addFaceFrames();
-            this.startTimer();
-            this.idle = false;
+            this.showDetection();
         }
         detections.forEach(d => {
             let faceFrame = this.isFaceInFrame(d);

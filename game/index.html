@@ -7,13 +7,24 @@
     <title>Foosball</title>
 </head>
 <body>
-    <span class='counter'>0</span>
+    <h2 id='messageBox'></h2>
     <video id='videoEl'
         style='
             transform: rotateY(180deg)
         '
+        class='hide'
     ></video>
     <figure id='idleScreen'>IDLE</figure>
+    <span id='userPosition'
+        style='
+            position: absolute;
+            width: 2vw;
+            height: 2vw;
+            background-color: lime;
+            bottom: 25vw;
+            z-index: 99;
+        '
+    ></span>
     <script src="./dist/js/main.js"></script>
 </body>
 </html>

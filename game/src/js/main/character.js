@@ -1,9 +1,11 @@
 import * as THREE from 'three';
 import {OBJLoader} from '../helper/OBJLoader.js';
+import {MTLLoader} from '../helper/MTLLoader.js';
 import {gsap} from 'gsap';
 import { CanvasTexture } from 'three';
 import CONFIG from '../helper/config.js';
 import fx from '../helper/glfx';
+import * as score from './score';
 require('../helper/physi');
 
 const errors = {
@@ -11,6 +13,9 @@ const errors = {
     noface: 'ERROR: Character Face has not been created. Try calling load()',
     nofacemap: 'WARNING: Character Face has no map.'
 };
+
+const blankVector = new THREE.Vector3(0,0,0);
+const fullVector =  new THREE.Vector3(1,1,1);
 
 export default class Character {
     constructor(index = 0,callback = null,position = {}) {
@@ -23,46 +28,47 @@ export default class Character {
             this.createCallback = callback;
         }
         this.index = index;
-        this.box = null;
         this.spinPlaying = false;
         this.load();
     }
 
     load() {
         const loader = new OBJLoader();
-        loader.load('/models/character/GamePeice.obj', o => {
-            this.geometry = new THREE.Geometry().fromBufferGeometry(o.children[0].geometry);
-            this.geometry.translate( 0, -9, 0 );
-            this.material = new THREE.MeshLambertMaterial({
-                color: 0xedca91,
-            });
-            this.mesh = new THREE.Mesh(this.geometry, this.material);
+        loader.load('/models/character/foosball_player_test_v2.obj', o => {
+            // this.geometry = new THREE.Geometry().fromBufferGeometry(o.children[0].geometry);
+            console.log(o.children[0]);
+            o.children[0].geometry.translate( 0, -9, 0 );
+            o.children[0].geometry.computeBoundingBox();
+            let size = new THREE.Vector3();
+            o.children[0].geometry.boundingBox.getSize(size)
+            this.geometry = new THREE.BoxGeometry(size.x,size.y * 1.2,size.z);
+            // this.material = Physijs.createMaterial(o.children[0].material, CONFIG.wallFriction,CONFIG.wallBounce);
+            this.material = Physijs.createMaterial(new THREE.MeshLambertMaterial({
+                transparent: true,
+                opacity: 0
+            }), CONFIG.wallFriction,CONFIG.wallBounce);
+            this.mesh = new Physijs.BoxMesh(this.geometry, this.material,0);
+            console.log(this.mesh);
+            this.mesh.add(o);
             this.mesh.scale.multiplyScalar(0.7);
             this.mesh.position.set(this.position.x,this.position.y,this.position.z);
-            this.box = new THREE.Box3().setFromObject( this.mesh );
             this.basePosition = this.mesh.position;
-            let faceGeometry = new THREE.CircleGeometry(1,32);
+            let faceGeometry = new THREE.CircleGeometry(2,32);
             let faceMat = new THREE.MeshPhongMaterial({
                 transparent: true,
                 opacity: 1
             });
             this.face = new THREE.Mesh(faceGeometry, faceMat);
             this.face.position.set(0,3.5,1.25);
-            this.mesh.add(this.face);
-            this.buildPhysicalBox();
+            o.add(this.face);
+            this.mesh.addEventListener('collision', (co,v,r,n) => {
+                co.setLinearVelocity(new THREE.Vector3(0,0,0));
+                this.kick();
+                score.increment();
+                co.setLinearVelocity(new THREE.Vector3(0,-1,CONFIG.ballSpeed));
+            });
             this.createCallback();
         });
-    }
-
-    buildPhysicalBox() {
-        let box = new Physijs.BoxMesh(
-            new THREE.BoxGeometry(this.box.max.x - this.box.min.x, 1.5 * (this.box.max.y - this.box.min.y), this.box.max.z - this.box.min.z),
-            Physijs.createMaterial(new THREE.MeshLambertMaterial(), CONFIG.wallFriction,CONFIG.wallBounce),
-            0
-        );
-        box.position.y = -1.5;
-        box.visible = false;
-        this.mesh.add(box);
     }
 
     addToScene(scene) {
@@ -96,6 +102,27 @@ export default class Character {
             x: intensity * 0
         });
         tl.play();
+        this.mesh.__dirtyRotation = true;
+    }
+
+    kick() {
+        if (!this.mesh) {
+            console.error(errors.nomesh);
+            return;
+        }
+        let tl = new gsap.timeline();
+        tl.to(this.mesh.rotation, {
+            duration: 0.1,
+            x: 0.0523599
+        }).to(this.mesh.rotation, {
+            duration: 0.3,
+            x: -0.785398
+        }).to(this.mesh.rotation, {
+            duration: 0.2,
+            x: 0
+        });
+        tl.play();
+        this.mesh.__dirtyRotation = true;
     }
 
     moveH(h, duration, delay) {
@@ -104,11 +131,12 @@ export default class Character {
             return;
         }
         
+        let moveTo = this.position.x + h;
         
         gsap.to(this.mesh.position, {
             duration: duration,
             delay: delay,
-            x: h
+            x: moveTo
         });
     }
 
@@ -166,6 +194,8 @@ export default class Character {
             console.error(errors.nomesh);
             return;
         }
+        this.mesh.setAngularFactor(blankVector);
+        this.mesh.setLinearFactor(blankVector);
         this.mesh.visible = false;
     }
 
@@ -174,13 +204,15 @@ export default class Character {
             console.error(errors.nomesh);
             return;
         }
+        this.mesh.setAngularFactor(fullVector);
+        this.mesh.setLinearFactor(fullVector);
         this.mesh.visible = true;
     }
 
     giveFace(canvas) {
         let glflCanv = fx.canvas();
         let texture = glflCanv.texture(canvas);
-        glflCanv.draw(texture).denoise(15).ink(0.35).update();
+        glflCanv.draw(texture).denoise(15).ink(0.35).brightnessContrast(0.2,0).update();
         if (!this.face) {
             console.error(errors.noface);
             return;
