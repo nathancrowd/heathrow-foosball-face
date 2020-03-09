@@ -25,7 +25,7 @@ function getGroupMidPoint(poses) {
         totalX += p;
     });
 
-    let midPoint = poseXs / poses.length;
+    let midPoint = totalX / poses.length;
 
     return midPoint;
 }
