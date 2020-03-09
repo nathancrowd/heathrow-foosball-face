@@ -45,7 +45,7 @@ function runBalls() {
     message.add(`0 points scored`);
     message.show();
     let gameLoop = setInterval(() => {
-        Footballs.createBall({x:getRandomInt(-35,22), y:getRandomInt(-4,4)});
+        Footballs.createBall({x:getRandomInt(-13,0), y:getRandomInt(-4,4)});
     },CONFIG.ballFrequency);
     setTimeout(() => {
         clearInterval(gameLoop);
