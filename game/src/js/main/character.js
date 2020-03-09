@@ -61,7 +61,7 @@ export default class Character {
                 co.setLinearVelocity(new THREE.Vector3(0,0,0));
                 this.kick();
                 score.increment();
-                co.setLinearVelocity(new THREE.Vector3(0,-1,CONFIG.ballSpeed));
+                co.setLinearVelocity(new THREE.Vector3(0,15,CONFIG.ballSpeed));
             });
             this.createCallback();
         });
