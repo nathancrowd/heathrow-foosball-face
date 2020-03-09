@@ -87,7 +87,7 @@ export default class FaceCapture {
     /**
      * Run a countdown timer for capturing faces
      */
-    startTimer() {
+    startTimer() {        
         this.startTime = Date.now();
         setTimeout(() => {
             this.deleteFaceFrames();
@@ -125,10 +125,10 @@ export default class FaceCapture {
         this.loop = requestAnimationFrame(this.detect.bind(this));
         let detections = await faceapi.detectAllFaces(this.videoEl);
         detections = faceapi.resizeResults(detections, {width: this.videoEl.width, height: this.videoEl.height});
-        if (!detections.length) {
+        if (!detections.length || this.end) {
             return;
         }
-        if (this.idle) {
+        if (this.idle && !this.end) {
             this.showDetection();
         }
         detections.forEach(d => {

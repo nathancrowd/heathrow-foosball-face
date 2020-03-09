@@ -73,7 +73,7 @@ function detectionCallback(e) {
         }, CONFIG.preGameTimer);
     } else {
         if (e.end) {
-            return;
+            // return;
         }
         idleScreen.style.display = 'flex';
         faces.startDetection(detectionCallback);
