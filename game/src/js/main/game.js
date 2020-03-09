@@ -47,13 +47,15 @@ function runBalls() {
     let gameLoop = setInterval(() => {
         Footballs.createBall({x:getRandomInt(-13,0), y:getRandomInt(-4,4)});
     },CONFIG.ballFrequency);
-    setTimeout(() => {
+    setTimeout(() => { // Stop throwing balls
         clearInterval(gameLoop);
-        score.display();
     }, CONFIG.gameTime);
-    setTimeout(() => {
+    setTimeout(() => { // Wait a bit before showing score
+        score.display();
+    }, CONFIG.gameTime * 1.5);
+    setTimeout(() => { // Wait a bit more before resetting
         reset();
-    }, CONFIG.postGameTime + (CONFIG.gameTime * 2));
+    }, CONFIG.postGameTime + (CONFIG.gameTime * 1.5));
 }
 
 function detectionCallback(e) {
