@@ -24,6 +24,11 @@ function relativeXToWindowMiddle(x) {
     return diff;
 }
 
+function round_to_precision(x, precision) {
+    var y = +x + (precision === undefined ? 0.5 : precision/2);
+    return y - (y % (precision === undefined ? 1 : +precision));
+}
+
 function animate() {
     scene.simulate();
 	renderLoop = requestAnimationFrame( animate );
@@ -41,8 +46,11 @@ function animate() {
         if (!relX) {
             return;
         }
+        let move = round_to_precision(relX, 0.1);
+        console.log(move);
+        
         activePlayers.forEach(p => {
-            p.moveH((relX * (2 * CONFIG.maxXMovement)), 0,0);
+            p.moveH((move * (2 * CONFIG.maxXMovement)), 0.2,0);
             // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
         });
     }).catch(error => { console.error(error) });

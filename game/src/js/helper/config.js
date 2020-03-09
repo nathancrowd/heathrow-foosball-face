@@ -48,7 +48,7 @@ export default {
     posenetMult: 0.75,
     maxPlayers: 3,
     scoreThreshold: 0.1,
-    maxXMovement: 8,
+    maxXMovement: 16,
     ballFriction: 0.4,
     ballBounce: 0.5,
     ballMass: 0.6,

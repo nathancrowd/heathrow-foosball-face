@@ -126,13 +126,21 @@ export default class Character {
             console.error(errors.nomesh);
             return;
         }
+        if (this.moving) {
+            return;
+        }
+        this.moving = true;
         
         let moveTo = this.position.x + h;
         
         gsap.to(this.mesh.position, {
             duration: duration,
             delay: delay,
-            x: moveTo
+            x: moveTo,
+            ease: 'elastic.inOut(1, 0.75)',
+            onComplete: () => {
+                this.moving  = false;
+            }
         });
     }
 
