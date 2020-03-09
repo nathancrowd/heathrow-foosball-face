@@ -1,6 +1,6 @@
 .face-frame {
-    width: 35vw;
-    height: 40vw;
+    width: 20vw;
+    height: 25vw;
     border-radius: 50%;
     border: 1vw dashed white;
     position: absolute;
@@ -8,7 +8,7 @@
     z-index: 2;
 
     &:nth-of-type(1) {
-        top: 10%;
+        top: 30%;
         left: 20%;
     }
     &:nth-of-type(2) {
