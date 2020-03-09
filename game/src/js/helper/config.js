@@ -42,6 +42,7 @@ export default {
             z: 0
         },
     ],
+    characterSpacing: 4,
     posenetArchitecture: 'MobileNetV1',
     outputStride: 8,
     quantBytes: 4,

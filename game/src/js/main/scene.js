@@ -15,7 +15,15 @@ let renderLoop = null;
 let gltfLoader = null;
 let characters = [];
 let activePlayers = [];
+let characterMidPoint = 0;
 
+/**
+ * 
+ * @param {*} x A pixel coordinate
+ * 
+ * returns the position relative to the window's mid-point.
+ * Where: 0 is the middle, -1 is left, and 1 is right
+ */
 function relativeXToWindowMiddle(x) {
     let relX = x / window.innerWidth;
 
@@ -29,6 +37,35 @@ function round_to_precision(x, precision) {
     return y - (y % (precision === undefined ? 1 : +precision));
 }
 
+/**
+ * Gets the midpoint of the character's group.
+ */
+function getGroupMidPoint() {
+    let returnArr = [];
+    characters.forEach(c => {
+        if (c.mesh.parent) {
+            returnArr.push(true);
+        } else {
+            returnArr.push(false);
+        }
+    });
+    if (returnArr[0] == true && returnArr[1] == true && returnArr[2] == true) {
+        return 0;
+    } else if(returnArr[0] == true && returnArr[1] == true && returnArr[2] == false) {
+        return -0.5;
+    } else if (returnArr[0] == true && returnArr[1] == false && returnArr[2] == true) {
+        return 0;
+    } else if (returnArr[0] == false && returnArr[1] == true && returnArr[2] == true) {
+        return 0.5;
+    } else if (returnArr[0] == false && returnArr[1] == true && returnArr[2] == false) {
+        return 0;
+    } else if (returnArr[0] == false && returnArr[1] == false && returnArr[2] == true) {
+        return 1;
+    } else if (returnArr[0] == true && returnArr[1] == false && returnArr[2] == false) {
+        return -1;
+    }
+}
+
 function animate() {
     scene.simulate();
 	renderLoop = requestAnimationFrame( animate );
@@ -40,6 +77,7 @@ function animate() {
         if (!poses.length) {
             return;
         }
+        
         let xPos = Posenet.getGroupMidPoint(poses);
         userPosition.style.left = `${(xPos/window.innerWidth) * 100}vw`;
         let relX = relativeXToWindowMiddle(xPos);
@@ -47,10 +85,8 @@ function animate() {
             return;
         }
         let move = round_to_precision(relX, 0.1);
-        console.log(move);
-        
         activePlayers.forEach(p => {
-            p.moveH((move * (2 * CONFIG.maxXMovement)), 0.2,0);
+            p.moveH((move * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), 0.2,0);
             // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
         });
     }).catch(error => { console.error(error) });
@@ -228,6 +264,7 @@ function init() {
 }
 
 function start() {
+    characterMidPoint = getGroupMidPoint();
     renderer.domElement.style.display = 'block';
     animate();
 }
