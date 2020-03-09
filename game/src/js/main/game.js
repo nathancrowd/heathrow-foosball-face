@@ -50,10 +50,10 @@ function runBalls() {
     setTimeout(() => {
         clearInterval(gameLoop);
         score.display();
-        setTimeout(() => {
-            reset();
-        }, CONFIG.postGameTime);
     }, CONFIG.gameTime);
+    setTimeout(() => {
+        reset();
+    }, CONFIG.postGameTime + (CONFIG.gameTime * 2));
 }
 
 function detectionCallback(e) {
