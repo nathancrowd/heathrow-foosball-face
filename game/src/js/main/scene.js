@@ -15,6 +15,7 @@ let renderLoop = null;
 let gltfLoader = null;
 let characters = [];
 let activePlayers = [];
+let currentPos = 0;
 
 function relativeXToWindowMiddle(x) {
     let relX = x / window.innerWidth;
@@ -29,6 +30,32 @@ function round_to_precision(x, precision) {
     return y - (y % (precision === undefined ? 1 : +precision));
 }
 
+function moveChar(e) {
+    switch (e.key) {
+        case 'ArrowLeft':
+            if (currentPos <= -1) {
+                return;
+            }
+            currentPos -= 0.1;
+        break;
+        case 'ArrowRight':
+            if (1 <= currentPos) {
+                return;
+            }
+            currentPos += 0.1;
+        break;
+        default:
+            break;
+    }
+    activePlayers.forEach(p => {
+        p.moveH((currentPos * (2 * CONFIG.maxXMovement)), 0.2,0);
+    });
+}
+
+function removeKeybind() {
+    document.removeEventListener('keydown', moveChar, false);
+}
+
 function animate() {
     scene.simulate();
 	renderLoop = requestAnimationFrame( animate );
@@ -36,24 +63,25 @@ function animate() {
     if (CONFIG.enableControls) {
         controls.update();
     }
-    Posenet.getPoses().then((poses) => {
-        if (!poses.length) {
-            return;
-        }
-        let xPos = Posenet.getGroupMidPoint(poses);
-        userPosition.style.left = `${(xPos/window.innerWidth) * 100}vw`;
-        let relX = relativeXToWindowMiddle(xPos);
-        if (!relX) {
-            return;
-        }
-        let move = round_to_precision(relX, 0.1);
-        console.log(move);
+    document.addEventListener('keydown', moveChar, false);
+    // Posenet.getPoses().then((poses) => {
+    //     if (!poses.length) {
+    //         return;
+    //     }
+    //     let xPos = Posenet.getGroupMidPoint(poses);
+    //     userPosition.style.left = `${(xPos/window.innerWidth) * 100}vw`;
+    //     let relX = relativeXToWindowMiddle(xPos);
+    //     if (!relX) {
+    //         return;
+    //     }
+    //     let move = round_to_precision(relX, 0.1);
+    //     console.log(move);
         
-        activePlayers.forEach(p => {
-            p.moveH((move * (2 * CONFIG.maxXMovement)), 0.2,0);
-            // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
-        });
-    }).catch(error => { console.error(error) });
+    //     activePlayers.forEach(p => {
+    //         p.moveH((move * (2 * CONFIG.maxXMovement)), 0.2,0);
+    //         // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
+    //     });
+    // }).catch(error => { console.error(error) });
     activePlayers.forEach(p => {
         p.mesh.__dirtyPosition = true;
         p.mesh.__dirtyRotation = true;
@@ -66,6 +94,7 @@ function pause() {
 }
 
 function reset() {
+    currentPos = 0;
     renderer.domElement.style.display = 'none';
     clearCharacters();
     scene.dispose();
@@ -239,5 +268,6 @@ export {
     characters,
     activePlayers,
     scene,
-    reset
+    reset,
+    removeKeybind
 }

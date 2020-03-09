@@ -32,6 +32,7 @@ import * as score from './score';
 let faces = null;
 
 function reset() {
+    Scene.removeKeybind();
     message.hide();
     score.reset();
     Scene.reset();
@@ -86,7 +87,7 @@ function init() {
     // runIdle
     message.hide();
     // loadPosenet (idle)
-    Posenet.init();
+    // Posenet.init();
 
     // buildScene
     Scene.init();
