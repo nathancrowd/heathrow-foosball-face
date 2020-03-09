@@ -52,14 +52,11 @@ const gulp = require('gulp'),
             dest: './includes/'
         },
         packageWhitelist: [ //Customise to your own folder structure
-            '*.{php,png,css,zip}',
-            'acf-json/**/*.json',
-            'includes/**/*.php',
-            'includes/plugins/advanced-custom-fields-pro.zip',
+            '*.{php,png,css,zip,html}',
             'dist/**/*',
-            'components/**/*.twig',
-            'templates/**/*.twig',
-            'login/**/*'
+            'facemodels/**/*',
+            'models/**/*',
+            'physics/**/*',
         ]
     };
 
