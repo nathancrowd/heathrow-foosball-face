@@ -179,8 +179,8 @@ function clearCharacters() {
 function buildCharacters() {
     CONFIG.characters.forEach((c,i) => {
         let character = new Character(i,() => {
-            character.addToScene(scene);
-            character.hide();
+            // character.addToScene(scene);
+            // character.hide();
         },c);
         characters.push(character);
     });

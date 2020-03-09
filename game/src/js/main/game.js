@@ -61,6 +61,7 @@ function detectionCallback(e) {
     videoEl.classList.add('hide');
     if (e.detections.length) {
         e.detections.forEach((d,i) => {
+            Scene.characters[i].addToScene(Scene.scene);
             Scene.characters[i].giveFace(d[0]);
             Scene.characters[i].show();
             Scene.activePlayers.push(Scene.characters[i]);
@@ -71,6 +72,9 @@ function detectionCallback(e) {
             runBalls();
         }, CONFIG.preGameTimer);
     } else {
+        if (e.end) {
+            return;
+        }
         idleScreen.style.display = 'flex';
         faces.startDetection(detectionCallback);
     }

@@ -44,6 +44,8 @@ export default {
     ],
     posenetArchitecture: 'MobileNetV1',
     outputStride: 8,
+    quantBytes: 4,
+    posenetMult: 0.75,
     maxPlayers: 3,
     scoreThreshold: 0.1,
     maxXMovement: 8,

@@ -11,6 +11,7 @@ export default class FaceCapture {
         this.MODEL_URL = '/facemodels';
 
         this.idle = true;
+        this.end = false;
     }
 
     /**
@@ -72,11 +73,14 @@ export default class FaceCapture {
 
     startDetection(callback) {
         this.res = callback;
+        this.end = false;
+        console.log('FaceCapture: Starting Face Detection');
         this.loop = requestAnimationFrame(this.detect.bind(this));
     }
 
     endDetection() {
-        console.log('Stopping Face Detection');
+        console.log('FaceCapture: Stopping Face Detection');
+        this.end = true;
         cancelAnimationFrame(this.loop);
     }
     
@@ -110,6 +114,9 @@ export default class FaceCapture {
      * Any captured faces are added to a detections array as a HTMLCanvas.
      */
     async detect() {
+        if (this.end) {
+            return;
+        }
         if (!this.idle) {
             // calulate time
             message.add(`${this.detections.length} faces captured. ${(CONFIG.faceCountdown / 1000) - Math.floor((Date.now() - this.startTime) / 1000)} seconds left`);

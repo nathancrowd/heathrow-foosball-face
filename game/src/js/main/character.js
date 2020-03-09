@@ -36,7 +36,6 @@ export default class Character {
         const loader = new OBJLoader();
         loader.load('/models/character/foosball_player_test_v2.obj', o => {
             // this.geometry = new THREE.Geometry().fromBufferGeometry(o.children[0].geometry);
-            console.log(o.children[0]);
             o.children[0].geometry.translate( 0, -9, 0 );
             o.children[0].geometry.computeBoundingBox();
             let size = new THREE.Vector3();
@@ -48,15 +47,12 @@ export default class Character {
                 opacity: 0
             }), CONFIG.wallFriction,CONFIG.wallBounce);
             this.mesh = new Physijs.BoxMesh(this.geometry, this.material,0);
-            console.log(this.mesh);
             this.mesh.add(o);
             this.mesh.scale.multiplyScalar(0.7);
             this.mesh.position.set(this.position.x,this.position.y,this.position.z);
             this.basePosition = this.mesh.position;
             let faceGeometry = new THREE.CircleGeometry(2,32);
             let faceMat = new THREE.MeshPhongMaterial({
-                transparent: true,
-                opacity: 1
             });
             this.face = new THREE.Mesh(faceGeometry, faceMat);
             this.face.position.set(0,3.5,1.25);
@@ -207,6 +203,10 @@ export default class Character {
         this.mesh.setAngularFactor(fullVector);
         this.mesh.setLinearFactor(fullVector);
         this.mesh.visible = true;
+    }
+
+    delete(scene) {
+        scene.remove(this.mesh);
     }
 
     giveFace(canvas) {

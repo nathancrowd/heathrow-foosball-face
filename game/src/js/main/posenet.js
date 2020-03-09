@@ -7,7 +7,9 @@ async function init() {
     console.log('POSENET: Initialising...');
     net = await posenet.load({
         architecture: CONFIG.posenetArchitecture,
-        outputStride: CONFIG.outputStride
+        outputStride: CONFIG.outputStride,
+        quantBytes: CONFIG.quantBytes,
+        multiplier: CONFIG.posenetMult
     });
     console.log('POSENET: Initialised');
 }
