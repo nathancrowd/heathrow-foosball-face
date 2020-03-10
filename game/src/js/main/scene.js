@@ -79,12 +79,14 @@ function animate() {
         }
         
         let xPos = Posenet.getGroupMidPoint(poses);
+        console.log(xPos);
+        
         userPosition.style.left = `${xPos}px`;
         let relX = relativeXToWindowMiddle(xPos);
         if (!relX) {
             return;
         }
-        let move = round_to_precision(relX, 0.1);
+        let move = round_to_precision(relX, 0.01);
         activePlayers.forEach(p => {
             p.moveH((move * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), 0.2,0);
             // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);

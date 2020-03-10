@@ -44,7 +44,7 @@ export default {
     ],
     characterSpacing: 4,
     posenetArchitecture: 'MobileNetV1',
-    outputStride: 16,
+    outputStride: 8,
     quantBytes: 2,
     posenetMult: 0.75,
     maxPlayers: 3,

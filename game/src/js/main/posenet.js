@@ -32,11 +32,11 @@ function getGroupMidPoint(poses) {
 
 function getPoseXPos(pose) {
     // let currentX = 0;
-    let left = pose.keypoints[5].position.x;
-    let right = pose.keypoints[6].position.x;
-    let currentX = (left + right) / 2;
+    // let left = pose.keypoints[5].position.x;
+    // let right = pose.keypoints[6].position.x;
+    // let currentX = (left + right) / 2;
 
-    return currentX;
+    return pose.keypoints[0].position.x;
 }
 
 function orderPoses(poses) {
