@@ -79,7 +79,6 @@ function animate() {
         }
         
         let xPos = Posenet.getGroupMidPoint(poses);
-        userPosition.style.left = `${(xPos/window.innerWidth) * 100}vw`;
         let relX = relativeXToWindowMiddle(xPos);
         if (!relX) {
             return;
@@ -276,5 +275,6 @@ export {
     characters,
     activePlayers,
     scene,
-    reset
+    reset,
+    camera
 }

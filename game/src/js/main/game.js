@@ -45,14 +45,15 @@ function runBalls() {
     message.add(`0 points scored`);
     message.show();
     let gameLoop = setInterval(() => {
-        Footballs.createBall({x:getRandomInt(-13,0), y:getRandomInt(-4,4)});
+        new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)});
     },CONFIG.ballFrequency);
     setTimeout(() => { // Stop throwing balls
         clearInterval(gameLoop);
+        Footballs.clearAll();
     }, CONFIG.gameTime);
     setTimeout(() => { // Wait a bit before showing score
         score.display();
-    }, CONFIG.gameTime * 1.5);
+    }, CONFIG.gameTime * 1.2);
     setTimeout(() => { // Wait a bit more before resetting
         reset();
     }, CONFIG.postGameTime + (CONFIG.gameTime * 1.5));
