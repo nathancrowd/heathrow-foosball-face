@@ -4,8 +4,7 @@ export default function captureVideo() {
     videoEl.height = window.innerHeight;
     
     navigator.mediaDevices.getUserMedia({video: {
-        width: {max: window.innerWidth},
-        height: {max: window.innerHeight}
+        aspectRatio: 0.5625
     }}).then(s => {
         videoEl.srcObject = s;
         videoEl.onloadedmetadata = () => {
