@@ -31,6 +31,10 @@ class Ball {
     createWarning() {
         this.warning = document.createElement('figure');
         this.warning.classList.add('ball-warning');
+        this.warning.innerHTML = `<svg>
+        <defs><clipPath id="a9c81aa8-4ba8-41e2-a150-b45d20ec3241"><circle cx="89.5" cy="89.5" r="85" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width="9"/></clipPath></defs>
+        <use href="#football"></use>
+        </svg>`;
         document.body.appendChild(this.warning);
         
         this.warningInterval = setInterval(() => {
