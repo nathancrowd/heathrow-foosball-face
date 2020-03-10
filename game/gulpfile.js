@@ -187,7 +187,7 @@ function watch() {
  */
 function deploy() {
     return gulp.src(paths.packageWhitelist, { base: './' })
-        .pipe(gulpif(args.pipeline, gulp.dest('pipeline/'), gulp.dest('../' + theme + '-package/')));
+        .pipe(gulpif(args.pipeline, gulp.dest('pipeline/'), gulp.dest('./' + theme + '-package/')));
 }
 
 gulp.task('default', gulp.series(fonts, images, styles, scripts, watch));
