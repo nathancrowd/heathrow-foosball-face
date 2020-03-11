@@ -12,6 +12,7 @@ export default class FaceCapture {
 
         this.idle = true;
         this.end = false;
+        this.count = 0;
     }
 
     /**
@@ -74,6 +75,7 @@ export default class FaceCapture {
     startDetection(callback) {
         this.res = callback;
         this.end = false;
+        this.count = 0;
         console.log('FaceCapture: Starting Face Detection');
         this.loop = requestAnimationFrame(this.detect.bind(this));
     }
@@ -119,7 +121,7 @@ export default class FaceCapture {
         }
         if (!this.idle) {
             // calulate time
-            message.add(`${this.detections.length} faces captured. ${(CONFIG.faceCountdown / 1000) - Math.floor((Date.now() - this.startTime) / 1000)} seconds left`);
+            message.add(`${this.count} faces captured. ${(CONFIG.faceCountdown / 1000) - Math.floor((Date.now() - this.startTime) / 1000)} seconds left`);
             // this.counter.innerHTML = (CONFIG.faceCountdown / 1000) - Math.floor((Date.now() - this.startTime) / 1000);
         }
         this.loop = requestAnimationFrame(this.detect.bind(this));
@@ -142,6 +144,7 @@ export default class FaceCapture {
                         faceFrame.frameEl.classList.add('active');
                         this.detections[faceFrame.frameIndex] = c;
                         console.log('FaceCapture: Face Captured');
+                        this.count++;
                     });
                 }
             }

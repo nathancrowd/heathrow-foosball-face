@@ -62,6 +62,7 @@ function runBalls() {
 function detectionCallback(e) {
     e.idle = true;
     videoEl.classList.add('hide');
+    message.hide();
     if (e.detections.length) {
         e.detections.forEach((d,i) => {
             Scene.characters[i].addToScene(Scene.scene);
