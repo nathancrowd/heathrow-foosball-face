@@ -76,7 +76,8 @@ function convertImageBitmapToData(bitmap) {
     ctx.clearRect(0,0,bitmap.width,bitmap.height);
     ctx.drawImage(bitmap,0,0,bitmap.width,bitmap.height);
     let r = {
-        data: ctx.getImageData(0,0,bitmap.width, bitmap.height),
+        // data: ctx.getImageData(0,0,bitmap.width, bitmap.height),
+        data: canvas,
         width: bitmap.width
     };
     return r;
@@ -92,14 +93,16 @@ function getPoses(videoData) {
             return;
         }
         detecting = true;
+        console.log('POSENET: Detection started');
         let poses = await net.estimateMultiplePoses(videoData.data, {
             scoreThreshold: CONFIG.scoreThreshold,
             flipHorizontal: true,
             decodingMethod: 'multi-person',
             maxDetections: CONFIG.maxPlayers
         });
+        console.log('POSENET: Poses detected');
         let orderedPoses = orderPoses(poses);
-        let posesMidPoint = getGroupMidPoint(poses);
+        let posesMidPoint = getGroupMidPoint(orderedPoses);
         let relativePoint = pointRelativeToScreen(posesMidPoint, videoData.width);
         detecting = false;
         console.log('Poses: ', poses);

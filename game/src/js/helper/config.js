@@ -48,7 +48,7 @@ export default {
     quantBytes: 2,
     posenetMult: 0.75,
     maxPlayers: 3,
-    scoreThreshold: 0.1,
+    scoreThreshold: 0.3,
     maxXMovement: 16,
     ballFriction: 0.4,
     ballBounce: 0.5,

@@ -100,21 +100,9 @@ function posenetReturn(e) {
     } else {
         return;
     }
-    
-    // let xPos = getPosesMidPoint(poses);
-    // console.log(xPos);
-    console.log(poses);
-    
-    // userPosition.style.left = `${xPos}px`;
-    // let relX = relativeXToWindowMiddle(xPos);
-    // if (!relX) {
-        // return;
-    // }
-    // let move = round_to_precision(relX, 0.01);
-    let move = round_to_precision(poses, 0.01);
 
     activePlayers.forEach(p => {
-        p.moveH((move * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), 0.5,0);
+        p.moveH((poses * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), 1,0);
         // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
     });
 }

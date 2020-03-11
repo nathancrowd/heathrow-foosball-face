@@ -137,7 +137,7 @@ export default class Character {
             duration: duration,
             delay: delay,
             x: moveTo,
-            ease: 'elastic.inOut(1, 0.75)',
+            ease: 'expo.inOut',
             onComplete: () => {
                 this.moving  = false;
             }
