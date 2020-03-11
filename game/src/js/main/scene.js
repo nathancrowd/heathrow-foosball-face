@@ -18,6 +18,7 @@ let characters = [];
 let activePlayers = [];
 let characterMidPoint = 0;
 let Posenet = null;
+let renderTarget = null;
 
 /**
  * 
@@ -104,7 +105,7 @@ function posenetReturn(e) {
     }
 
     activePlayers.forEach(p => {
-        p.moveH((poses * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), 0,0);
+        p.moveH((poses * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), 0.1,0.05);
         // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
     });
 }
@@ -121,7 +122,7 @@ function mobileReturn(e) {
 
 function animate() {
     scene.simulate();
-	renderLoop = requestAnimationFrame( animate );
+    renderLoop = requestAnimationFrame( animate );
     renderer.render( scene, camera );
     if (CONFIG.enableControls) {
         controls.update();
@@ -268,11 +269,17 @@ function addShadow(o) {
 
 function buildPoles() {
     let poleGeometry = new THREE.CylinderGeometry(0.7,0.7,80,32);
-    let poleMaterial = Physijs.createMaterial(new THREE.MeshLambertMaterial({
-        color: new THREE.Color(0x858585)
+    console.log(camera);
+    
+    let poleMaterial = Physijs.createMaterial(new THREE.MeshPhongMaterial({
+        color: 0x000000,
+        specular: 0xffffff,
+        shininess: 50
     }),CONFIG.wallFriction,CONFIG.wallBounce);
     CONFIG.poles.forEach(p => {
         let pole = new Physijs.CylinderMesh(poleGeometry,poleMaterial,0);
+        pole.castShadow = true;
+        pole.receiveShadow = true;
         pole.position.set(p.x,p.y,p.z);
         pole.rotation.set(0, 0, 1.5708);
         scene.add(pole);
@@ -314,7 +321,6 @@ function init() {
         alpha: true
     });
     gltfLoader = new GLTFLoader();
-
     renderer.shadowMapEnabled = true;
     renderer.setClearColor(0x000000, 0.0);
     renderer.setSize( window.innerWidth, window.innerHeight );

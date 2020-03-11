@@ -36,6 +36,8 @@ export default class Character {
         const loader = new OBJLoader();
         loader.load('/models/character/foosball_player_test_v2.obj', o => {
             // this.geometry = new THREE.Geometry().fromBufferGeometry(o.children[0].geometry);
+            o.children[0].castShadow = true;
+            o.children[0].receiveShadow = true;
             o.children[0].geometry.translate( 0, -9, 0 );
             o.children[0].geometry.computeBoundingBox();
             let size = new THREE.Vector3();
