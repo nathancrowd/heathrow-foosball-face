@@ -102,7 +102,7 @@ function posenetReturn(e) {
     }
 
     activePlayers.forEach(p => {
-        p.moveH((poses * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), 1,0);
+        p.moveH((poses * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), 0,0);
         // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
     });
 }
