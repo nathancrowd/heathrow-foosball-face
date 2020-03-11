@@ -4,7 +4,7 @@ import {OrbitControls} from '../helper/OrbitControls.js';
 import Character from './character.js';
 import CONFIG from '../helper/config.js';
 import getRandomInt from '../helper/randomInt';
-import * as Posenet from './posenet';
+// import * as Posenet from './posenet';
 require('../helper/physi');
 
 let scene = null;
@@ -16,6 +16,8 @@ let gltfLoader = null;
 let characters = [];
 let activePlayers = [];
 let characterMidPoint = 0;
+let Posenet = null;
+let imageCapture = null;
 
 /**
  * 
@@ -66,6 +68,57 @@ function getGroupMidPoint() {
     }
 }
 
+function getPosesMidPoint(poses) {
+    let poseXs = [];
+    poses.forEach(p => {
+        poseXs.push(getPoseXPos(p));
+    });
+
+    let totalX = 0;
+    poseXs.forEach(p => {
+        totalX += p;
+    });
+
+    let midPoint = totalX / poses.length;
+
+    return midPoint;
+}
+
+function getPoseXPos(pose) {
+    // let currentX = 0;
+    // let left = pose.keypoints[5].position.x;
+    // let right = pose.keypoints[6].position.x;
+    // let currentX = (left + right) / 2;
+
+    return pose.keypoints[0].position.x;
+}
+
+function posenetReturn(e) {
+    let poses = null;
+    if (e.data.poses) {
+        poses = e.data.poses;
+    } else {
+        return;
+    }
+    if (!poses.length) {
+        return;
+    }
+    
+    let xPos = getPosesMidPoint(poses);
+    console.log(xPos);
+    
+    userPosition.style.left = `${xPos}px`;
+    let relX = relativeXToWindowMiddle(xPos);
+    if (!relX) {
+        return;
+    }
+    let move = round_to_precision(relX, 0.01);
+    activePlayers.forEach(p => {
+        p.moveH((move * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), 0.5,0);
+        // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
+    });
+}
+
 function animate() {
     scene.simulate();
 	renderLoop = requestAnimationFrame( animate );
@@ -73,25 +126,31 @@ function animate() {
     if (CONFIG.enableControls) {
         controls.update();
     }
-    Posenet.getPoses().then((poses) => {
-        if (!poses.length) {
-            return;
-        }
+    imageCapture.grabFrame().then(b => {
+        Posenet.postMessage({
+            action: 'getPoses',
+            video: b
+        },[b]);
+    }).catch(e => {});
+    // Posenet.getPoses().then((poses) => {
+    //     if (!poses.length) {
+    //         return;
+    //     }
         
-        let xPos = Posenet.getGroupMidPoint(poses);
-        console.log(xPos);
+    //     let xPos = Posenet.getGroupMidPoint(poses);
+    //     console.log(xPos);
         
-        userPosition.style.left = `${xPos}px`;
-        let relX = relativeXToWindowMiddle(xPos);
-        if (!relX) {
-            return;
-        }
-        let move = round_to_precision(relX, 0.01);
-        activePlayers.forEach(p => {
-            p.moveH((move * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), 0.2,0);
-            // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
-        });
-    }).catch(error => { console.error(error) });
+    //     userPosition.style.left = `${xPos}px`;
+    //     let relX = relativeXToWindowMiddle(xPos);
+    //     if (!relX) {
+    //         return;
+    //     }
+    //     let move = round_to_precision(relX, 0.01);
+    //     activePlayers.forEach(p => {
+    //         p.moveH((move * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), 0.2,0);
+    //         // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
+    //     });
+    // }).catch(error => { console.error(error) });
     activePlayers.forEach(p => {
         p.mesh.__dirtyPosition = true;
         p.mesh.__dirtyRotation = true;
@@ -233,6 +292,14 @@ function buildCharacters() {
 }
 
 function init() {
+    Posenet = new Worker('/dist/js/posenet.js');
+    Posenet.postMessage({
+        action: 'init'
+    });
+    Posenet.addEventListener('message', posenetReturn, false);
+    let stream = videoEl.captureStream();
+    let track = stream.getVideoTracks()[0];
+    imageCapture = new ImageCapture(track);
     Physijs.scripts.worker = '../../physics/physijs_worker.js';
 	Physijs.scripts.ammo = '../../physics/ammo.js';
     scene = new Physijs.Scene();
@@ -258,7 +325,6 @@ function init() {
     if (CONFIG.enableControls) {
         controls.update();
     }
-
     setupLight();
     buildTable();
     buildPoles();

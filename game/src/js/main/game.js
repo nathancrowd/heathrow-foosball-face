@@ -1,5 +1,5 @@
 import * as Scene from './scene';
-import * as Posenet from './posenet';
+// import * as Posenet from './posenet';
 import FaceCapture from './capture-faces';
 import * as Footballs from './footballs';
 import getRandomInt from '../helper/randomInt';
@@ -88,7 +88,6 @@ function init() {
     // runIdle
     message.hide();
     // loadPosenet (idle)
-    Posenet.init();
 
     // buildScene
     Scene.init();

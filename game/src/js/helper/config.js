@@ -59,5 +59,9 @@ export default {
     preGameTimer: 10000, // milliseconds
     gameTime: 20000, // milliseconds
     postGameTime: 5000,
-    idleTime: 5000 // milliseconds
+    idleTime: 5000, // milliseconds
+    dimensions: {
+        width: 2160,
+        height: 3840
+    }
 }

@@ -37,6 +37,10 @@ const gulp = require('gulp'),
                     entryFiles: glob.sync('./src/js/main/**/*.js'),
                     outputName: 'main'
                 },
+                {
+                    entryFiles: glob.sync('./src/js/worker/posenet.js'),
+                    outputName: 'posenet'
+                },
             ]
         },
         images: {
