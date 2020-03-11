@@ -1,4 +1,6 @@
-export default function captureVideo() {
+let imageCapture = null;
+
+function captureVideo() {
 
     videoEl.width = window.innerWidth;
     videoEl.height = window.innerHeight;
@@ -10,9 +12,17 @@ export default function captureVideo() {
         videoEl.onloadedmetadata = () => {
              videoEl.play();
         };
+        let track = s.getVideoTracks()[0];
+        imageCapture = new ImageCapture(track);
+        
     }).catch(e => {
         console.error(e);
     });
+}
+
+export {
+    captureVideo,
+    imageCapture
 }
 
 document.addEventListener('DOMContentLoaded', captureVideo, false);

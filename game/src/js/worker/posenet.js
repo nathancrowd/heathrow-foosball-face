@@ -15,9 +15,17 @@ async function init() {
         quantBytes: CONFIG.quantBytes,
         multiplier: CONFIG.posenetMult
     });
-    canvas = new OffscreenCanvas(CONFIG.dimensions.width,CONFIG.dimensions.height);
+    canvas = new OffscreenCanvas(0,0);
     ctx = canvas.getContext('2d');
     console.log('POSENET: Initialised');
+}
+
+function pointRelativeToScreen(xPoint, width) {
+    let relX = xPoint / width;
+
+    let diff = relX - 0.5;
+    
+    return diff;
 }
 
 function getGroupMidPoint(poses) {
@@ -40,9 +48,10 @@ function getPoseXPos(pose) {
     // let currentX = 0;
     // let left = pose.keypoints[5].position.x;
     // let right = pose.keypoints[6].position.x;
-    // let currentX = (left + right) / 2;
+    // currentX = (left + right) / 2;
 
     return pose.keypoints[0].position.x;
+    // return currentX;
 }
 
 function orderPoses(poses) {
@@ -62,10 +71,15 @@ function orderPoses(poses) {
 }
 
 function convertImageBitmapToData(bitmap) {
-    ctx.clearRect(0,0,CONFIG.dimensions.width,CONFIG.dimensions.height);
-    ctx.drawImage(bitmap,0,0);
-    let data = ctx.getImageData(0,0,bitmap.width, bitmap.height);
-    return data;
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    ctx.clearRect(0,0,bitmap.width,bitmap.height);
+    ctx.drawImage(bitmap,0,0,bitmap.width,bitmap.height);
+    let r = {
+        data: ctx.getImageData(0,0,bitmap.width, bitmap.height),
+        width: bitmap.width
+    };
+    return r;
 }
 
 function getPoses(videoData) {
@@ -78,15 +92,19 @@ function getPoses(videoData) {
             return;
         }
         detecting = true;
-        let poses = await net.estimateMultiplePoses(videoData, {
+        let poses = await net.estimateMultiplePoses(videoData.data, {
             scoreThreshold: CONFIG.scoreThreshold,
             flipHorizontal: true,
             decodingMethod: 'multi-person',
             maxDetections: CONFIG.maxPlayers
         });
         let orderedPoses = orderPoses(poses);
+        let posesMidPoint = getGroupMidPoint(poses);
+        let relativePoint = pointRelativeToScreen(posesMidPoint, videoData.width);
         detecting = false;
-        res(orderedPoses);
+        console.log('Poses: ', poses);
+        
+        res(relativePoint);
     });
 }
 
