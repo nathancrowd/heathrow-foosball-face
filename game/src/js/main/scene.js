@@ -27,7 +27,9 @@ let Posenet = null;
  * Where: 0 is the middle, -1 is left, and 1 is right
  */
 function relativeXToWindowMiddle(x) {
+    console.log(x,window.innerWidth);
     let relX = x / window.innerWidth;
+
 
     let diff = relX - 0.5;
     
@@ -107,6 +109,16 @@ function posenetReturn(e) {
     });
 }
 
+function mobileReturn(e) {
+    let relX = relativeXToWindowMiddle(e.touches[0].clientX);
+    console.log(relX);
+    
+    activePlayers.forEach(p => {
+        p.moveH((relX * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), 0,0);
+        // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
+    });
+}
+
 function animate() {
     scene.simulate();
 	renderLoop = requestAnimationFrame( animate );
@@ -114,12 +126,16 @@ function animate() {
     if (CONFIG.enableControls) {
         controls.update();
     }
-    imageCapture.grabFrame().then(b => {
-        Posenet.postMessage({
-            action: 'getPoses',
-            video: b
-        },[b]);
-    }).catch(e => {});
+    if (CONFIG.mobile) {
+
+    } else {
+        imageCapture.grabFrame().then(b => {
+            Posenet.postMessage({
+                action: 'getPoses',
+                video: b
+            },[b]);
+        }).catch(e => {});
+    }
     // Posenet.getPoses().then((poses) => {
     //     if (!poses.length) {
     //         return;
@@ -280,11 +296,15 @@ function buildCharacters() {
 }
 
 function init() {
-    Posenet = new Worker('/dist/js/posenet.js');
-    Posenet.postMessage({
-        action: 'init'
-    });
-    Posenet.addEventListener('message', posenetReturn, false);
+    if (CONFIG.mobile) {
+        document.addEventListener('touchmove', mobileReturn, false);
+    } else {
+        Posenet = new Worker('/dist/js/posenet.js');
+        Posenet.postMessage({
+            action: 'init'
+        });
+        Posenet.addEventListener('message', posenetReturn, false);
+    }
     Physijs.scripts.worker = '../../physics/physijs_worker.js';
 	Physijs.scripts.ammo = '../../physics/ammo.js';
     scene = new Physijs.Scene();

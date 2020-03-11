@@ -28,4 +28,15 @@
     &.active {
         border-color: green;
     }
+
+    @media screen and (max-width: 768px) {
+        width: 80vw;
+        height: 100vw;
+        max-height: 90vh;
+        &:nth-of-type(1) {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+        }
+    }
 }

@@ -20,11 +20,18 @@ export default class FaceCapture {
      */
     addFaceFrames() {
         this.frames = [];
-        for (let index = 0; index < CONFIG.faceSlots.length; index++) {
+        if (CONFIG.mobile) {
             let frame = document.createElement('div');
             frame.classList.add('face-frame');
             document.body.appendChild(frame);
             this.frames.push(frame);
+        } else {
+            for (let index = 0; index < CONFIG.faceSlots.length; index++) {
+                let frame = document.createElement('div');
+                frame.classList.add('face-frame');
+                document.body.appendChild(frame);
+                this.frames.push(frame);
+            }
         }
     }
 

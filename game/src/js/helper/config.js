@@ -1,3 +1,8 @@
+let isMobile = false;
+if (typeof window === 'object') {
+    isMobile = window.innerWidth < 769 ? true : false;
+}
+
 export default {
     wallFriction: 0.4,
     wallBounce: 0.5,
@@ -63,5 +68,6 @@ export default {
     dimensions: {
         width: 2160,
         height: 3840
-    }
+    },
+    mobile: isMobile
 }

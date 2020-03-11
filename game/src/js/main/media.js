@@ -6,7 +6,8 @@ function captureVideo() {
     videoEl.height = window.innerHeight;
     
     navigator.mediaDevices.getUserMedia({video: {
-        aspectRatio: 0.5625
+        aspectRatio: 0.5625,
+        facingMode: null
     }}).then(s => {
         videoEl.srcObject = s;
         videoEl.onloadedmetadata = () => {
