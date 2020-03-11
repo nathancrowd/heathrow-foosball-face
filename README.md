@@ -7,7 +7,7 @@ HTTPS dev server needed for video cam access. To install:
 
 `npm install http-server -g`
 
-You need to generate certificates in the appropriate directly:
+You need to generate certificates in the appropriate directly. First install Git for Windows https://gitforwindows.org/ (installs openssl that you need for the next step). Then run:
 
 `openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pem -out cert.pem
 `
