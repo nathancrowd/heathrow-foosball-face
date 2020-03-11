@@ -1,3 +1,4 @@
+$border-radius: 0.8em;
 #messageBox {
     position: absolute;
     top: 0;
@@ -6,4 +7,9 @@
     text-align: center;
     font-size: 5vw;
     z-index: 2;
+    margin: 0;
+    padding: 0.8em 0;
+    background-color: white;
+    border-bottom-left-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
 }
