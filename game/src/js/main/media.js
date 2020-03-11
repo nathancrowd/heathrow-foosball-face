@@ -1,13 +1,20 @@
+import CONFIG from '../helper/config';
 let imageCapture = null;
 
 function captureVideo() {
 
     videoEl.width = window.innerWidth;
     videoEl.height = window.innerHeight;
+
+    let constrainFront = null;
+
+    if (CONFIG.mobile) {
+        constrainFront = { exact: "user" };
+    }
     
     navigator.mediaDevices.getUserMedia({video: {
         aspectRatio: 0.5625,
-        facingMode: null
+        facingMode: constrainFront
     }}).then(s => {
         videoEl.srcObject = s;
         videoEl.onloadedmetadata = () => {
