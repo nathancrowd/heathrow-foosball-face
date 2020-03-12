@@ -42,6 +42,7 @@ function reset() {
 }
 
 function runBalls() {
+    movementIcon.classList.add('fade');
     message.add(`0 points scored`);
     message.show();
     let gameLoop = setInterval(() => {
@@ -72,6 +73,7 @@ function detectionCallback(e) {
         });
         e.clear();
         Scene.start();
+        movementIcon.classList.remove('fade');
         setTimeout(() => {
             runBalls();
         }, CONFIG.preGameTimer);
