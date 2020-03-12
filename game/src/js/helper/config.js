@@ -57,7 +57,7 @@ export default {
     drawShadows: true,
     scoreThreshold: 0.3,
     maxXMovement: 16,
-    characterMovementSpeed: 0.01,
+    characterMovementSpeed: 0.1,
     characterMovementDelay: 0,
     ballFriction: 0.4,
     ballBounce: 0.5,
