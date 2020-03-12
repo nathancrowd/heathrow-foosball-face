@@ -70,8 +70,8 @@ export default {
     postGameTime: 5000,
     idleTime: 5000, // milliseconds
     dimensions: {
-        width: 2160,
-        height: 3840
+        width: 1080,
+        height: 1920
     },
     mobile: isMobile,
     teams: [

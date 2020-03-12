@@ -19,6 +19,7 @@ let activePlayers = [];
 let characterMidPoint = 0;
 let Posenet = null;
 let renderTarget = null;
+let paused = true;
 
 /**
  * 
@@ -119,6 +120,9 @@ function mobileReturn(e) {
 }
 
 function animate() {
+    if (paused) {
+        return;
+    }
     scene.simulate();
     setTimeout( function() {
         renderLoop = requestAnimationFrame( animate );
@@ -165,6 +169,7 @@ function animate() {
 function pause() {
     cancelAnimationFrame(renderLoop);
     renderLoop = null;
+    paused = true;
 }
 
 function reset() {
@@ -345,6 +350,7 @@ function init() {
 }
 
 function start() {
+    paused = false;
     characterMidPoint = getGroupMidPoint();
     renderer.domElement.style.display = 'block';
     animate();
