@@ -69,5 +69,31 @@ export default {
         width: 2160,
         height: 3840
     },
-    mobile: isMobile
+    mobile: isMobile,
+    teams: [
+        'Italy',
+        'Switzerland',
+        'Turkey',
+        'Wales',
+        'Belgium',
+        'Denmark',
+        'Finland',
+        'Russia',
+        'Austria',
+        'Netherlands',
+        '',
+        'Ukraine',
+        'Croatia',
+        'Czech Republic',
+        'England',
+        '',
+        '',
+        'Poland',
+        'Spain',
+        'Sweden',
+        'France',
+        'Germany',
+        '',
+        'Portugal'
+    ]
 }

@@ -69,6 +69,7 @@ function detectionCallback(e) {
             Scene.characters[i].addToScene(Scene.scene);
             Scene.characters[i].giveFace(d[0]);
             Scene.characters[i].show();
+            console.log(`Player ${i + 1} is: ${Scene.characters[i].team}`);
             Scene.activePlayers.push(Scene.characters[i]);
         });
         e.clear();

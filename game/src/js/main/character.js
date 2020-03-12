@@ -6,6 +6,7 @@ import { CanvasTexture } from 'three';
 import CONFIG from '../helper/config.js';
 import fx from '../helper/glfx';
 import * as score from './score';
+import getRandomInt from '../helper/randomInt';
 require('../helper/physi');
 
 const errors = {
@@ -27,6 +28,7 @@ export default class Character {
         if (callback) {
             this.createCallback = callback;
         }
+        this.pickTeam();
         this.index = index;
         this.spinPlaying = false;
         this.load();
@@ -234,5 +236,11 @@ export default class Character {
         }
         this.face.material.map = new CanvasTexture(glflCanv);
         this.face.material.needsUpdate = true;
+    }
+
+    pickTeam() {
+        let r = getRandomInt(0, CONFIG.teams.length - 1);
+        let teamString = CONFIG.teams[r];
+        this.team = teamString;
     }
 }

@@ -28,7 +28,6 @@ let renderTarget = null;
  * Where: 0 is the middle, -1 is left, and 1 is right
  */
 function relativeXToWindowMiddle(x) {
-    console.log(x,window.innerWidth);
     let relX = x / window.innerWidth;
 
 
@@ -112,7 +111,6 @@ function posenetReturn(e) {
 
 function mobileReturn(e) {
     let relX = relativeXToWindowMiddle(e.touches[0].clientX);
-    console.log(relX);
     
     activePlayers.forEach(p => {
         p.moveH((relX * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), 0,0);
@@ -269,7 +267,6 @@ function addShadow(o) {
 
 function buildPoles() {
     let poleGeometry = new THREE.CylinderGeometry(0.7,0.7,80,32);
-    console.log(camera);
     
     let poleMaterial = Physijs.createMaterial(new THREE.MeshPhongMaterial({
         color: 0x000000,
