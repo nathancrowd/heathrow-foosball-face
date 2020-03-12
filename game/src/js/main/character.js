@@ -39,7 +39,7 @@ export default class Character {
         loader.load('/models/character/foosball_player_test_v2.obj', o => {
             // this.geometry = new THREE.Geometry().fromBufferGeometry(o.children[0].geometry);
             o.children[0].castShadow = true;
-            o.children[0].receiveShadow = true;
+            o.children[0].receiveShadow = false;
             o.children[0].geometry.translate( 0, -9, 0 );
             o.children[0].geometry.computeBoundingBox();
             let size = new THREE.Vector3();
@@ -56,7 +56,7 @@ export default class Character {
             this.mesh.position.set(this.position.x,this.position.y,this.position.z);
             this.basePosition = this.mesh.position;
             let faceGeometry = new THREE.CircleGeometry(2,32);
-            let faceMat = new THREE.MeshPhongMaterial({
+            let faceMat = new THREE.MeshBasicMaterial({
             });
             this.face = new THREE.Mesh(faceGeometry, faceMat);
             this.face.position.set(0,3.5,1.25);

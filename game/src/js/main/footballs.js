@@ -79,7 +79,7 @@ function getWindowCoords(object) {
 
 function init() {
     loader = new THREE.TextureLoader();
-    footballGeometry = new THREE.SphereGeometry(1,32,32);
+    footballGeometry = new THREE.BufferGeometry().fromGeometry(new THREE.SphereGeometry(1,32,32));
     footballMaterial = Physijs.createMaterial(new THREE.MeshLambertMaterial({
         color: 0xffffff,
         map: loader.load('/models/football/football.jpeg')
