@@ -7,6 +7,8 @@ import getRandomInt from '../helper/randomInt';
 // import * as Posenet from './posenet';
 require('../helper/physi');
 import {imageCapture} from './media';
+import Server from "./server";
+import Haptics from "./haptics";
 
 let scene = null;
 let camera = null;
@@ -19,6 +21,8 @@ let activePlayers = [];
 let characterMidPoint = 0;
 let Posenet = null;
 let renderTarget = null;
+let server = null;
+let haptics = null;
 
 /**
  * 
@@ -303,6 +307,7 @@ function buildCharacters() {
 }
 
 function init() {
+
     if (CONFIG.mobile) {
         document.addEventListener('touchmove', mobileReturn, false);
     } else {
@@ -336,6 +341,9 @@ function init() {
     if (CONFIG.enableControls) {
         controls.update();
     }
+    //server = new Server();
+    haptics = new Haptics();
+
     setupLight();
     buildTable();
     buildPoles();

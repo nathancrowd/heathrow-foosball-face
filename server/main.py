@@ -36,7 +36,6 @@ async def consumer():
 
 
 async def producer():
-    global clean_emotions
     while True:
         await asyncio.sleep(1)
         clean_emotions_str = dumps(dumps({'bla': True}))
