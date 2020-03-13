@@ -7,6 +7,7 @@ import CONFIG from '../helper/config.js';
 import fx from '../helper/glfx';
 import * as score from './score';
 import getRandomInt from '../helper/randomInt';
+import * as Sound from './sound';
 require('../helper/physi');
 
 const errors = {
@@ -69,6 +70,9 @@ export default class Character {
             o.add(this.face);
             this.mesh.addEventListener('collision', (co,v,r,n) => {
                 co.setLinearVelocity(new THREE.Vector3(0,0,0));
+                if (Sound.running) {
+                    Sound.kick();
+                }
                 this.kick();
                 score.increment();
                 co.setLinearVelocity(new THREE.Vector3(0,15,CONFIG.ballSpeed));

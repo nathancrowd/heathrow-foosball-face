@@ -6,6 +6,7 @@ import getRandomInt from '../helper/randomInt';
 import CONFIG from '../helper/config';
 import * as message from './message';
 import * as score from './score';
+import * as Sound from './sound';
 /**
  * Scene
  */
@@ -54,6 +55,9 @@ function runBalls() {
         Footballs.clearAll();
     }, CONFIG.gameTime);
     setTimeout(() => { // Wait a bit before showing score
+        if (Sound.running) {
+            Sound.fanfare();
+        }
         score.display();
     }, CONFIG.gameTime * 1.2);
     setTimeout(() => { // Wait a bit more before resetting
@@ -76,6 +80,9 @@ function detectionCallback(e) {
         e.clear();
         Scene.start();
         movementIcon.classList.remove('fade');
+        if (Sound.running) {
+            Sound.chant();
+        }
         setTimeout(() => {
             movementIcon.classList.add('fade');
             runBalls();
@@ -95,6 +102,7 @@ function init() {
     // loadPosenet (idle)
 
     // buildScene
+    Sound.init();
     Scene.init();
     Footballs.init();
 

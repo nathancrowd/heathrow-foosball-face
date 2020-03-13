@@ -93,19 +93,19 @@ function getPoses(videoData) {
             return;
         }
         detecting = true;
-        console.log('POSENET: Detection started');
+        // console.log('POSENET: Detection started');
         let poses = await net.estimateMultiplePoses(videoData.data, {
             scoreThreshold: CONFIG.scoreThreshold,
             flipHorizontal: true,
             decodingMethod: 'multi-person',
             maxDetections: CONFIG.maxPlayers
         });
-        console.log('POSENET: Poses detected');
+        // console.log('POSENET: Poses detected');
         let orderedPoses = orderPoses(poses);
         let posesMidPoint = getGroupMidPoint(orderedPoses);
         let relativePoint = pointRelativeToScreen(posesMidPoint, videoData.width);
         detecting = false;
-        console.log('Poses: ', poses);
+        // console.log('Poses: ', poses);
         
         res(relativePoint);
     });
@@ -122,7 +122,7 @@ onmessage = e => {
                 postMessage({
                     poses: r
                 });
-            }).catch(e => console.warn(e));
+            }).catch(e => {});
         default:
             break;
     }
