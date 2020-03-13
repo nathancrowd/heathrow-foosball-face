@@ -1,0 +1,12 @@
+#scoreboard {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 7vw;
+    background-color: black;
+    color: white;
+    z-index: 99;
+    transform: translate3d(calc(67vw - 100%), 46vh,0);
+    padding: 0.5em 2em;
+    display: none;
+}

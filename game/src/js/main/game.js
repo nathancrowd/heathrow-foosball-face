@@ -43,8 +43,9 @@ function reset() {
 }
 
 function runBalls() {
-    message.add(`0 points scored`);
-    message.show();
+    // message.add(`0 points scored`);
+    // message.show();
+    score.showBoard();
     let gameLoop = setInterval(() => {
         new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)});
     },CONFIG.ballFrequency);
