@@ -31,28 +31,18 @@ def collect_websocket(func):
 async def consumer():
     while True:
         data = await websocket.receive()
-        if data == 'age_sex':
-            await websocket.send(dumps({'bla': True}))
+        if data == 'linked':
+            await websocket.send(dumps({'message': 'linked'}))
 
-
-async def producer():
-    while True:
-        await asyncio.sleep(1)
-        clean_emotions_str = dumps(dumps({'bla': True}))
-        print('gave emotions', clean_emotions_str)
-        if len(clean_emotions_str) > 5:
-            await websocket.send(clean_emotions_str)
 
 
 @app.websocket('/ws')
 async def ws():
     consumer_task = asyncio.ensure_future(copy_current_websocket_context(consumer)(), )
-    producer_task = asyncio.ensure_future(copy_current_websocket_context(producer)(), )
     try:
-        await asyncio.gather(consumer_task, producer_task)
+        await asyncio.gather(consumer_task, )
     finally:
         consumer_task.cancel()
-        producer_task.cancel()
 
 
 @app.route("/api/demographics/")

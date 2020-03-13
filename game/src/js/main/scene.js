@@ -343,7 +343,7 @@ function init() {
     }
 
     server = new Server();
-    haptics = new Haptics();
+    //haptics = new Haptics();
 
     setupLight();
     buildTable();

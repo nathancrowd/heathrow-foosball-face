@@ -27,6 +27,8 @@ I have now made an automatic deploy URL at: https://heathrow.thisiscrowd.com. An
 
 ## Haptics
 
+You need to install bHaptics player which controls the hardware. It creates server for JS to communicate with: https://www.bhaptics.com/download/
+
 You can create specific haptic sensations via a GUI: https://designer.bhaptics.com/ (there are a number of prebuilt sensations there too). Save the file in models/haptics.
 
 Load the file by adding, in js/main/haptics.js:
