@@ -164,6 +164,7 @@ function animate() {
         p.mesh.__dirtyPosition = true;
         p.mesh.__dirtyRotation = true;
     });
+    renderer.shadowMap.needsUpdate = true;
 }
 
 function pause() {
