@@ -5,6 +5,10 @@ $border-radius: 0.8em;
     left:0;
     width: 100vw;
     text-align: center;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
     font-size: 5vw;
     z-index: 2;
     margin: 0;
@@ -12,4 +16,21 @@ $border-radius: 0.8em;
     background-color: white;
     border-bottom-left-radius: $border-radius;
     border-bottom-right-radius: $border-radius;
+
+    h2 {
+        margin: 0;
+        font-size: 5vw;
+    }
+
+    &.popup {
+        transition: all 0.3s ease-in-out;
+        width: calc(80vw - 1.6em);
+        height: 80vw;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 10vw;
+        padding: 0.8em;
+        border-top-left-radius: $border-radius;
+        border-top-right-radius: $border-radius;
+    }
 }

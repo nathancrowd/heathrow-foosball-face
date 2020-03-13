@@ -32,6 +32,7 @@ import * as score from './score';
 let faces = null;
 
 function reset() {
+    message.popdown();
     message.hide();
     score.reset();
     Scene.reset();

@@ -36,7 +36,13 @@ export default class Character {
 
     load() {
         const loader = new OBJLoader();
-        loader.load('/models/character/foosball_player_test_v2.obj', o => {
+        let modelUrl = null;
+        // if (this.team == '') {
+            modelUrl = '/models/character/foosball_player_test_v2.obj';
+        // } else {
+            // modelUrl = `/models/character/${this.team}.obj`;
+        // }
+        loader.load(modelUrl, o => {
             // this.geometry = new THREE.Geometry().fromBufferGeometry(o.children[0].geometry);
             o.children[0].castShadow = true;
             o.children[0].receiveShadow = false;

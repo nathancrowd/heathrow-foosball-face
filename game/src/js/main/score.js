@@ -8,6 +8,7 @@ function increment() {
 }
 
 function display() {
+    message.popup();
     message.add(`Time is up. ${score} points scored. Well done!`);
 }
 
