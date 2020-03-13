@@ -307,7 +307,7 @@ function buildCharacters() {
 }
 
 function init() {
-
+    console.clear(); //removes many not useful repetitive console dev warnings.
     if (CONFIG.mobile) {
         document.addEventListener('touchmove', mobileReturn, false);
     } else {
@@ -341,7 +341,8 @@ function init() {
     if (CONFIG.enableControls) {
         controls.update();
     }
-    //server = new Server();
+
+    server = new Server();
     haptics = new Haptics();
 
     setupLight();
