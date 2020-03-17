@@ -7,6 +7,7 @@ import CONFIG from '../helper/config';
 import * as message from './message';
 import * as score from './score';
 import * as Sound from './sound';
+import * as Scoreboard from './scoreboard';
 /**
  * Scene
  */
@@ -35,6 +36,8 @@ let faces = null;
 function reset() {
     message.popdown();
     message.hide();
+    Scoreboard.hideLeaderboard();
+    faces.clear();
     score.reset();
     Scene.reset();
     idleScreen.style.display = 'flex';
@@ -61,8 +64,12 @@ function runBalls() {
         score.display();
     }, CONFIG.gameTime * 1.2);
     setTimeout(() => { // Wait a bit more before resetting
-        reset();
+        Scoreboard.addToLeaderboard(faces.detections, score.score);
+        Scoreboard.showLeaderboard();
     }, CONFIG.postGameTime + (CONFIG.gameTime * 1.5));
+    setTimeout(() => { // Wait a bit more before resetting
+        reset();
+    }, CONFIG.postGameTime + (CONFIG.gameTime * 3));
 }
 
 function detectionCallback(e) {
@@ -77,7 +84,6 @@ function detectionCallback(e) {
             console.log(`Player ${i + 1} is: ${Scene.characters[i].team}`);
             Scene.activePlayers.push(Scene.characters[i]);
         });
-        e.clear();
         Scene.start();
         movementIcon.classList.remove('fade');
         if (Sound.running) {
@@ -100,9 +106,12 @@ function init() {
     // runIdle
     message.hide();
     // loadPosenet (idle)
+    Scoreboard.init();
 
     // buildScene
-    Sound.init();
+    if (CONFIG.playSound) {
+        Sound.init();
+    }
     Scene.init();
     Footballs.init();
 
@@ -111,12 +120,6 @@ function init() {
     faces.load(() => {
         faces.startDetection(detectionCallback);
     })
-        
-    // Scene: hide
-    
-    // playEndVideo
-
-    // Scene: clear
 }
 
 videoEl.addEventListener('loadedmetadata', init, false);
