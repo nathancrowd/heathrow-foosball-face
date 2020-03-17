@@ -99,5 +99,6 @@ export default {
         'Germany',
         '',
         'Portugal'
-    ]
+    ],
+    playSound: false
 }

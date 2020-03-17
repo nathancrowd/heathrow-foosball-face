@@ -37,48 +37,60 @@ export default class Character {
 
     load() {
         const loader = new OBJLoader();
+        const matload = new MTLLoader();
         let modelUrl = null;
         // if (this.team == '') {
-            modelUrl = '/models/character/foosball_player_test_v2.obj';
+            modelUrl = '/models/character/foosball_player.obj';
+            let materialUrl = null;
+            materialUrl = '/models/character/foosball_player.mtl';
         // } else {
             // modelUrl = `/models/character/${this.team}.obj`;
         // }
-        loader.load(modelUrl, o => {
-            // this.geometry = new THREE.Geometry().fromBufferGeometry(o.children[0].geometry);
-            o.children[0].castShadow = true;
-            o.children[0].receiveShadow = false;
-            o.children[0].geometry.translate( 0, -9, 0 );
-            o.children[0].geometry.computeBoundingBox();
-            let size = new THREE.Vector3();
-            o.children[0].geometry.boundingBox.getSize(size)
-            this.geometry = new THREE.BoxGeometry(size.x,size.y * 1.2,size.z);
-            // this.material = Physijs.createMaterial(o.children[0].material, CONFIG.wallFriction,CONFIG.wallBounce);
-            this.material = Physijs.createMaterial(new THREE.MeshLambertMaterial({
-                transparent: true,
-                opacity: 0
-            }), CONFIG.wallFriction,CONFIG.wallBounce);
-            this.mesh = new Physijs.BoxMesh(this.geometry, this.material,0);
-            this.mesh.add(o);
-            this.mesh.scale.multiplyScalar(0.7);
-            this.mesh.position.set(this.position.x,this.position.y,this.position.z);
-            this.basePosition = this.mesh.position;
-            let faceGeometry = new THREE.CircleGeometry(2,32);
-            let faceMat = new THREE.MeshBasicMaterial({
+        matload.load(materialUrl, materials => {
+            materials.preload();
+            loader.setMaterials( materials );
+            loader.load(modelUrl, o => {
+                // this.geometry = new THREE.Geometry().fromBufferGeometry(o.children[0].geometry);
+                o.children[0].castShadow = true;
+                o.children[0].receiveShadow = false;
+                o.children[0].geometry.translate( 0, -9, 0 );
+                o.children[0].geometry.computeBoundingBox();
+                let size = new THREE.Vector3();
+                o.children[0].geometry.boundingBox.getSize(size)
+                this.geometry = new THREE.BoxGeometry(size.x,size.y * 1.2,size.z);
+                // this.material = Physijs.createMaterial(o.children[0].material, CONFIG.wallFriction,CONFIG.wallBounce);
+                this.material = Physijs.createMaterial(new THREE.MeshLambertMaterial({
+                    transparent: true,
+                    opacity: 0
+                }), CONFIG.wallFriction,CONFIG.wallBounce);
+                this.mesh = new Physijs.BoxMesh(this.geometry, this.material,0);
+                this.mesh.add(o);
+                this.mesh.scale.multiplyScalar(0.7);
+                this.mesh.position.set(this.position.x,this.position.y,this.position.z);
+                this.basePosition = this.mesh.position;
+                loader.load('/models/character/foosball_face.obj', f => {
+                    this.face = f.children[0];
+                    this.face.position.set(0,3.6,1.1);
+                    o.add(f.children[0]);
+                });
+                // let faceGeometry = new THREE.CircleGeometry(2,32);
+                // let faceMat = new THREE.MeshBasicMaterial({
+                // });
+                // this.face = new THREE.Mesh(faceGeometry, faceMat);
+                // o.add(this.face);
+                this.mesh.addEventListener('collision', (co,v,r,n) => {
+                    co.setLinearVelocity(new THREE.Vector3(0,0,0));
+                    if (Sound.running) {
+                        Sound.kick();
+                    }
+                    this.kick();
+                    score.increment();
+                    co.setLinearVelocity(new THREE.Vector3(0,15,CONFIG.ballSpeed));
+                });
+                this.createCallback();
             });
-            this.face = new THREE.Mesh(faceGeometry, faceMat);
-            this.face.position.set(0,3.5,1.25);
-            o.add(this.face);
-            this.mesh.addEventListener('collision', (co,v,r,n) => {
-                co.setLinearVelocity(new THREE.Vector3(0,0,0));
-                if (Sound.running) {
-                    Sound.kick();
-                }
-                this.kick();
-                score.increment();
-                co.setLinearVelocity(new THREE.Vector3(0,15,CONFIG.ballSpeed));
-            });
-            this.createCallback();
-        });
+
+        })
     }
 
     addToScene(scene) {
