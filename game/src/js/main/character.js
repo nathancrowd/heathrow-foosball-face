@@ -41,13 +41,9 @@ export default class Character {
         const matload = new MTLLoader();
         const gltfLoader = new GLTFLoader();
         let modelUrl = null;
-        // if (this.team == '') {
-            modelUrl = '/models/character/foosball_player.obj';
-            let materialUrl = null;
-            materialUrl = '/models/character/foosball_player.mtl';
-        // } else {
-            // modelUrl = `/models/character/${this.team}.obj`;
-        // }
+        let materialUrl = null;
+        modelUrl = CONFIG.teams[this.team].object;
+        materialUrl = CONFIG.teams[this.team].material;
         matload.load(materialUrl, materials => {
             materials.preload();
             loader.setMaterials( materials );
@@ -60,6 +56,16 @@ export default class Character {
                 o.children[0].name = 'Player';
                 let size = new THREE.Vector3();
                 o.children[0].geometry.boundingBox.getSize(size)
+                o.children[0].material.forEach(m => {
+                    if (m.name == 'Material') {
+                        m.opacity = 1;
+                        m.alphaMap = null;
+                        m.map.flipY = false;
+                        m.map.format = THREE.RGBFormat;
+                        m.map.rotation = 1.5708;
+                        m.map.needsUpdate = true;
+                    }
+                });
                 this.geometry = new THREE.BoxGeometry(size.x,size.y * 1.2,size.z);
                 // this.material = Physijs.createMaterial(o.children[0].material, CONFIG.wallFriction,CONFIG.wallBounce);
                 this.material = Physijs.createMaterial(new THREE.MeshLambertMaterial({
@@ -68,11 +74,12 @@ export default class Character {
                 }), CONFIG.wallFriction,CONFIG.wallBounce);
                 this.mesh = new Physijs.BoxMesh(this.geometry, this.material,0);
                 this.mesh.add(o);
+                console.log(o);
+                
                 this.mesh.scale.multiplyScalar(0.7);
                 this.mesh.position.set(this.position.x,this.position.y,this.position.z);
                 this.basePosition = this.mesh.position;
                 gltfLoader.load('/models/character/facemask.gltf', f => {
-                    console.log(f);
                     this.face = f.scene.children[0];
                     // this.face.geometry = new THREE.Geometry().fromBufferGeometry(this.face.geometry);
                     this.face.geometry.uvsNeedUpdate = true;
@@ -98,9 +105,9 @@ export default class Character {
                     co.setLinearVelocity(new THREE.Vector3(0,15,CONFIG.ballSpeed));
                 });
                 this.createCallback();
-            });
+            }, null, error => {});
 
-        })
+        }, null, error => {});
     }
 
     addToScene(scene) {
@@ -284,7 +291,6 @@ export default class Character {
 
     pickTeam() {
         let r = getRandomInt(0, CONFIG.teams.length - 1);
-        let teamString = CONFIG.teams[r];
-        this.team = teamString;
+        this.team = r;
     }
 }

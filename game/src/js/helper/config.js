@@ -75,30 +75,36 @@ export default {
     },
     mobile: isMobile,
     teams: [
-        'Italy',
-        'Switzerland',
-        'Turkey',
-        'Wales',
-        'Belgium',
-        'Denmark',
-        'Finland',
-        'Russia',
-        'Austria',
-        'Netherlands',
-        '',
-        'Ukraine',
-        'Croatia',
-        'Czech Republic',
-        'England',
-        '',
-        '',
-        'Poland',
-        'Spain',
-        'Sweden',
-        'France',
-        'Germany',
-        '',
-        'Portugal'
+        {
+            object:'/models/character/kits/Blue/Blue Kit 1/blue_kit_1_foosball_player.obj',
+            material:'/models/character/kits/Blue/Blue Kit 1/blue_kit_1_foosball_player.mtl',
+            image:'/models/character/kits/Blue/Blue Kit 1/shirt_1_bl.jpg'
+        },
+        {
+            object:'/models/character/kits/Blue/Blue Kit 2/blue_kit_2_foosball_player.obj',
+            material:'/models/character/kits/Blue/Blue Kit 2/blue_kit_2_foosball_player.mtl',
+            image:'/models/character/kits/Blue/Blue Kit 2/shirt_2_bl-01.jpg'
+        },
+        {
+            object:'/models/character/kits/Blue/Blue Kit 3/blue_kit_3_foosball_player.obj',
+            material:'/models/character/kits/Blue/Blue Kit 3/blue_kit_3_foosball_player.mtl',
+            image:'/models/character/kits/Blue/Blue Kit 3/shirt_3_bl-01.jpg'
+        },
+        {
+            object:'/models/character/kits/Red/Red Kit 1/red_kit_1_foosball_player.obj',
+            material:'/models/character/kits/Red/Red Kit 1/red_kit_1_foosball_player.mtl',
+            image:'/models/character/kits/Red/Red Kit 1/shirt_1_red.jpg'
+        },
+        {
+            object:'/models/character/kits/Red/Red Kit 2/red_kit_2_foosball_player.obj',
+            material:'/models/character/kits/Red/Red Kit 2/red_kit_2_foosball_player.mtl',
+            image:'/models/character/kits/Red/Red Kit 2/shirt_2_red-01.jpg'
+        },
+        {
+            object:'/models/character/kits/Red/Red Kit 3/red_kit_3_foosball_player.obj',
+            material:'/models/character/kits/Red/Red Kit 3/red_kit_3_foosball_player.mtl',
+            image:'/models/character/kits/Red/Red Kit 3/shirt_3_red-01.jpg'
+        },
     ],
     playSound: false
 }
