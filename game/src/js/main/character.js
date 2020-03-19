@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import {OBJLoader} from '../helper/OBJLoader.js';
+import {GLTFLoader} from '../helper/gltfLoader.js';
 import {MTLLoader} from '../helper/MTLLoader.js';
 import {gsap} from 'gsap';
-import { CanvasTexture } from 'three';
+import { CanvasTexture, Texture } from 'three';
 import CONFIG from '../helper/config.js';
 import fx from '../helper/glfx';
 import * as score from './score';
@@ -38,6 +39,7 @@ export default class Character {
     load() {
         const loader = new OBJLoader();
         const matload = new MTLLoader();
+        const gltfLoader = new GLTFLoader();
         let modelUrl = null;
         // if (this.team == '') {
             modelUrl = '/models/character/foosball_player.obj';
@@ -55,6 +57,7 @@ export default class Character {
                 o.children[0].receiveShadow = false;
                 o.children[0].geometry.translate( 0, -9, 0 );
                 o.children[0].geometry.computeBoundingBox();
+                o.children[0].name = 'Player';
                 let size = new THREE.Vector3();
                 o.children[0].geometry.boundingBox.getSize(size)
                 this.geometry = new THREE.BoxGeometry(size.x,size.y * 1.2,size.z);
@@ -68,10 +71,17 @@ export default class Character {
                 this.mesh.scale.multiplyScalar(0.7);
                 this.mesh.position.set(this.position.x,this.position.y,this.position.z);
                 this.basePosition = this.mesh.position;
-                loader.load('/models/character/foosball_face.obj', f => {
-                    this.face = f.children[0];
-                    this.face.position.set(0,3.6,1.1);
-                    o.add(f.children[0]);
+                gltfLoader.load('/models/character/facemask.gltf', f => {
+                    console.log(f);
+                    this.face = f.scene.children[0];
+                    // this.face.geometry = new THREE.Geometry().fromBufferGeometry(this.face.geometry);
+                    this.face.geometry.uvsNeedUpdate = true;
+                    this.face.geometry.computeFaceNormals();
+                    this.face.geometry.computeVertexNormals();
+                    // this.face.material = new THREE.MeshBasicMaterial();
+                    this.face.name = 'Face';
+                    this.face.position.set(0,3.9,1.3);
+                    this.mesh.add(this.face);
                 });
                 // let faceGeometry = new THREE.CircleGeometry(2,32);
                 // let faceMat = new THREE.MeshBasicMaterial({
@@ -251,13 +261,25 @@ export default class Character {
             console.error(errors.noface);
             return;
         }
+        
         if (this.face.material.map) {
-            this.face.material.map.dispose();
+            // this.face.material.map.dispose();
         } else {
             console.warn(errors.nofacemap);
         }
-        this.face.material.map = new CanvasTexture(glflCanv);
+        this.face.material.metalness = 0;
+        let canvasT = new CanvasTexture(glflCanv);
+        this.face.geometry.computeBoundingBox();
+        this.face.material.map = canvasT;
+        this.face.material.map.rotation = 1.5708;
+        this.face.material.map.offset.y = 0.9;
+        this.face.material.map.repeat.y = 1.3;
+        this.face.material.map.repeat.x = 1.3;
+        this.face.material.map.offset.x = -0.1;
+        this.face.material.map.wrapS = this.face.material.map.wrapT = THREE.ClampToEdgeWrapping;
         this.face.material.needsUpdate = true;
+        console.log(this.face.material.map);
+        
     }
 
     pickTeam() {
