@@ -21,21 +21,21 @@ let activePlayers = [];
 let characterMidPoint = 0;
 let Posenet = null;
 let renderTarget = null;
-let server = null;
+let scienceServer = null;
 let haptics = null;
 let paused = true;
 
 /**
- * 
+ *
  * @param {*} x A pixel coordinate
- * 
+ *
  * returns the position relative to the window's mid-point.
  * Where: 0 is the middle, -1 is left, and 1 is right
  */
 function relativeXToWindowMiddle(x) {
     let relX = x / window.innerWidth;
     let diff = relX - 0.5;
-    
+
     return diff;
 }
 
@@ -47,30 +47,25 @@ function round_to_precision(x, precision) {
 /**
  * Gets the midpoint of the character's group.
  */
+
+const groupMidPointMap = {
+    '111': 0,
+    '110': -.5,
+    '101': 0,
+    '011': .5,
+    '010': 5,
+    '001': 1,
+    '100': -1
+}
+
 function getGroupMidPoint() {
-    let returnArr = [];
-    characters.forEach(c => {
-        if (c.mesh.parent) {
-            returnArr.push(true);
-        } else {
-            returnArr.push(false);
-        }
+
+    const lookup = characters.map(c =>{
+        //return 1 if c.mesh.parent === true
+        if(c.mesh.parent) return '1' ? c.mesh.parent: '0';
     });
-    if (returnArr[0] == true && returnArr[1] == true && returnArr[2] == true) {
-        return 0;
-    } else if(returnArr[0] == true && returnArr[1] == true && returnArr[2] == false) {
-        return -0.5;
-    } else if (returnArr[0] == true && returnArr[1] == false && returnArr[2] == true) {
-        return 0;
-    } else if (returnArr[0] == false && returnArr[1] == true && returnArr[2] == true) {
-        return 0.5;
-    } else if (returnArr[0] == false && returnArr[1] == true && returnArr[2] == false) {
-        return 0;
-    } else if (returnArr[0] == false && returnArr[1] == false && returnArr[2] == true) {
-        return 1;
-    } else if (returnArr[0] == true && returnArr[1] == false && returnArr[2] == false) {
-        return -1;
-    }
+
+    return groupMidPointMap[lookup];
 }
 
 function getPosesMidPoint(poses) {
@@ -78,7 +73,7 @@ function getPosesMidPoint(poses) {
     poses.forEach(p => {
         poseXs.push(getPoseXPos(p));
     });
-    
+
     let totalX = 0;
     poseXs.forEach(p => {
         totalX += p;
@@ -114,7 +109,7 @@ function posenetReturn(e) {
 
 function mobileReturn(e) {
     let relX = relativeXToWindowMiddle(e.touches[0].clientX);
-    
+
     activePlayers.forEach(p => {
         p.moveH((relX * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), 0,0);
         // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
@@ -147,10 +142,10 @@ function animate() {
     //     if (!poses.length) {
     //         return;
     //     }
-        
+
     //     let xPos = Posenet.getGroupMidPoint(poses);
     //     console.log(xPos);
-        
+
     //     userPosition.style.left = `${xPos}px`;
     //     let relX = relativeXToWindowMiddle(xPos);
     //     if (!relX) {
@@ -183,6 +178,9 @@ function reset() {
     characters = [];
     activePlayers = [];
     buildCharacters();
+    haptics.listenKicks(characters);
+    scienceServer.saveResults();
+
 }
 
 function setupLight() {
@@ -276,7 +274,7 @@ function addShadow(o) {
 
 function buildPoles() {
     let poleGeometry = new THREE.BufferGeometry().fromGeometry(new THREE.CylinderGeometry(0.7,0.7,80,32));
-    
+
     let poleMaterial = Physijs.createMaterial(new THREE.MeshBasicMaterial({
         color: 0x000000,
         // specular: 0xffffff,
@@ -296,6 +294,7 @@ function buildPoles() {
 function clearCharacters() {
     characters.forEach(c => {
         scene.remove(c.mesh);
+        c.kill(); // explicitly removing listeners
     });
 }
 
@@ -340,7 +339,7 @@ function init() {
     if (CONFIG.enableControls) {
         controls = new OrbitControls( camera, renderer.domElement );
     }
-    
+
     camera.position.x = CONFIG.cameraPosition.x;
     camera.position.y = CONFIG.cameraPosition.y;
     camera.position.z = CONFIG.cameraPosition.z;
@@ -349,7 +348,7 @@ function init() {
         controls.update();
     }
 
-    server = new Server();
+    scienceServer = new Server();
     haptics = new Haptics();
 
 

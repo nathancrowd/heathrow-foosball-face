@@ -57,6 +57,7 @@ export default class FaceCapture {
             let inBottom = face.box.top + (face.box.height/2) > f.getBoundingClientRect().top && face.box.top + (face.box.height/2) < f.getBoundingClientRect().bottom;
             let inLeft = window.innerWidth - face.box.right > f.getBoundingClientRect().left && window.innerWidth - face.box.right < f.getBoundingClientRect().right;
             let inRight = window.innerWidth - face.box.left > f.getBoundingClientRect().left && window.innerWidth - face.box.left < f.getBoundingClientRect().right;
+            console.log(inTop,inBottom , inLeft , inRight)
 
             if (inTop && inBottom && inLeft && inRight) {
                 returnFrame = {frameEl: f, frameIndex: i};
