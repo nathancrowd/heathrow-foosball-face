@@ -34,11 +34,8 @@ export default class Character {
         this.pickTeam();
         this.index = index;
         this.spinPlaying = false;
+        this.collisionCallbacks = [];
         this.load();
-    }
-
-    kill(){
-        this.removeListeners();
     }
 
     load() {
@@ -108,7 +105,7 @@ export default class Character {
                 // this.face = new THREE.Mesh(faceGeometry, faceMat);
                 // o.add(this.face);
 
-                this.listenCollision((co,v,r,n) => {
+                this.mesh.addEventListener('collision', (co,v,r,n) => {
                     co.setLinearVelocity(new THREE.Vector3(0,0,0));
                     if (Sound.running) {
                         Sound.kick();
@@ -116,6 +113,7 @@ export default class Character {
                     this.kick();
                     score.increment();
                     co.setLinearVelocity(new THREE.Vector3(0,15,CONFIG.ballSpeed));
+                    this.collisionCallbacks.forEach(f=>f(co,v,r,n));
                 });
 
                 this.createCallback();
@@ -124,14 +122,8 @@ export default class Character {
         }, null, error => {});
     }
 
-    // hope ok. Just means external classes dont need to know about 'collision'. <= delete me :)
-    listenCollision(f){
-        this.listeners.push(f);
-        return this.mesh.addEventListener('collision', f);
-    }
-    removeListeners(){
-        this.listeners.forEach(f=>this.mesh.removeEventListener('collision', f));
-        this.listeners = null;
+    onCollision(f){
+        this.collisionCallbacks.push(f);
     }
 
     addToScene(scene) {

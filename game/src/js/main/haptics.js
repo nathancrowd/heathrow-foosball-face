@@ -12,10 +12,10 @@ export default class Haptics {
     }
 
     listenKicks(players) {
-        const haptics = this.haptics;
         players.forEach(p => {
-            p.listenKicks((co, v, r, n) => {
-                haptics.submit({
+            p.onCollision((co, v, r, n) => {
+                console.log('HAPTICS: kick', co, v, r, n);
+                this.haptics.submit({
                     "Submit": [{
                         "Type": "frame",
                         "Key": "FootRpath",
