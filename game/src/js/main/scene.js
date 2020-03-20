@@ -34,8 +34,6 @@ let haptics = null;
 function relativeXToWindowMiddle(x) {
     console.log(x,window.innerWidth);
     let relX = x / window.innerWidth;
-
-
     let diff = relX - 0.5;
     
     return diff;
@@ -308,6 +306,7 @@ function buildCharacters() {
 
 function init() {
     console.clear(); //removes many not useful repetitive console dev warnings.
+
     if (CONFIG.mobile) {
         document.addEventListener('touchmove', mobileReturn, false);
     } else {
@@ -343,7 +342,8 @@ function init() {
     }
 
     server = new Server();
-    //haptics = new Haptics();
+    haptics = new Haptics();
+
 
     setupLight();
     buildTable();
