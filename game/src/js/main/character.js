@@ -60,9 +60,16 @@ export default class Character {
                     if (m.name == 'Material') {
                         m.opacity = 1;
                         m.alphaMap = null;
-                        m.map.flipY = false;
-                        m.map.format = THREE.RGBFormat;
-                        m.map.rotation = 1.5708;
+                        m.map.wrapT = THREE.MirroredRepeatWrapping;
+                        m.map.flipY = CONFIG.teams[this.team].mapping.flipY;
+                        
+                        // m.map.format = THREE.RGBFormat;
+                        m.map.rotation = CONFIG.teams[this.team].mapping.rotation;
+                        m.map.offset.x = CONFIG.teams[this.team].mapping.offset.x;
+                        m.map.offset.y = CONFIG.teams[this.team].mapping.offset.y;
+                        m.map.repeat.x = CONFIG.teams[this.team].mapping.repeat.x;
+                        m.map.repeat.x = CONFIG.teams[this.team].mapping.repeat.x;
+                        console.log(m.map);
                         m.map.needsUpdate = true;
                     }
                 });
