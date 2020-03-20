@@ -1,0 +1,44 @@
+$border-radius: 0.8em;
+.leaderboard {
+    border-radius: $border-radius;
+    background-color: white;
+    list-style: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 90vw;
+    height: 90vh;
+    margin: 5vh 5vw;
+    list-style: none;
+    padding:0;
+    font-size: 4vw;
+    z-index: 3;
+    li {
+        margin: 0.5em 1em;
+        border-bottom: 0.1em solid rgba(black, 0.6);
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: flex-start;
+        align-items: center;
+        &.new {
+            background-color: rgba(yellow, 0.3);
+        }
+        figure {
+            margin: 0;
+
+            img {
+                border: 2% solid grey;
+                border-radius: 50%;
+                z-index: 2;
+                &:nth-child(2) {
+                    margin: 0 -10%;
+                    z-index: 1;
+                }
+            }
+        }
+        p {
+            margin: 0;
+            margin-bottom: 0.5em;
+        }
+    }
+}

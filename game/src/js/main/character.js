@@ -1,11 +1,14 @@
 import * as THREE from 'three';
 import {OBJLoader} from '../helper/OBJLoader.js';
+import {GLTFLoader} from '../helper/gltfLoader.js';
 import {MTLLoader} from '../helper/MTLLoader.js';
 import {gsap} from 'gsap';
-import { CanvasTexture } from 'three';
+import { CanvasTexture, Texture } from 'three';
 import CONFIG from '../helper/config.js';
 import fx from '../helper/glfx';
 import * as score from './score';
+import getRandomInt from '../helper/randomInt';
+import * as Sound from './sound';
 require('../helper/physi');
 
 const errors = {
@@ -27,6 +30,7 @@ export default class Character {
         if (callback) {
             this.createCallback = callback;
         }
+        this.pickTeam();
         this.index = index;
         this.spinPlaying = false;
         this.load();
@@ -34,39 +38,83 @@ export default class Character {
 
     load() {
         const loader = new OBJLoader();
-        loader.load('/models/character/foosball_player_test_v2.obj', o => {
-            // this.geometry = new THREE.Geometry().fromBufferGeometry(o.children[0].geometry);
-            o.children[0].castShadow = true;
-            o.children[0].receiveShadow = true;
-            o.children[0].geometry.translate( 0, -9, 0 );
-            o.children[0].geometry.computeBoundingBox();
-            let size = new THREE.Vector3();
-            o.children[0].geometry.boundingBox.getSize(size)
-            this.geometry = new THREE.BoxGeometry(size.x,size.y * 1.2,size.z);
-            // this.material = Physijs.createMaterial(o.children[0].material, CONFIG.wallFriction,CONFIG.wallBounce);
-            this.material = Physijs.createMaterial(new THREE.MeshLambertMaterial({
-                transparent: true,
-                opacity: 0
-            }), CONFIG.wallFriction,CONFIG.wallBounce);
-            this.mesh = new Physijs.BoxMesh(this.geometry, this.material,0);
-            this.mesh.add(o);
-            this.mesh.scale.multiplyScalar(0.7);
-            this.mesh.position.set(this.position.x,this.position.y,this.position.z);
-            this.basePosition = this.mesh.position;
-            let faceGeometry = new THREE.CircleGeometry(2,32);
-            let faceMat = new THREE.MeshPhongMaterial({
-            });
-            this.face = new THREE.Mesh(faceGeometry, faceMat);
-            this.face.position.set(0,3.5,1.25);
-            o.add(this.face);
-            this.mesh.addEventListener('collision', (co,v,r,n) => {
-                co.setLinearVelocity(new THREE.Vector3(0,0,0));
-                this.kick();
-                score.increment();
-                co.setLinearVelocity(new THREE.Vector3(0,15,CONFIG.ballSpeed));
-            });
-            this.createCallback();
-        });
+        const matload = new MTLLoader();
+        const gltfLoader = new GLTFLoader();
+        let modelUrl = null;
+        let materialUrl = null;
+        modelUrl = CONFIG.teams[this.team].object;
+        materialUrl = CONFIG.teams[this.team].material;
+        matload.load(materialUrl, materials => {
+            materials.preload();
+            loader.setMaterials( materials );
+            loader.load(modelUrl, o => {
+                // this.geometry = new THREE.Geometry().fromBufferGeometry(o.children[0].geometry);
+                o.children[0].castShadow = true;
+                o.children[0].receiveShadow = false;
+                o.children[0].geometry.translate( 0, -9, 0 );
+                o.children[0].geometry.computeBoundingBox();
+                o.children[0].name = 'Player';
+                let size = new THREE.Vector3();
+                o.children[0].geometry.boundingBox.getSize(size)
+                o.children[0].material.forEach(m => {
+                    if (m.name == 'Material') {
+                        m.opacity = 1;
+                        m.alphaMap = null;
+                        m.map.wrapT = THREE.MirroredRepeatWrapping;
+                        m.map.flipY = CONFIG.teams[this.team].mapping.flipY;
+                        
+                        // m.map.format = THREE.RGBFormat;
+                        m.map.rotation = CONFIG.teams[this.team].mapping.rotation;
+                        m.map.offset.x = CONFIG.teams[this.team].mapping.offset.x;
+                        m.map.offset.y = CONFIG.teams[this.team].mapping.offset.y;
+                        m.map.repeat.x = CONFIG.teams[this.team].mapping.repeat.x;
+                        m.map.repeat.x = CONFIG.teams[this.team].mapping.repeat.x;
+                        console.log(m.map);
+                        m.map.needsUpdate = true;
+                    }
+                });
+                this.geometry = new THREE.BoxGeometry(size.x,size.y * 1.2,size.z);
+                // this.material = Physijs.createMaterial(o.children[0].material, CONFIG.wallFriction,CONFIG.wallBounce);
+                this.material = Physijs.createMaterial(new THREE.MeshLambertMaterial({
+                    transparent: true,
+                    opacity: 0
+                }), CONFIG.wallFriction,CONFIG.wallBounce);
+                this.mesh = new Physijs.BoxMesh(this.geometry, this.material,0);
+                this.mesh.add(o);
+                console.log(o);
+                
+                this.mesh.scale.multiplyScalar(0.7);
+                this.mesh.position.set(this.position.x,this.position.y,this.position.z);
+                this.basePosition = this.mesh.position;
+                gltfLoader.load('/models/character/facemask.gltf', f => {
+                    this.face = f.scene.children[0];
+                    // this.face.geometry = new THREE.Geometry().fromBufferGeometry(this.face.geometry);
+                    this.face.geometry.uvsNeedUpdate = true;
+                    this.face.geometry.computeFaceNormals();
+                    this.face.geometry.computeVertexNormals();
+                    // this.face.material = new THREE.MeshBasicMaterial();
+                    this.face.name = 'Face';
+                    this.face.position.set(0,3.9,1.3);
+                    this.mesh.add(this.face);
+                });
+                // let faceGeometry = new THREE.CircleGeometry(2,32);
+                // let faceMat = new THREE.MeshBasicMaterial({
+                // });
+                // this.face = new THREE.Mesh(faceGeometry, faceMat);
+                // o.add(this.face);
+                this.mesh.addEventListener('collision', (co,v,r,n) => {
+                    co.setLinearVelocity(new THREE.Vector3(0,0,0));
+                    if (Sound.running) {
+                        Sound.kick();
+                    }
+                    this.kick();
+                    score.increment();
+                    co.setLinearVelocity(new THREE.Vector3(0,15,CONFIG.ballSpeed));
+                });
+                this.createCallback();
+            }, null, error => {});
+
+        }, null, error => {});
     }
 
     addToScene(scene) {
@@ -227,12 +275,29 @@ export default class Character {
             console.error(errors.noface);
             return;
         }
+        
         if (this.face.material.map) {
-            this.face.material.map.dispose();
+            // this.face.material.map.dispose();
         } else {
             console.warn(errors.nofacemap);
         }
-        this.face.material.map = new CanvasTexture(glflCanv);
+        this.face.material.metalness = 0;
+        let canvasT = new CanvasTexture(glflCanv);
+        this.face.geometry.computeBoundingBox();
+        this.face.material.map = canvasT;
+        this.face.material.map.rotation = 1.5708;
+        this.face.material.map.offset.y = 0.9;
+        this.face.material.map.repeat.y = 1.3;
+        this.face.material.map.repeat.x = 1.3;
+        this.face.material.map.offset.x = -0.1;
+        this.face.material.map.wrapS = this.face.material.map.wrapT = THREE.ClampToEdgeWrapping;
         this.face.material.needsUpdate = true;
+        console.log(this.face.material.map);
+        
+    }
+
+    pickTeam() {
+        let r = getRandomInt(0, CONFIG.teams.length - 1);
+        this.team = r;
     }
 }

@@ -1,6 +1,7 @@
 import * as faceapi from 'face-api.js';
 import CONFIG from '../helper/config';
 import 'regenerator-runtime/runtime';
+import * as Sound from './sound';
 import * as message from './message';
 
 
@@ -151,6 +152,7 @@ export default class FaceCapture {
                         faceFrame.frameEl.classList.add('active');
                         this.detections[faceFrame.frameIndex] = c;
                         console.log('FaceCapture: Face Captured');
+                        Sound.bell();
                         this.count++;
                     });
                 }

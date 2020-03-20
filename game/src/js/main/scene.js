@@ -23,6 +23,7 @@ let Posenet = null;
 let renderTarget = null;
 let server = null;
 let haptics = null;
+let paused = true;
 
 /**
  * 
@@ -32,7 +33,6 @@ let haptics = null;
  * Where: 0 is the middle, -1 is left, and 1 is right
  */
 function relativeXToWindowMiddle(x) {
-    console.log(x,window.innerWidth);
     let relX = x / window.innerWidth;
     let diff = relX - 0.5;
     
@@ -107,14 +107,13 @@ function posenetReturn(e) {
     }
 
     activePlayers.forEach(p => {
-        p.moveH((poses * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), 0.1,0.05);
+        p.moveH((poses * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), CONFIG.characterMovementSpeed,CONFIG.characterMovementDelay);
         // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
     });
 }
 
 function mobileReturn(e) {
     let relX = relativeXToWindowMiddle(e.touches[0].clientX);
-    console.log(relX);
     
     activePlayers.forEach(p => {
         p.moveH((relX * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), 0,0);
@@ -123,8 +122,13 @@ function mobileReturn(e) {
 }
 
 function animate() {
+    if (paused) {
+        return;
+    }
     scene.simulate();
-    renderLoop = requestAnimationFrame( animate );
+    setTimeout( function() {
+        renderLoop = requestAnimationFrame( animate );
+    }, 1000 / CONFIG.maxFps );
     renderer.render( scene, camera );
     if (CONFIG.enableControls) {
         controls.update();
@@ -162,11 +166,13 @@ function animate() {
         p.mesh.__dirtyPosition = true;
         p.mesh.__dirtyRotation = true;
     });
+    renderer.shadowMap.needsUpdate = true;
 }
 
 function pause() {
     cancelAnimationFrame(renderLoop);
     renderLoop = null;
+    paused = true;
 }
 
 function reset() {
@@ -188,15 +194,14 @@ function setupLight() {
 		dir_light.position.set( 20, 30, -5 );
 		dir_light.target.position.copy( scene.position );
 		dir_light.castShadow = true;
-		dir_light.shadowCameraLeft = -30;
-		dir_light.shadowCameraTop = -30;
-		dir_light.shadowCameraRight = 30;
-		dir_light.shadowCameraBottom = 30;
-		dir_light.shadowCameraNear = 20;
-		dir_light.shadowCameraFar = 200;
-		dir_light.shadowBias = -.001
-		dir_light.shadowMapWidth = dir_light.shadowMapHeight = 2048;
-		dir_light.shadowDarkness = .5;
+		dir_light.shadow.camera.left = -30;
+		dir_light.shadow.camera.top = -30;
+		dir_light.shadow.camera.right = 30;
+		dir_light.shadow.camera.bottom = 30;
+		dir_light.shadow.camera.near = 20;
+		dir_light.shadow.camera.far = 200;
+		dir_light.shadow.bias = -.001
+		dir_light.shadow.mapSize.width = dir_light.shadow.mapSize.height = 2048;
 		scene.add( dir_light );
 }
 
@@ -270,18 +275,18 @@ function addShadow(o) {
 }
 
 function buildPoles() {
-    let poleGeometry = new THREE.CylinderGeometry(0.7,0.7,80,32);
-    console.log(camera);
+    let poleGeometry = new THREE.BufferGeometry().fromGeometry(new THREE.CylinderGeometry(0.7,0.7,80,32));
     
-    let poleMaterial = Physijs.createMaterial(new THREE.MeshPhongMaterial({
+    let poleMaterial = Physijs.createMaterial(new THREE.MeshBasicMaterial({
         color: 0x000000,
-        specular: 0xffffff,
-        shininess: 50
+        // specular: 0xffffff,
+        // shininess: 50
     }),CONFIG.wallFriction,CONFIG.wallBounce);
     CONFIG.poles.forEach(p => {
+        // let g = poleGeometry.clone();
         let pole = new Physijs.CylinderMesh(poleGeometry,poleMaterial,0);
         pole.castShadow = true;
-        pole.receiveShadow = true;
+        pole.receiveShadow = false;
         pole.position.set(p.x,p.y,p.z);
         pole.rotation.set(0, 0, 1.5708);
         scene.add(pole);
@@ -325,7 +330,10 @@ function init() {
         alpha: true
     });
     gltfLoader = new GLTFLoader();
-    renderer.shadowMapEnabled = true;
+    renderer.shadowMap.enabled = CONFIG.drawShadows;
+    renderer.shadowMap.autoUpdate = false;
+    renderer.shadowMap.needsUpdate = true;
+
     renderer.setClearColor(0x000000, 0.0);
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
@@ -352,6 +360,7 @@ function init() {
 }
 
 function start() {
+    paused = false;
     characterMidPoint = getGroupMidPoint();
     renderer.domElement.style.display = 'block';
     animate();
