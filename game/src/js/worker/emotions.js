@@ -8,6 +8,7 @@ let ctx = null;
 const MODEL_URL = '/facemodels';
 canvas = new OffscreenCanvas(0, 0);
 ctx = canvas.getContext('2d');
+let loaded = false;
 
 
 function load(callback) {
@@ -15,7 +16,8 @@ function load(callback) {
     faceapi.loadSsdMobilenetv1Model(MODEL_URL);
     faceapi.loadFaceLandmarkModel(MODEL_URL);
     faceapi.loadAgeGenderModel(MODEL_URL);
-    faceapi.loadFaceExpressionModel(MODEL_URL)
+    faceapi.loadFaceExpressionModel(MODEL_URL);
+    loaded = true;
     console.log('EMOTIONS: Loaded models...');
 }
 
@@ -28,10 +30,12 @@ function convertImageBitmapToData(bitmap) {
 }
 
 async function getEmotions(canvas) {
+
     let detections = await faceapi.detectAllFaces(canvas).withFaceLandmarks().withFaceExpressions().withAgeAndGender();
     postMessage({
         emotions: detections
     });
+
 }
 
 async function getDemographics(canvas) {

@@ -361,25 +361,27 @@ function init() {
     //haptics = new Haptics();
     emotions = new Worker('./dist/js/emotions.js');
     emotions.onmessage = (data => {
-        console.log('EMOTIONS received', data)
+
         const emotions = data['data']['emotions']
-        if(emotions.length > 0){
+        if (emotions.length > 0) {
             console.log(emotions);
         }
+        console.log('EMOTIONS received', data, data['data']['emotions']);
+        getEmotions();
     });
+    const getEmotions = () => {
+        const image = imageCapture.grabFrame().then(image => {
+            emotions.postMessage({action: 'getEmotions', video: image,});
+        });
+
+    };
+
     emotions.postMessage({
         action: 'init'
     });
-    imageCapture.grabFrame().then(image => {
-        window.setInterval(()=>{
-            emotions.postMessage({
-                action: 'getEmotions',
-                video: image,
-            });
+    window.setTimeout(()=>getEmotions(), 2000); // models need to load
 
-        }, 2000)
 
-    });
 
 
     setupLight();
