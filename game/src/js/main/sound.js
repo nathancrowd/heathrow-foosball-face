@@ -131,7 +131,7 @@ function chant() {
 }
 
 function bell() {
-    tuneSynth.triggerAttackRelease('C4', '8n');
+    if(tuneSynth)tuneSynth.triggerAttackRelease('C4', '8n');
 }
 
 export {

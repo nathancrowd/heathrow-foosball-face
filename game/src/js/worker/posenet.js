@@ -83,6 +83,28 @@ function convertImageBitmapToData(bitmap) {
     return r;
 }
 
+// function subsectionOfCanvas(image, x1, x2, y1, y2){
+//     const cut = new OffscreenCanvas(width, height);
+//     const ctx = cut.getContext("2d");
+//     ctx.drawImage(fromImage, -x, -y);
+//     return cut;
+// }
+//
+// function getHeadPositions(poses, videoData){
+//     console.log(videoData)
+//     poses.forEach(p=>{
+//         //taking first 7 body part points (related to head position)
+//         const nose = Math.round(p['keypoints'][0]['position']);
+//         const leftShoulder = Math.round(p['keypoints'][5]['position'];
+//         const rightShoulder = Math.round(p['keypoints'][6]['position'];
+//         const x1= leftShoulder['x'];
+//         const x2= rightShoulder['x'];
+//
+//         subsectionOfCanvas(image)
+//
+//     })
+// }
+
 function getPoses(videoData) {
     return new Promise(async (res, rej) => {
         if (!net) {
@@ -100,6 +122,8 @@ function getPoses(videoData) {
             decodingMethod: 'multi-person',
             maxDetections: CONFIG.maxPlayers
         });
+
+        // let headPositions = getHeadPositions(poses, videoData);
         // console.log('POSENET: Poses detected');
         let orderedPoses = orderPoses(poses);
         let posesMidPoint = getGroupMidPoint(orderedPoses);
@@ -123,6 +147,7 @@ onmessage = e => {
                     poses: r
                 });
             }).catch(e => {});
+            break;
         default:
             break;
     }

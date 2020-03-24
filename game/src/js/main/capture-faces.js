@@ -132,8 +132,10 @@ export default class FaceCapture {
             message.add(`${this.count} faces captured. ${(CONFIG.faceCountdown / 1000) - Math.floor((Date.now() - this.startTime) / 1000)} seconds left`);
             // this.counter.innerHTML = (CONFIG.faceCountdown / 1000) - Math.floor((Date.now() - this.startTime) / 1000);
         }
+
         this.loop = requestAnimationFrame(this.detect.bind(this));
         let detections = await faceapi.detectAllFaces(this.videoEl);
+
         detections = faceapi.resizeResults(detections, {width: this.videoEl.width, height: this.videoEl.height});
         if (!detections.length || this.end) {
             return;

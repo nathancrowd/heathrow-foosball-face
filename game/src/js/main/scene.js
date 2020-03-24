@@ -9,6 +9,7 @@ require('../helper/physi');
 import {imageCapture} from './media';
 import Server from "./server";
 import Haptics from "./haptics";
+import Emotions from "../worker/emotions";
 
 let scene = null;
 let camera = null;
@@ -23,6 +24,7 @@ let Posenet = null;
 let renderTarget = null;
 let scienceServer = null;
 let haptics = null;
+let emotions = null;
 let paused = true;
 
 /**
@@ -133,11 +135,16 @@ function animate() {
 
     } else {
         imageCapture.grabFrame().then(b => {
-            Posenet.postMessage({
-                action: 'getPoses',
-                video: b
-            }, [b]);
-        }).catch(e => {
+                Posenet.postMessage({
+                    action: 'getPoses',
+                    video: b
+                }, [b]);
+                emotions.postMessage({
+                    action: 'getEmotions',
+                    video: b
+                }, [b])
+            }
+        ).catch(e => {
         });
     }
     // Posenet.getPoses().then((poses) => {
@@ -180,7 +187,7 @@ function reset() {
     characters = [];
     activePlayers = [];
     buildCharacters();
-    haptics.listenKicks(characters);
+    if (haptics) haptics.listenKicks(characters);
     scienceServer.saveResults();
 
 }
@@ -311,7 +318,7 @@ function buildCharacters() {
 }
 
 function init() {
-    console.clear(); //removes many not useful repetitive console dev warnings.
+    //console.clear(); //removes many not useful repetitive console dev warnings.
 
     if (CONFIG.mobile) {
         document.addEventListener('touchmove', mobileReturn, false);
@@ -351,14 +358,35 @@ function init() {
     }
 
     scienceServer = new Server();
-    haptics = new Haptics();
+    //haptics = new Haptics();
+    emotions = new Worker('./dist/js/emotions.js');
+    emotions.onmessage = (data => {
+        console.log('EMOTIONS received', data)
+        const emotions = data['data']['emotions']
+        if(emotions.length > 0){
+            console.log(emotions);
+        }
+    });
+    emotions.postMessage({
+        action: 'init'
+    });
+    imageCapture.grabFrame().then(image => {
+        window.setInterval(()=>{
+            emotions.postMessage({
+                action: 'getEmotions',
+                video: image,
+            });
+
+        }, 2000)
+
+    });
 
 
     setupLight();
     buildTable();
     buildPoles();
     buildCharacters();
-    haptics.listenKicks(characters);
+    if (haptics) haptics.listenKicks(characters);
 }
 
 function start() {

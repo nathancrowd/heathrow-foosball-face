@@ -12,6 +12,7 @@ var PlayerSocket = /** @class */ (function () {
         if (retryConnectTime === void 0) { retryConnectTime = DEFAULT_RETRY_CONNECT_TIME; }
         this.handlers = [];
         this.isTriggered = false;
+        this.connected = false;
         this.addListener = function (func) {
             _this.handlers.push(func);
         };
@@ -23,10 +24,18 @@ var PlayerSocket = /** @class */ (function () {
         this.connect = function () {
             try {
                 _this.websocketClient = new WebSocket(DEFAULT_URL);
+                _this.websocketClient.addEventListener('error', function (event) {
+                    _this.connected = false;
+                });
+                _this.websocketClient.addEventListener('open', function (event) {
+                    _this.connected = true;
+                });
+
             }
             catch (e) {
                 // connection failed
                 console.log('PlayerSocket', e);
+
                 return;
             }
             _this.websocketClient.onopen = function () {
@@ -63,6 +72,9 @@ var PlayerSocket = /** @class */ (function () {
             });
         };
         this.send = function (message) {
+
+            console.log(this.connected, 2)
+
             if (message === undefined) {
                 return;
             }
@@ -93,6 +105,7 @@ var PlayerSocket = /** @class */ (function () {
 
 var HapticPlayer = /** @class */ (function () {
     function HapticPlayer() {
+
         var _this = this;
         this.addListener = function (func) {
             _this.socket.addListener(func);
@@ -195,6 +208,9 @@ var HapticPlayer = /** @class */ (function () {
             };
             _this.socket.send(JSON.stringify(request));
         };
+
+
+
         this.socket = new PlayerSocket();
     }
     return HapticPlayer;

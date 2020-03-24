@@ -10,9 +10,8 @@ function getFaces() {
 async function render() {
     let detections = await faceapi.detectAllFaces(videoEl);
     detections = faceapi.resizeResults(detections, {width: videoEl.width, height: videoEl.height});
-    
     if (detections) {
-        detections.forEach(async (f,i) => {
+        detections.forEach(async (f, i) => {
             faces[i] = await faceapi.extractFaces(videoEl, [f]);
         });
     }
