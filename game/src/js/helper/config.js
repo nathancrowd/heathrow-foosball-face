@@ -178,5 +178,5 @@ export default {
             }
         },
     ],
-    playSound: false
+    playSound: true
 }
