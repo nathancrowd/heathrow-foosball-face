@@ -1,17 +1,36 @@
 let scores = [];
 let board = null;
+const DATAURL = 'https://www.sfpanel.com/foosball/data/';
+
+async function getScores() {
+    let data = await fetch(DATAURL).then(res => {
+        return res.json();
+    }).then(data => {
+        return data;
+    });
+
+    scores = data.scores;
+}
+
+async function postScore(score) {
+    await fetch(DATAURL, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: JSON.stringify(score)
+    }).then(res => {console.log(res.json())});
+}
 
 function init() {
-    if (localStorage.foosballLeaderboard) {
-        scores = JSON.parse(localStorage.getItem('foosballLeaderboard'));
-    }
+    getScores();
 }
 
 function showLeaderboard() {
     if (board) {
         hideLeaderboard();
     }
-    console.log(scores);
     board = document.createElement('ul');
     board.classList.add('leaderboard');
     let frag = new DocumentFragment();
@@ -22,11 +41,13 @@ function showLeaderboard() {
         }
         let scoreItem = document.createElement('li');
         let images = [];
-        s.faces.forEach(f => {
-            let i = new Image();
-            i.src = f;
-            images.push(i);
-        });
+        if (s.faces) {
+            s.faces.forEach(f => {
+                let i = new Image();
+                i.src = f;
+                images.push(i);
+            });
+        }
         scoreItem.innerHTML = `
         <figure></figure>
         <p>${s.score} points</p>`;
@@ -83,6 +104,7 @@ function addToLeaderboard(faces, score) {
         score: score,
         timestamp: Date.now()
     }
+    postScore(entry);
     scores.push(entry);
     sortScores();
 }
