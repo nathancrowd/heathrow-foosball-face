@@ -69,7 +69,7 @@ export default {
     posenetMult: 0.75,
     maxPlayers: 3,
     maxFps: 60,
-    drawShadows: true,
+    drawShadows: true, // Set to false for better performance
     scoreThreshold: 0.3,
     maxXMovement: 16,
     characterMovementSpeed: 0.1,
