@@ -9,7 +9,9 @@ import fx from '../helper/glfx';
 import * as score from './score';
 import getRandomInt from '../helper/randomInt';
 import * as Sound from './sound';
+import { loadTinyFaceDetectorModel } from 'face-api.js';
 require('../helper/physi');
+import * as State from '../helper/state';
 
 const errors = {
     nomesh: 'ERROR: Character Mesh has not been created. Try calling load()',
@@ -20,7 +22,7 @@ const errors = {
 const blankVector = new THREE.Vector3(0,0,0);
 const fullVector =  new THREE.Vector3(1,1,1);
 
-export default class Character {
+class Character {
     constructor(index = 0,callback = null,position = {}) {
         this.mesh = null;
         this.geometry = null;
@@ -40,10 +42,8 @@ export default class Character {
         const loader = new OBJLoader();
         const matload = new MTLLoader();
         const gltfLoader = new GLTFLoader();
-        let modelUrl = null;
-        let materialUrl = null;
-        modelUrl = CONFIG.teams[this.team].object;
-        materialUrl = CONFIG.teams[this.team].material;
+        let modelUrl = this.getModel();
+        let materialUrl = this.getMaterial();
         matload.load(materialUrl, materials => {
             materials.preload();
             loader.setMaterials( materials );
@@ -61,15 +61,15 @@ export default class Character {
                         m.opacity = 1;
                         m.alphaMap = null;
                         m.map.wrapT = THREE.MirroredRepeatWrapping;
-                        m.map.flipY = CONFIG.teams[this.team].mapping.flipY;
+                        let mapping = this.getMapping();
+                        m.map.flipY = mapping.flipY;
                         
                         // m.map.format = THREE.RGBFormat;
-                        m.map.rotation = CONFIG.teams[this.team].mapping.rotation;
-                        m.map.offset.x = CONFIG.teams[this.team].mapping.offset.x;
-                        m.map.offset.y = CONFIG.teams[this.team].mapping.offset.y;
-                        m.map.repeat.x = CONFIG.teams[this.team].mapping.repeat.x;
-                        m.map.repeat.x = CONFIG.teams[this.team].mapping.repeat.x;
-                        console.log(m.map);
+                        m.map.rotation = mapping.rotation;
+                        m.map.offset.x = mapping.offset.x;
+                        m.map.offset.y = mapping.offset.y;
+                        m.map.repeat.x = mapping.repeat.x;
+                        m.map.repeat.x = mapping.repeat.x;
                         m.map.needsUpdate = true;
                     }
                 });
@@ -81,7 +81,6 @@ export default class Character {
                 }), CONFIG.wallFriction,CONFIG.wallBounce);
                 this.mesh = new Physijs.BoxMesh(this.geometry, this.material,0);
                 this.mesh.add(o);
-                console.log(o);
                 
                 this.mesh.scale.multiplyScalar(0.7);
                 this.mesh.position.set(this.position.x,this.position.y,this.position.z);
@@ -102,19 +101,35 @@ export default class Character {
                 // });
                 // this.face = new THREE.Mesh(faceGeometry, faceMat);
                 // o.add(this.face);
-                this.mesh.addEventListener('collision', (co,v,r,n) => {
-                    co.setLinearVelocity(new THREE.Vector3(0,0,0));
-                    if (Sound.running) {
-                        Sound.kick();
-                    }
-                    this.kick();
-                    score.increment();
-                    co.setLinearVelocity(new THREE.Vector3(0,15,CONFIG.ballSpeed));
-                });
+                this.listenForCollision();
+                this.done();
                 this.createCallback();
             }, null, error => {});
 
         }, null, error => {});
+    }
+
+    done() {
+
+    }
+
+    listenForCollision() {
+        this.mesh.addEventListener('collision', (co,v,r,n) => {
+            co.setLinearVelocity(new THREE.Vector3(0,0,0));
+            if (Sound.running) {
+                Sound.kick();
+            }
+            this.kick();
+            if (State.getStage() == 1) {
+                score.increment();
+            }
+            co.setLinearVelocity(new THREE.Vector3(0,15,CONFIG.ballSpeed));
+            setTimeout(() => {
+                if (this.scene && State.getStage() == 1) {
+                    this.scene.remove(co);
+                }
+            }, CONFIG.kickedBallDecay);
+        });
     }
 
     addToScene(scene) {
@@ -123,6 +138,7 @@ export default class Character {
             return;
         }
         scene.add(this.mesh);
+        this.scene = scene;
     }
 
     swing(duration, intensity) {
@@ -292,12 +308,108 @@ export default class Character {
         this.face.material.map.offset.x = -0.1;
         this.face.material.map.wrapS = this.face.material.map.wrapT = THREE.ClampToEdgeWrapping;
         this.face.material.needsUpdate = true;
-        console.log(this.face.material.map);
-        
     }
 
     pickTeam() {
         let r = getRandomInt(0, CONFIG.teams.length - 1);
         this.team = r;
     }
+
+    getModel() {
+        return CONFIG.teams[this.team].object;
+    }
+
+    getMaterial() {
+        return CONFIG.teams[this.team].material;
+    }
+
+    getMapping() {
+        return CONFIG.teams[this.team].mapping;
+    }
+
+    done() {
+        
+    }
+}
+
+class GoalKeeper extends Character {
+    constructor(index = 0,callback = null,position = {}) {
+        super(index, callback, position);
+    }
+
+    listenForCollision() {
+        this.mesh.addEventListener('collision', (co,v,r,n) => {
+            co.setLinearVelocity(new THREE.Vector3(0,0,0));
+            if (Sound.running) {
+                // Sound.kick();
+            }
+            this.kick();
+            co.setLinearVelocity(new THREE.Vector3(0,15,-CONFIG.ballSpeed));
+        });
+    }
+
+    pickTeam() {
+        this.team = null;
+    }
+
+    getModel() {
+        return CONFIG.keeper.object;
+    }
+
+    getMaterial() {
+        return CONFIG.keeper.material;
+    }
+
+    getMapping() {
+        return CONFIG.keeper.mapping;
+    }
+
+    kick() {
+        if (!this.mesh) {
+            console.error(errors.nomesh);
+            return;
+        }
+        let tl = new gsap.timeline();
+        tl.to(this.mesh.rotation, {
+            duration: 0.1,
+            x: -3.14159 + -0.0523599
+        }).to(this.mesh.rotation, {
+            duration: 0.3,
+            x: -3.14159 + 0.785398
+        }).to(this.mesh.rotation, {
+            duration: 0.2,
+            x: -3.14159
+        });
+        tl.play();
+        this.mesh.__dirtyRotation = true;
+    }
+
+    done() {
+        if (!this.mesh) {
+            console.error(errors.nomesh);
+            return;
+        }
+        this.mesh.rotation.y = 3.14159;
+        this.defend();
+    }
+
+    defend() {
+        let tl = new gsap.timeline({
+            repeat: -1,
+            yoyo: true
+        });
+        this.mesh.position.x = -1;
+        tl.to(this.mesh.position, {
+            duration: CONFIG.keeperSpeed,
+            x: -15,
+        }).to(this.mesh.position, {
+            duration: CONFIG.keeperSpeed,
+            x: -1,
+        });
+    }
+}
+
+export {
+    Character,
+    GoalKeeper
 }

@@ -13,7 +13,7 @@ function display() {
     hideBoard();
     message.show();
     message.popup();
-    message.add(`Time is up. ${score} points scored. Well done!`);
+    message.add(`<h2>Time is up!</h2><p>You scored</p><span class='number'>${score}</span><p>Goals</p><h2>Well done!</h2>`);
 }
 
 function reset() {

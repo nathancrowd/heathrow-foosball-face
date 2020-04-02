@@ -22,6 +22,16 @@ $border-radius: 0.8em;
         font-size: 5vw;
     }
 
+    p {
+        font-size: 3vw;
+    }
+
+    span.number {
+        font-size: 7vw;
+        display: block;
+        color: $green;
+    }
+
     &.popup {
         transition: all 0.3s ease-in-out;
         width: calc(80vw - 1.6em);

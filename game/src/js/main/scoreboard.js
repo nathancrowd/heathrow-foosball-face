@@ -20,7 +20,7 @@ async function postScore(score) {
             // 'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: JSON.stringify(score)
-    }).then(res => {console.log(res.json())});
+    });
 }
 
 function init() {
@@ -34,27 +34,16 @@ function showLeaderboard() {
     board = document.createElement('ul');
     board.classList.add('leaderboard');
     let frag = new DocumentFragment();
+    let title = document.createElement('h2');
+    title.innerHTML = 'Leaderboard'
+    frag.appendChild(title);
     let mostRecent = null;
     scores.forEach((s,i) => {
         if (i > 9) {
             return;
         }
         let scoreItem = document.createElement('li');
-        let images = [];
-        if (s.faces) {
-            s.faces.forEach(f => {
-                let i = new Image();
-                i.src = f;
-                images.push(i);
-            });
-        }
-        scoreItem.innerHTML = `
-        <figure></figure>
-        <p>${s.score} points</p>`;
-        let fig = scoreItem.querySelector('figure');
-        images.forEach(i => {
-            fig.appendChild(i);
-        });
+        scoreItem.innerHTML = `<p class='index'>#${i + 1}</p><p class='score'>${s.score} goals</p>`;
         frag.appendChild(scoreItem);
         if (!s.timestamp) {
             return;
@@ -94,13 +83,8 @@ function sortScores() {
  * @param {Array} faces An array of FaceApi faces
  * @param {Integer} score Number of points scored
  */
-function addToLeaderboard(faces, score) {
-    let retF = [];
-    faces.forEach(f => {
-        retF.push(f[0].toDataURL());
-    });
+function addToLeaderboard(score) {
     let entry = {
-        faces: retF,
         score: score,
         timestamp: Date.now()
     }

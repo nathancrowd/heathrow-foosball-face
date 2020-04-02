@@ -1,5 +1,5 @@
 function add(message) {
-    messageBox.innerHTML = `<h2>${message}</h2>`;
+    messageBox.innerHTML = `${message}`;
 }
 
 function show() {

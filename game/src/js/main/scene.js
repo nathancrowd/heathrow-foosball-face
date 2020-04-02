@@ -1,12 +1,15 @@
 import * as THREE from 'three';
 import {GLTFLoader} from '../helper/gltfLoader.js';
 import {OrbitControls} from '../helper/OrbitControls.js';
-import Character from './character.js';
+import {Character,GoalKeeper} from './character.js';
 import CONFIG from '../helper/config.js';
 import getRandomInt from '../helper/randomInt';
 // import * as Posenet from './posenet';
 require('../helper/physi');
+import {gsap} from 'gsap';
 import {imageCapture} from './media';
+import * as State from '../helper/state';
+import * as Score from './score.js';
 
 let scene = null;
 let camera = null;
@@ -20,6 +23,7 @@ let characterMidPoint = 0;
 let Posenet = null;
 let renderTarget = null;
 let paused = true;
+let keeper = null;
 
 /**
  * 
@@ -103,11 +107,17 @@ function posenetReturn(e) {
     } else {
         return;
     }
-
-    activePlayers.forEach(p => {
-        p.moveH((poses * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), CONFIG.characterMovementSpeed,CONFIG.characterMovementDelay);
-        // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
-    });
+    if (State.getStage() == 1) {
+        activePlayers.forEach(p => {
+            p.moveH((poses * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), CONFIG.characterMovementSpeed,CONFIG.characterMovementDelay);
+            // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
+        });
+    } else if (State.getStage() == 2) {
+        activePlayers.forEach(p => {
+            p.moveH((poses * (-2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), CONFIG.characterMovementSpeed,CONFIG.characterMovementDelay);
+            // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
+        });
+    }
 }
 
 function mobileReturn(e) {
@@ -164,6 +174,9 @@ function animate() {
         p.mesh.__dirtyPosition = true;
         p.mesh.__dirtyRotation = true;
     });
+    if (keeper) {
+        keeper.mesh.__dirtyPosition = true;
+    }
     renderer.shadowMap.needsUpdate = true;
 }
 
@@ -175,6 +188,10 @@ function pause() {
 
 function reset() {
     renderer.domElement.style.display = 'none';
+    camera.position.x = CONFIG.cameraPosition.x;
+    camera.position.y = CONFIG.cameraPosition.y;
+    camera.position.z = CONFIG.cameraPosition.z;
+    camera.rotation.set(0,0,0);
     clearCharacters();
     scene.dispose();
     pause();
@@ -245,9 +262,15 @@ function buildTable() {
             // goal
             let goalGeom = new THREE.PlaneGeometry(Math.abs(box.max.x - box.min.x) / 4, 20);
             wall = new Physijs.BoxMesh( goalGeom, boundingMat);
-            wall.position.z = -54;
+            wall.position.z = 52.9;
             wall.position.x = -8;
             wall.visible = false;
+            wall.addEventListener('collision', (co,v,r,n) => {
+                if (State.getStage() == 2) {
+                    scene.remove(co);
+                    Score.increment();
+                }
+            });
             scene.add(wall);
             // front
             wall = new Physijs.BoxMesh( wallGeomShort, boundingMat);
@@ -307,6 +330,11 @@ function buildCharacters() {
     });
 }
 
+function buildKeeper() {
+    keeper = new GoalKeeper(0,() => {
+    },CONFIG.keeper.position);
+}
+
 function init() {
     if (CONFIG.mobile) {
         document.addEventListener('touchmove', mobileReturn, false);
@@ -348,6 +376,7 @@ function init() {
     buildTable();
     buildPoles();
     buildCharacters();
+    buildKeeper();
 }
 
 function start() {
@@ -355,6 +384,17 @@ function start() {
     characterMidPoint = getGroupMidPoint();
     renderer.domElement.style.display = 'block';
     animate();
+}
+
+function stageTwo() {
+    keeper.addToScene(scene);
+    keeper.show();
+    gsap.to(camera.position, CONFIG.cameraPosition.stageTwo.position);
+    gsap.to(camera.rotation, CONFIG.cameraPosition.stageTwo.rotation);
+    activePlayers.forEach(p => {
+        p.moveH((0 * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), CONFIG.characterMovementSpeed,CONFIG.characterMovementDelay);
+        // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
+    });
 }
 
 export {
@@ -365,5 +405,6 @@ export {
     activePlayers,
     scene,
     reset,
-    camera
+    camera,
+    stageTwo
 }

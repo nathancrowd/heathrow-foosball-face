@@ -8,6 +8,7 @@ import * as message from './message';
 import * as score from './score';
 import * as Sound from './sound';
 import * as Scoreboard from './scoreboard';
+import * as State from '../helper/state';
 /**
  * Scene
  */
@@ -40,10 +41,17 @@ function reset() {
     faces.clear();
     score.reset();
     Scene.reset();
+    State.setStage(1);
     idleScreen.style.display = 'flex';
     setTimeout(() => {
         faces.startDetection(detectionCallback);
     }, CONFIG.idleTime); // Some time to allow for character reload
+}
+
+function scoreGoal() {
+    State.setStage(2);
+    Scene.stageTwo();
+    runBalls();
 }
 
 function runBalls() {
@@ -51,25 +59,33 @@ function runBalls() {
     // message.show();
     score.showBoard();
     let gameLoop = setInterval(() => {
-        new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)});
+        new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)}, State.getStage() == 1);
     },CONFIG.ballFrequency);
-    setTimeout(() => { // Stop throwing balls
-        clearInterval(gameLoop);
-        Footballs.clearAll();
-    }, CONFIG.gameTime);
-    setTimeout(() => { // Wait a bit before showing score
-        if (Sound.running) {
-            Sound.fanfare();
-        }
-        score.display();
-    }, CONFIG.gameTime * 1.2);
-    setTimeout(() => { // Wait a bit more before resetting
-        Scoreboard.addToLeaderboard(faces.detections, score.score);
-        Scoreboard.showLeaderboard();
-    }, CONFIG.postGameTime + (CONFIG.gameTime * 1.5));
-    setTimeout(() => { // Wait a bit more before resetting
-        reset();
-    }, CONFIG.postGameTime + (CONFIG.gameTime * 3));
+    if (State.getStage() == 1) {
+        setTimeout(() => { // Stop throwing balls
+            clearInterval(gameLoop);
+            Footballs.clearAll();
+            scoreGoal();
+        }, CONFIG.gameTime);
+    } else if (State.getStage() == 2) {
+        setTimeout(() => { // Stop throwing balls
+            clearInterval(gameLoop);
+            Footballs.clearAll();
+        }, CONFIG.gameTime);
+        setTimeout(() => { // Wait a bit before showing score
+            if (Sound.running) {
+                Sound.fanfare();
+            }
+            score.display();
+        }, CONFIG.gameTime * 1.2);
+        setTimeout(() => { // Wait a bit more before resetting
+            Scoreboard.addToLeaderboard(score.score);
+            Scoreboard.showLeaderboard();
+        }, CONFIG.postGameTime + (CONFIG.gameTime * 1.5));
+        setTimeout(() => { // Wait a bit more before resetting
+            reset();
+        }, CONFIG.postGameTime + (CONFIG.gameTime * 3));
+    }
 }
 
 function detectionCallback(e) {

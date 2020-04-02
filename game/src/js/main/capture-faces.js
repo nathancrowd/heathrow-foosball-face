@@ -129,7 +129,7 @@ export default class FaceCapture {
         }
         if (!this.idle) {
             // calulate time
-            message.add(`${this.count} faces captured. ${(CONFIG.faceCountdown / 1000) - Math.floor((Date.now() - this.startTime) / 1000)} seconds left`);
+            message.add(`<h2>${this.count} player${this.count == 1 ? '' : 's'}<br><br>${(CONFIG.faceCountdown / 1000) - Math.floor((Date.now() - this.startTime) / 1000)}<small>s</small> until kickoff!</h2>`);
             // this.counter.innerHTML = (CONFIG.faceCountdown / 1000) - Math.floor((Date.now() - this.startTime) / 1000);
         }
         this.loop = requestAnimationFrame(this.detect.bind(this));

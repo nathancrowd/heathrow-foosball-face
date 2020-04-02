@@ -9,7 +9,17 @@ export default {
     cameraPosition: {
         x:-8,
         y: 5,
-        z: 30
+        z: 30,
+        stageTwo: {
+            position: {
+                duration: 4,
+                z: -30
+            },
+            rotation: {
+                duration: 4,
+                y: 3.14159
+            }
+        }
     },
     enableControls: false,
     faceSlots: [
@@ -17,7 +27,7 @@ export default {
         {},
         {},
     ],
-    faceCountdown: 10000, // milliseconds
+    faceCountdown: 15000, // milliseconds
     poles: [
         {
             x: -8,
@@ -28,6 +38,11 @@ export default {
             x: -8,
             y: -3.4,
             z: -11.5,
+        },
+        {
+            x: -8,
+            y: -3.4,
+            z: 51
         }
     ],
     characters: [
@@ -64,9 +79,11 @@ export default {
     ballMass: 0.6,
     ballFrequency: 1000, // milliseconds
     ballSpeed: 25,
+    ballWarningDecay: 3000, // milliseconds
     ballDecay: 15000, // milliseconds
+    kickedBallDecay: 1000, // milliseconds
     preGameTimer: 10000, // milliseconds
-    gameTime: 20000, // milliseconds
+    gameTime: 30000, // milliseconds
     postGameTime: 5000,
     idleTime: 5000, // milliseconds
     dimensions: {
@@ -178,5 +195,28 @@ export default {
             }
         },
     ],
-    playSound: true
+    keeper: {
+        object:'/models/character/kits/Red/Red Kit 3/red_kit_3_foosball_player.obj',
+        material:'/models/character/kits/Red/Red Kit 3/red_kit_3_foosball_player.mtl',
+        image:'/models/character/kits/Red/Red Kit 3/shirt_3_red-01.jpg',
+        position: {
+            x: -8,
+            y: -3.3,
+            z: 51
+        },
+        mapping: {
+            flipY: false,
+            offset: {
+                x: -0.2,
+                y: 0.725
+            },
+            repeat: {
+                x: 1.4,
+                y: 1
+            },
+            rotation: 1.5708
+        }
+    },
+    keeperSpeed: 2, // Lower is faster
+    playSound: false
 }
