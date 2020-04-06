@@ -51,6 +51,10 @@ const gulp = require('gulp'),
             src: 'src/fonts/**/*',
             dist: 'dist/fonts'
         },
+        audio: {
+            src: 'src/audio/**/*',
+            dist: 'dist/audio'
+        },
         cache: {
             src: './includes/cache_bust.php',
             dest: './includes/'
@@ -164,6 +168,13 @@ function fonts() {
         .pipe(gulp.dest(paths.fonts.dist));
 }
 
+function audio() {
+    return gulp.src(paths.audio.src)
+        .pipe(changed(paths.audio.dist))
+        .pipe(debug({title: 'audio'}))
+        .pipe(gulp.dest(paths.audio.dist));
+}
+
 /**
  *  Cache Bust
  * 
@@ -194,6 +205,6 @@ function deploy() {
         .pipe(gulpif(args.pipeline, gulp.dest('pipeline/'), gulp.dest('./' + theme + '-package/')));
 }
 
-gulp.task('default', gulp.series(fonts, images, styles, scripts, watch));
+gulp.task('default', gulp.series(fonts, audio, images, styles, scripts, watch));
 
-gulp.task('package', gulp.series(fonts, images, styles, scripts, deploy));
+gulp.task('package', gulp.series(fonts, audio, images, styles, scripts, deploy));

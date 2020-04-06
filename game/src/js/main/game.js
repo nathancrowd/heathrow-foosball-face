@@ -63,6 +63,9 @@ function runBalls() {
     },CONFIG.ballFrequency);
     if (State.getStage() == 1) {
         setTimeout(() => { // Stop throwing balls
+            if (Sound.running) {
+                Sound.blowWhistle();
+            }
             clearInterval(gameLoop);
             Footballs.clearAll();
             scoreGoal();
@@ -70,11 +73,14 @@ function runBalls() {
     } else if (State.getStage() == 2) {
         setTimeout(() => { // Stop throwing balls
             clearInterval(gameLoop);
+            if (Sound.running) {
+                Sound.blowWhistle();
+            }
             Footballs.clearAll();
         }, CONFIG.gameTime);
         setTimeout(() => { // Wait a bit before showing score
             if (Sound.running) {
-                Sound.fanfare();
+                Sound.crowdCheer();
             }
             score.display();
         }, CONFIG.gameTime * 1.2);
@@ -103,10 +109,12 @@ function detectionCallback(e) {
         Scene.start();
         movementIcon.classList.remove('fade');
         if (Sound.running) {
-            Sound.chant();
         }
         setTimeout(() => {
             movementIcon.classList.add('fade');
+            if (Sound.running) {
+                Sound.blowWhistle();
+            }
             runBalls();
         }, CONFIG.preGameTimer);
     } else {

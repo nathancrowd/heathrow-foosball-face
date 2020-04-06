@@ -83,7 +83,7 @@ export default {
     ballDecay: 15000, // milliseconds
     kickedBallDecay: 1000, // milliseconds
     preGameTimer: 10000, // milliseconds
-    gameTime: 30000, // milliseconds
+    gameTime: 15000, // milliseconds
     postGameTime: 5000,
     idleTime: 5000, // milliseconds
     dimensions: {
@@ -218,5 +218,15 @@ export default {
         }
     },
     keeperSpeed: 2, // Lower is faster
-    playSound: false
+    playSound: true,
+    sound: {
+        whistle: {
+            src: '/dist/audio/single-whistle.wav',
+        },
+        cheer: {
+            src: '/dist/audio/cheer.wav',
+            fade: 500, // milliseconds
+            duration: 5000, // milliseconds
+        }
+    }
 }
