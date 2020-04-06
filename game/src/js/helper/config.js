@@ -89,6 +89,8 @@ export default {
     ballBounce: 0.5,
     ballMass: 0.6,
     ballFrequency: 1000, // milliseconds
+    mediumBallCount: 10,
+    frenzyBallCount: 20,
     ballSpeed: 25,
     ballWarningDecay: 3000, // milliseconds
     ballDecay: 15000, // milliseconds

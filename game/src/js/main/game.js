@@ -62,7 +62,7 @@ function runBalls() {
     let gameLoop = setInterval(() => {
         new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)}, State.getStage() == 1);
         ballCount++;
-        if (ballCount > 15) {
+        if (ballCount > CONFIG.frenzyBallCount) {
             setTimeout(() => {
                 if (!gameLoop) {
                     return;
@@ -77,7 +77,7 @@ function runBalls() {
                 new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)}, State.getStage() == 1);
                 ballCount++;
             }, CONFIG.ballFrequency / 2);
-        } else if (ballCount > 5) {
+        } else if (ballCount > CONFIG.mediumBallCount) {
             setTimeout(() => {
                 if (!gameLoop) {
                     return;
