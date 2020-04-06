@@ -1,5 +1,6 @@
 let scores = [];
 let board = null;
+let currentScoreTimestamp = null;
 const DATAURL = 'https://www.sfpanel.com/foosball/data/';
 
 async function getScores() {
@@ -43,19 +44,14 @@ function showLeaderboard() {
             return;
         }
         let scoreItem = document.createElement('li');
+        if (s.timestamp) {
+            if (s.timestamp == currentScoreTimestamp) {
+                scoreItem.classList.add('new');
+            }
+        }
         scoreItem.innerHTML = `<p class='index'>#${i + 1}</p><p class='score'>${s.score} goals</p>`;
         frag.appendChild(scoreItem);
-        if (!s.timestamp) {
-            return;
-        }
-        if (!mostRecent || !scores[mostRecent].timestamp) {
-            mostRecent = i;
-        }
-        if (s.timestamp > scores[mostRecent].timestamp) {
-            mostRecent = i;
-        }
     });
-    [].slice.call(frag.querySelectorAll('li'))[mostRecent].classList.add('new');
     board.appendChild(frag);
     document.body.appendChild(board);
 }
@@ -84,9 +80,11 @@ function sortScores() {
  * @param {Integer} score Number of points scored
  */
 function addToLeaderboard(score) {
+    let timestamp = Date.now();
+    currentScoreTimestamp = timestamp;
     let entry = {
         score: score,
-        timestamp: Date.now()
+        timestamp: timestamp
     }
     postScore(entry);
     scores.push(entry);
