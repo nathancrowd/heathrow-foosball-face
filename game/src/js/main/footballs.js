@@ -38,25 +38,21 @@ class Ball {
         <use href="#football"></use>
         </svg>`;
         document.body.appendChild(this.warning);
-        console.log('Warning created ', this.mesh.position.z);
         
         this.warningInterval = setInterval(() => {
             let coords = getWindowCoords(this.mesh);
-            console.log('Warning updated ', this.mesh.position.z, coords.x);
             if (this.mesh.position.z >= camera.position.z * 1.5) {
                 this.warning.style.right = coords.x + 'px';
             }
             // this.warning.style.top = coords.y + 'px';
             
             if (this.mesh.position.z <= camera.position.z - 10) {
-                console.log('Warning removed ', this.mesh.position.z);
                 this.removeWarning();
             }
         },1);
 
         setTimeout(() => {
             if (this.warning) {
-                console.log('Warning decayed ', this.mesh.position.z);
                 this.removeWarning();
             }
         }, CONFIG.ballWarningDecay);

@@ -94,7 +94,7 @@ export default {
     ballDecay: 15000, // milliseconds
     kickedBallDecay: 1000, // milliseconds
     preGameTimer: 10000, // milliseconds
-    gameTime: 15000, // milliseconds
+    gameTime: 30000, // milliseconds
     postGameTime: 5000,
     idleTime: 5000, // milliseconds
     dimensions: {

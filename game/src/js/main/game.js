@@ -58,8 +58,34 @@ function runBalls() {
     // message.add(`0 points scored`);
     // message.show();
     score.showBoard();
+    let ballCount = 0;
     let gameLoop = setInterval(() => {
         new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)}, State.getStage() == 1);
+        ballCount++;
+        if (ballCount > 15) {
+            setTimeout(() => {
+                if (!gameLoop) {
+                    return;
+                }
+                new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)}, State.getStage() == 1);
+                ballCount++;
+            }, CONFIG.ballFrequency / 3);
+            setTimeout(() => {
+                if (!gameLoop) {
+                    return;
+                }
+                new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)}, State.getStage() == 1);
+                ballCount++;
+            }, CONFIG.ballFrequency / 2);
+        } else if (ballCount > 5) {
+            setTimeout(() => {
+                if (!gameLoop) {
+                    return;
+                }
+                new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)}, State.getStage() == 1);
+                ballCount++;
+            }, CONFIG.ballFrequency / 3);
+        }
     },CONFIG.ballFrequency);
     if (State.getStage() == 1) {
         setTimeout(() => { // Stop throwing balls
@@ -67,12 +93,14 @@ function runBalls() {
                 Sound.blowWhistle();
             }
             clearInterval(gameLoop);
+            gameLoop = null;
             Footballs.clearAll();
             scoreGoal();
         }, CONFIG.gameTime);
     } else if (State.getStage() == 2) {
         setTimeout(() => { // Stop throwing balls
             clearInterval(gameLoop);
+            gameLoop = null;
             if (Sound.running) {
                 Sound.blowWhistle();
             }
