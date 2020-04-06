@@ -11,13 +11,24 @@ export default {
         y: 5,
         z: 30,
         stageTwo: {
-            position: {
-                duration: 4,
-                z: -30
-            },
+            position: [
+                {
+                    duration: 2,
+                    z: 0,
+                    x: -28,
+                    ease: 'none'
+                },
+                {
+                    duration: 2,
+                    z: -30,
+                    x: -8,
+                    ease: 'none'
+                }
+            ],
             rotation: {
                 duration: 4,
-                y: 3.14159
+                y: -3.14159,
+                ease: 'none'
             }
         }
     },

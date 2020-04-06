@@ -389,8 +389,11 @@ function start() {
 function stageTwo() {
     keeper.addToScene(scene);
     keeper.show();
-    gsap.to(camera.position, CONFIG.cameraPosition.stageTwo.position);
-    gsap.to(camera.rotation, CONFIG.cameraPosition.stageTwo.rotation);
+    let tl = new gsap.timeline();
+    tl.to(camera.rotation, CONFIG.cameraPosition.stageTwo.rotation, 0);
+    tl.to(camera.position, CONFIG.cameraPosition.stageTwo.position[0], 0);
+    tl.to(camera.position, CONFIG.cameraPosition.stageTwo.position[1], 2);
+    tl.play();
     activePlayers.forEach(p => {
         p.moveH((0 * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), CONFIG.characterMovementSpeed,CONFIG.characterMovementDelay);
         // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
