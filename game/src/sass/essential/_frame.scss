@@ -2,10 +2,15 @@
     width: 20vw;
     height: 25vw;
     border-radius: 50%;
-    border: 1vw dashed white;
+    // border: 1vw dashed white;
     position: absolute;
     transition: border-color 0.5 ease-in;
     z-index: 2;
+
+    background-image: url('../images/face-icon-01.svg');
+    background-size: contain;
+    background-position: center bottom;
+    background-repeat: no-repeat;
 
     &:nth-of-type(1) {
         top: 30%;
@@ -27,6 +32,7 @@
 
     &.active {
         border-color: green;
+        background-image: url('../images/face-icon-green-01.svg');
     }
 
     @media screen and (max-width: 768px) {
