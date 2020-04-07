@@ -41,7 +41,6 @@ class Character {
     load() {
         const loader = new OBJLoader();
         const matload = new MTLLoader();
-        const gltfLoader = new GLTFLoader();
         let modelUrl = this.getModel();
         let materialUrl = this.getMaterial();
         matload.load(materialUrl, materials => {
@@ -85,17 +84,7 @@ class Character {
                 this.mesh.scale.multiplyScalar(0.7);
                 this.mesh.position.set(this.position.x,this.position.y,this.position.z);
                 this.basePosition = this.mesh.position;
-                gltfLoader.load('/models/character/facemask.gltf', f => {
-                    this.face = f.scene.children[0];
-                    // this.face.geometry = new THREE.Geometry().fromBufferGeometry(this.face.geometry);
-                    this.face.geometry.uvsNeedUpdate = true;
-                    this.face.geometry.computeFaceNormals();
-                    this.face.geometry.computeVertexNormals();
-                    // this.face.material = new THREE.MeshBasicMaterial();
-                    this.face.name = 'Face';
-                    this.face.position.set(0,3.9,1.3);
-                    this.mesh.add(this.face);
-                });
+                this.loadFacemask();
                 // let faceGeometry = new THREE.CircleGeometry(2,32);
                 // let faceMat = new THREE.MeshBasicMaterial({
                 // });
@@ -111,6 +100,21 @@ class Character {
 
     done() {
 
+    }
+
+    loadFacemask() {
+        const gltfLoader = new GLTFLoader();
+        gltfLoader.load('/models/character/facemask.gltf', f => {
+            this.face = f.scene.children[0];
+            // this.face.geometry = new THREE.Geometry().fromBufferGeometry(this.face.geometry);
+            this.face.geometry.uvsNeedUpdate = true;
+            this.face.geometry.computeFaceNormals();
+            this.face.geometry.computeVertexNormals();
+            // this.face.material = new THREE.MeshBasicMaterial();
+            this.face.name = 'Face';
+            this.face.position.set(0,3.9,1.3);
+            this.mesh.add(this.face);
+        });
     }
 
     listenForCollision() {
@@ -406,6 +410,10 @@ class GoalKeeper extends Character {
             duration: CONFIG.keeperSpeed,
             x: -1,
         });
+    }
+
+    loadFacemask() {
+        return;
     }
 }
 
