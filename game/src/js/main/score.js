@@ -1,8 +1,10 @@
 import * as message from './message';
 let score = 0;
+let stageScore = 0;
 
 function increment() {
     score++;
+    stageScore++;
     // message.show();
     showBoard();
     updateBoard(score);
@@ -16,8 +18,13 @@ function display() {
     message.add(`<h2>Time is up!</h2><p>You scored</p><span class='number'>${score}</span><p>Goals</p><h2>Well done!</h2>`);
 }
 
+function newStage() {
+    stageScore = 0;
+}
+
 function reset() {
     score = 0;
+    stageScore = 0;
     updateBoard(score);
     hideBoard();
 }
@@ -37,6 +44,8 @@ function hideBoard() {
 export {
     increment,
     score,
+    stageScore,
+    newStage,
     showBoard,
     display,
     reset
