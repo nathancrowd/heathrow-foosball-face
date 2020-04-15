@@ -10,9 +10,7 @@
             "nodes" : [
                 0,
                 1,
-                2,
-                3,
-                9
+                7
             ]
         }
     ],
@@ -46,78 +44,44 @@
             ]
         },
         {
-            "name" : "Light.001",
-            "rotation" : [
-                0.5232754945755005,
-                0.34203392267227173,
-                -0.7269423604011536,
-                0.284166157245636
-            ],
-            "translation" : [
-                4.076245307922363,
-                5.903862476348877,
-                -1.0054532289505005
-            ]
-        },
-        {
-            "name" : "Camera.001",
-            "rotation" : [
-                0.8937963247299194,
-                0.09062855690717697,
-                -0.3857799172401428,
-                0.20997287333011627
-            ],
-            "translation" : [
-                7.358891487121582,
-                4.958308696746826,
-                6.925792217254639
-            ]
-        },
-        {
             "mesh" : 0,
             "name" : "polySurface305_lambert11_0"
         },
         {
             "children" : [
-                4
+                2
             ],
             "name" : "polySurface305"
         },
         {
             "children" : [
-                5
+                3
             ],
             "name" : "RootNode"
         },
         {
             "children" : [
-                6
+                4
             ],
             "name" : "foosballexport2.fbx",
             "rotation" : [
                 0.7071068286895752,
                 0,
                 0,
-                0.7071067094802856
+                0.7071068286895752
             ]
         },
         {
             "children" : [
-                7
+                5
             ],
             "name" : "RootNode (model correction matrix)"
         },
         {
             "children" : [
-                8
+                6
             ],
-            "name" : "RootNode (gltf orientation matrix)",
-            "rotation" : [
-                0.7071068286895752,
-                0,
-                0,
-                0.7071067094802856
-            ]
+            "name" : "RootNode (gltf orientation matrix)"
         }
     ],
     "materials" : [
@@ -133,13 +97,19 @@
                 "index" : 0,
                 "texCoord" : 0
             },
+            "occlusionTexture" : {
+                "index" : 1,
+                "texCoord" : 0
+            },
             "pbrMetallicRoughness" : {
                 "baseColorTexture" : {
-                    "index" : 1,
+                    "index" : 2,
                     "texCoord" : 0
                 },
-                "metallicFactor" : 0,
-                "roughnessFactor" : 0.5
+                "metallicRoughnessTexture" : {
+                    "index" : 1,
+                    "texCoord" : 0
+                }
             }
         }
     ],
@@ -165,47 +135,55 @@
         },
         {
             "source" : 1
+        },
+        {
+            "source" : 2
         }
     ],
     "images" : [
         {
             "mimeType" : "image/png",
             "name" : "lambert11_normal",
-            "uri" : "lambert11_normal.png"
+            "uri" : "textures/lambert11_normal.png"
+        },
+        {
+            "mimeType" : "image/png",
+            "name" : "lambert11_metallicRoughness",
+            "uri" : "textures/lambert11_metallicRoughness.png"
         },
         {
             "mimeType" : "image/png",
             "name" : "lambert11_baseColor",
-            "uri" : "lambert11_baseColor.png"
+            "uri" : "textures/lambert11_baseColor.png"
         }
     ],
     "accessors" : [
         {
             "bufferView" : 0,
             "componentType" : 5126,
-            "count" : 5819,
+            "count" : 5558,
             "max" : [
                 62.013877868652344,
-                39.63419723510742,
-                48.830448150634766
+                32.2785530090332,
+                39.63419723510742
             ],
             "min" : [
                 -62.5380859375,
-                -37.795616149902344,
-                -32.2785530090332
+                -48.830448150634766,
+                -37.795616149902344
             ],
             "type" : "VEC3"
         },
         {
             "bufferView" : 1,
             "componentType" : 5126,
-            "count" : 5819,
+            "count" : 5558,
             "type" : "VEC3"
         },
         {
             "bufferView" : 2,
             "componentType" : 5126,
-            "count" : 5819,
+            "count" : 5558,
             "type" : "VEC2"
         },
         {
@@ -218,28 +196,28 @@
     "bufferViews" : [
         {
             "buffer" : 0,
-            "byteLength" : 69828,
+            "byteLength" : 66696,
             "byteOffset" : 0
         },
         {
             "buffer" : 0,
-            "byteLength" : 69828,
-            "byteOffset" : 69828
+            "byteLength" : 66696,
+            "byteOffset" : 66696
         },
         {
             "buffer" : 0,
-            "byteLength" : 46552,
-            "byteOffset" : 139656
+            "byteLength" : 44464,
+            "byteOffset" : 133392
         },
         {
             "buffer" : 0,
             "byteLength" : 26346,
-            "byteOffset" : 186208
+            "byteOffset" : 177856
         }
     ],
     "buffers" : [
         {
-            "byteLength" : 212556,
+            "byteLength" : 204204,
             "uri" : "scene.bin"
         }
     ]
