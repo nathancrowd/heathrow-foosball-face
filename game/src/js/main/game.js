@@ -9,6 +9,7 @@ import * as score from './score';
 import * as Sound from './sound';
 import * as Scoreboard from './scoreboard';
 import * as State from '../helper/state';
+import * as Logo from './logo';
 /**
  * Scene
  */
@@ -63,8 +64,11 @@ function runBalls() {
     // message.add(`0 points scored`);
     // message.show();
     score.showBoard();
+    let timeElapsed = 0;
     let gameLoop = setInterval(() => {
+        timeElapsed += CONFIG.ballFrequency;
         new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)}, State.getStage() == 1);
+        score.setTime((CONFIG.gameTime - timeElapsed) / 1000);
         if (score.stageScore > CONFIG.frenzyBallCount) {
             setTimeout(() => {
                 if (!gameLoop) {
@@ -95,6 +99,7 @@ function runBalls() {
             clearInterval(gameLoop);
             gameLoop = null;
             Footballs.clearAll();
+            score.hideBoard();
             scoreGoal();
         }, CONFIG.gameTime);
     } else if (State.getStage() == 2) {
@@ -108,12 +113,14 @@ function runBalls() {
             Footballs.clearAll();
         }, CONFIG.gameTime);
         setTimeout(() => { // Wait a bit before showing score
+            Logo.hide();
             if (Sound.running) {
                 Sound.crowdCheer();
             }
             score.display();
         }, CONFIG.gameTime * 1.2);
         setTimeout(() => { // Wait a bit more before resetting
+            message.hide();
             Scoreboard.addToLeaderboard(score.score);
             Scoreboard.showLeaderboard();
         }, CONFIG.postGameTime + (CONFIG.gameTime * 1.5));
@@ -135,7 +142,9 @@ function detectionCallback(e) {
             console.log(`Player ${i + 1} is: ${Scene.characters[i].team}`);
             Scene.activePlayers.push(Scene.characters[i]);
         });
+        score.setFaces(e.detections);
         Scene.start();
+        Logo.show();
         movementIcon.classList.remove('fade');
         if (Sound.running) {
         }
@@ -172,7 +181,9 @@ function init() {
     faces = new FaceCapture(videoEl);
     faces.load(() => {
         faces.startDetection(detectionCallback);
-    })
+    });
+
+    window.addEventListener('resize', () => {location.reload()}, false);
 }
 
 videoEl.addEventListener('loadedmetadata', init, false);

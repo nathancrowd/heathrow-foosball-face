@@ -106,8 +106,8 @@ export default {
     mobile: isMobile,
     teams: [
         {
-            object:'/models/character/kits/Blue/Blue Kit 1/blue_kit_1_foosball_player.obj',
-            material:'/models/character/kits/Blue/Blue Kit 1/blue_kit_1_foosball_player.mtl',
+            object:'/models/character/kits/Blue/foosball_player_blue_v2.obj',
+            material:'/models/character/kits/Blue/foosball_player_blue_v2.mtl',
             image:'/models/character/kits/Blue/Blue Kit 1/shirt_1_bl.jpg',
             mapping: {
                 flipY: false,
@@ -117,49 +117,15 @@ export default {
                 },
                 repeat: {
                     x: 1,
-                    y: 1
-                },
-                rotation: 1.5708
-            }
-        },
-        {
-            object:'/models/character/kits/Blue/Blue Kit 2/blue_kit_2_foosball_player.obj',
-            material:'/models/character/kits/Blue/Blue Kit 2/blue_kit_2_foosball_player.mtl',
-            image:'/models/character/kits/Blue/Blue Kit 2/shirt_2_bl-01.jpg',
-            mapping: {
-                flipY: true,
-                offset: {
-                    x: 0,
-                    y: -0.1
-                },
-                repeat: {
-                    x: 2,
                     y: 2
                 },
                 rotation: 1.5708
             }
         },
         {
-            object:'/models/character/kits/Blue/Blue Kit 3/blue_kit_3_foosball_player.obj',
-            material:'/models/character/kits/Blue/Blue Kit 3/blue_kit_3_foosball_player.mtl',
-            image:'/models/character/kits/Blue/Blue Kit 3/shirt_3_bl-01.jpg',
-            mapping: {
-                flipY: false,
-                offset: {
-                    x: -0.2,
-                    y: 0.725
-                },
-                repeat: {
-                    x: 1.4,
-                    y: 1
-                },
-                rotation: 1.5708
-            }
-        },
-        {
-            object:'/models/character/kits/Red/Red Kit 1/red_kit_1_foosball_player.obj',
-            material:'/models/character/kits/Red/Red Kit 1/red_kit_1_foosball_player.mtl',
-            image:'/models/character/kits/Red/Red Kit 1/shirt_1_red.jpg',
+            object:'/models/character/kits/Red/foosball_player_red_v2.obj',
+            material:'/models/character/kits/Red/foosball_player_red_v2.mtl',
+            image:'/models/character/kits/Red/Red Kit 3/shirt_3_red-01.jpg',
             mapping: {
                 flipY: false,
                 offset: {
@@ -168,50 +134,16 @@ export default {
                 },
                 repeat: {
                     x: 1,
-                    y: 1
-                },
-                rotation: 1.5708
-            }
-        },
-        {
-            object:'/models/character/kits/Red/Red Kit 2/red_kit_2_foosball_player.obj',
-            material:'/models/character/kits/Red/Red Kit 2/red_kit_2_foosball_player.mtl',
-            image:'/models/character/kits/Red/Red Kit 2/shirt_2_red-01.jpg',
-            mapping: {
-                flipY: true,
-                offset: {
-                    x: 0,
-                    y: -0.1
-                },
-                repeat: {
-                    x: 2,
                     y: 2
-                },
-                rotation: 1.5708
-            }
-        },
-        {
-            object:'/models/character/kits/Red/Red Kit 3/red_kit_3_foosball_player.obj',
-            material:'/models/character/kits/Red/Red Kit 3/red_kit_3_foosball_player.mtl',
-            image:'/models/character/kits/Red/Red Kit 3/shirt_3_red-01.jpg',
-            mapping: {
-                flipY: false,
-                offset: {
-                    x: -0.2,
-                    y: 0.725
-                },
-                repeat: {
-                    x: 1.4,
-                    y: 1
                 },
                 rotation: 1.5708
             }
         },
     ],
     keeper: {
-        object:'/models/character/kits/Red/Red Kit 3/red_kit_3_foosball_player.obj',
-        material:'/models/character/kits/Red/Red Kit 3/red_kit_3_foosball_player.mtl',
-        image:'/models/character/kits/Red/Red Kit 3/shirt_3_red-01.jpg',
+        object:'/models/character/kits/Keeper/foosball_keeper_v2.obj',
+        material:'/models/character/kits/Keeper/foosball_keeper_v2.mtl',
+        image:'/models/character/kits/Keeper/foosball_keeper_v2.mtl',
         position: {
             x: -8,
             y: -3.3,
@@ -231,7 +163,7 @@ export default {
         }
     },
     keeperSpeed: 2, // Lower is faster
-    playSound: true,
+    playSound: false,
     sound: {
         whistle: {
             src: '/dist/audio/single-whistle.wav',
@@ -241,5 +173,6 @@ export default {
             fade: 500, // milliseconds
             duration: 5000, // milliseconds
         }
-    }
+    },
+    logo: '/img/Heathrow_Logo-01.png'
 }

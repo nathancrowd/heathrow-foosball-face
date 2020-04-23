@@ -1,21 +1,28 @@
 import * as message from './message';
 let score = 0;
 let stageScore = 0;
+let time = '0:00';
+let faces = '';
 
 function increment() {
     score++;
     stageScore++;
     // message.show();
     showBoard();
-    updateBoard(score);
+    updateBoard();
     // message.add(`${score} points scored`);
+}
+
+function setTime(newTime) {
+    time = `0:${newTime < 10 ? 0 : ''}${newTime}`;
+    updateBoard();
 }
 
 function display() {
     hideBoard();
     message.show();
     message.popup();
-    message.add(`<h2>Time is up!</h2><p>You scored</p><span class='number'>${score}</span><p>Goals</p><h2>Well done!</h2>`);
+    message.add(`<h2 class='final'>And that's the final whistle!</h2><p>You scored</p><span class='number'>${score}</span><p>Goals</p><h2>Well done!</h2>`);
 }
 
 function newStage() {
@@ -25,20 +32,29 @@ function newStage() {
 function reset() {
     score = 0;
     stageScore = 0;
-    updateBoard(score);
+    updateBoard();
     hideBoard();
 }
 
 function showBoard() {
-    scoreboard.style.display = 'block';
+    scoreboard.style.display = 'flex';
 }
 
-function updateBoard(score) {
-    scoreboard.innerHTML = `${score}`;
+function updateBoard() {
+    scoreboard.innerHTML = `<span>${time}</span><span>${score}</span>`;
+    scoreboard.appendChild(faces);
 }
 
 function hideBoard() {
     scoreboard.style.display = 'none';
+}
+
+function setFaces(detections) {
+    let facesEl = document.createElement('div');
+    detections.forEach(d => {
+        facesEl.appendChild(d[0]);
+    });
+    faces = facesEl;
 }
 
 export {
@@ -47,6 +63,9 @@ export {
     stageScore,
     newStage,
     showBoard,
+    hideBoard,
     display,
-    reset
+    reset,
+    setTime,
+    setFaces
 }

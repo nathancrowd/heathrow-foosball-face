@@ -9,4 +9,11 @@
     font-weight: 400;
 }
 
+@font-face {
+    font-family: 'Scoreboard';
+    src: url('/dist/fonts/scoreboard.ttf');
+    font-weight: 400;
+}
+
 $type: 'Nexa', -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+$scoreboard: 'Scoreboard', monospace, -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;

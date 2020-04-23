@@ -1,22 +1,28 @@
 $border-radius: 0.8em;
+$gold: #d5bd68;
+$silver: #ababab;
+$bronze: #b39b8b;
 .leaderboard {
-    border-radius: $border-radius;
     background-color: white;
     list-style: none;
     position: absolute;
     display: flex;
     flex-flow: column nowrap;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
-    top: 0;
-    left: 0;
-    width: 90vw;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 50vw;
     height: 90vh;
-    margin: 5vh 5vw;
+    font-size:2vh;
+    padding: 2em 1em;
     list-style: none;
     padding:1em 0;
-    font-size: 4vw;
     z-index: 3;
+    h2 {
+        font-family: $scoreboard;
+    }
     li {
         margin: 0.5em 1em;
         display: flex;
@@ -28,8 +34,16 @@ $border-radius: 0.8em;
         p {
             margin: 0.6em 0;
         }
+        &:nth-of-type(1) {
+            color: $gold;
+        }
+        &:nth-of-type(2) {
+            color: $silver;
+        }
+        &:nth-of-type(3) {
+            color: $bronze;
+        }
         &.new {
-            color: $green;
             font-size: 1.2em;
         }
     }

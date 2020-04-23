@@ -112,7 +112,8 @@ class Character {
             this.face.geometry.computeVertexNormals();
             // this.face.material = new THREE.MeshBasicMaterial();
             this.face.name = 'Face';
-            this.face.position.set(0,3.9,1.3);
+            this.face.position.set(0,4.1,1.5);
+            this.face.scale.set(1.3,1.3,1.3);
             this.mesh.add(this.face);
         });
     }
@@ -312,6 +313,8 @@ class Character {
         this.face.material.map.offset.x = -0.1;
         this.face.material.map.wrapS = this.face.material.map.wrapT = THREE.ClampToEdgeWrapping;
         this.face.material.needsUpdate = true;
+        console.log(this.face);
+        
     }
 
     pickTeam() {

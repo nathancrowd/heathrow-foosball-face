@@ -17,6 +17,7 @@ let renderer = null;
 let controls = null;
 let renderLoop = null;
 let gltfLoader = null;
+let imageLoader = null;
 let characters = [];
 let activePlayers = [];
 let characterMidPoint = 0;
@@ -335,6 +336,20 @@ function buildKeeper() {
     },CONFIG.keeper.position);
 }
 
+function buildStand() {
+    imageLoader.load('models/stand/sf_stands.jpg', i => {
+        let geo = new THREE.CylinderGeometry(110,90,140,129, 1, true);
+        let m = new THREE.MeshBasicMaterial({
+            map: i,
+            side: THREE.BackSide
+        });
+        let stand = new THREE.Mesh(geo,m);
+        stand.position.y = 60;
+        stand.position.x = -7;
+        scene.add(stand);
+    })
+}
+
 function init() {
     if (CONFIG.mobile) {
         document.addEventListener('touchmove', mobileReturn, false);
@@ -354,6 +369,7 @@ function init() {
         alpha: true
     });
     gltfLoader = new GLTFLoader();
+    imageLoader = new THREE.TextureLoader();
     renderer.shadowMap.enabled = CONFIG.drawShadows;
     renderer.shadowMap.autoUpdate = false;
     renderer.shadowMap.needsUpdate = true;
@@ -377,6 +393,7 @@ function init() {
     buildPoles();
     buildCharacters();
     buildKeeper();
+    buildStand();
 }
 
 function start() {

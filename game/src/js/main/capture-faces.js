@@ -159,4 +159,6 @@ export default class FaceCapture {
             }
         });
     }
+
+    
 }

@@ -24,6 +24,8 @@ async function postScore(score) {
     });
 }
 
+import * as Blur from './blur';
+
 function init() {
     getScores();
 }
@@ -54,10 +56,12 @@ function showLeaderboard() {
     });
     board.appendChild(frag);
     document.body.appendChild(board);
+    Blur.show();
 }
 
 function hideLeaderboard() {
     board.parentElement.removeChild(board);
+    Blur.hide();
     board = null;
 }
 

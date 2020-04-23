@@ -1,12 +1,43 @@
 #scoreboard {
     position: absolute;
     top: 0;
-    left: 0;
-    font-size: 7vw;
+    left: 50%;
+    font-size: 5vh;
     background-color: black;
     color: white;
     z-index: 99;
-    transform: translate3d(calc(67vw - 100%), 46vh,0);
+    transform: translate3d(-50%, 30vh,0);
     padding: 0.5em 2em;
     display: none;
+    font-family: $scoreboard;
+    flex-flow: row nowrap;
+    justify-content: center;
+    span {
+        margin: 0 0.2em;
+        min-width:33.3%;
+        flex: 1 0 auto;
+        text-align: center;
+        &:first-child {
+            margin-left: auto;
+        }
+    }
+    div {
+        display: flex;
+        flex-flow: row nowrap;
+        margin: 0 0.2em;
+        align-items: center;
+        min-width:33.3%;
+        flex: 1 0 auto;
+        margin-right:0;
+        canvas {
+            position: relative;
+            width: auto;
+            flex: 1 0 auto;
+            border-radius: 1em;
+            height: 1em;
+            max-width:1em;
+            margin: 0;
+            padding: 0.1em;
+        }
+    }
 }

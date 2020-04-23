@@ -9,7 +9,7 @@ $border-radius: 0.8em;
     flex-flow: column nowrap;
     justify-content: center;
     align-items: center;
-    font-size: 5vw;
+    font-size: 2vh;
     z-index: 2;
     margin: 0;
     padding: 0.8em 0;
@@ -19,28 +19,51 @@ $border-radius: 0.8em;
 
     h2 {
         margin: 0;
-        font-size: 5vw;
+        font-size: 2vh;
+        &.final {
+            font-family: $scoreboard;
+            text-transform: uppercase;
+            font-weight: 400;
+        }
     }
 
     p {
-        font-size: 3vw;
+        font-size: 0.8vh;
     }
 
     span.number {
-        font-size: 7vw;
+        font-size: 10vh;
         display: block;
         color: $green;
     }
 
     &.popup {
         transition: all 0.3s ease-in-out;
-        width: calc(80vw - 1.6em);
-        height: 80vw;
-        top: 50%;
-        transform: translateY(-50%);
-        left: 10vw;
+        width: 50vw;
+        height: auto;
+        top: 20%;
+        left: 50%;
+        transform: translate(-50%,0%);
         padding: 0.8em;
-        border-top-left-radius: $border-radius;
-        border-top-right-radius: $border-radius;
+        border-radius: none;
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+        p {
+            font-size: 2vh;
+        }
+        h2 {
+            font-size: 4vh;
+            margin: 1em 0 1em 0;
+        }
     }
+}
+
+.blur {
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    backdrop-filter: blur(20px);
 }

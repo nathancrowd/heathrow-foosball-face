@@ -1,3 +1,5 @@
+import * as Blur from './blur';
+
 function add(message) {
     messageBox.innerHTML = `${message}`;
 }
@@ -12,10 +14,12 @@ function hide() {
 
 function popup() {
     messageBox.classList.add('popup');
+    Blur.show();
 }
 
 function popdown() {
     messageBox.classList.remove('popup');
+    Blur.hide();
 }
 
 export {

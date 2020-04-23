@@ -13,7 +13,7 @@ function captureVideo() {
     }
     
     navigator.mediaDevices.getUserMedia({video: {
-        aspectRatio: 0.5625,
+        aspectRatio: window.innerWidth / window.innerHeight,
         facingMode: constrainFront
     }}).then(s => {
         videoEl.srcObject = s;
