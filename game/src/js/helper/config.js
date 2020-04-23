@@ -174,5 +174,5 @@ export default {
             duration: 5000, // milliseconds
         }
     },
-    logo: '/img/Heathrow_Logo-01.png'
+    logo: '/dist/images/Heathrow_Logo-01.png'
 }
