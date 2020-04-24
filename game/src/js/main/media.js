@@ -21,7 +21,9 @@ function captureVideo() {
              videoEl.play();
         };
         let track = s.getVideoTracks()[0];
-        imageCapture = new ImageCapture(track);
+        if (!CONFIG.mobile) {
+            imageCapture = new ImageCapture(track);
+        }
         
     }).catch(e => {
         console.error(e);
