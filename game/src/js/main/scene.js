@@ -307,7 +307,9 @@ function buildPoles() {
     CONFIG.poles.forEach(p => {
         // let g = poleGeometry.clone();
         let pole = new Physijs.CylinderMesh(poleGeometry,poleMaterial,0);
-        pole.castShadow = true;
+        if (!CONFIG.mobile) {
+            pole.castShadow = true;
+        }
         pole.receiveShadow = false;
         pole.position.set(p.x,p.y,p.z);
         pole.rotation.set(0, 0, 1.5708);
