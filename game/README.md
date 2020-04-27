@@ -23,4 +23,4 @@ Allowing insecure origins to capture webcam video is a bit funny, so you can ins
 
 <del>TODO: running `gulp package` or `npm package` will build a production-ready package for easy deployment to the machines.</del>
 
-I have now made an automatic deploy URL at: https://heathrow.thisiscrowd.com . Any pushes to the `game` branch will deploy here.
+I have now made an automatic deploy URL at: https://foosball.thisiscrowd.com/. Any pushes to the `game` branch will deploy here.
