@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import {GLTFLoader} from '../helper/gltfLoader.js';
+import {OBJLoader} from '../helper/OBJLoader.js';
+import {MTLLoader} from '../helper/MTLLoader.js';
 import {OrbitControls} from '../helper/OrbitControls.js';
 import {Character,GoalKeeper} from './character.js';
 import CONFIG from '../helper/config.js';
@@ -17,6 +19,8 @@ let renderer = null;
 let controls = null;
 let renderLoop = null;
 let gltfLoader = null;
+let objLoader = null;
+let mtlLoader = null;
 let imageLoader = null;
 let characters = [];
 let activePlayers = [];
@@ -25,6 +29,10 @@ let Posenet = null;
 let renderTarget = null;
 let paused = true;
 let keeper = null;
+let keyState = 0;
+let poles = [];
+let renderCam = null;
+let first = true;
 
 /**
  * 
@@ -130,6 +138,45 @@ function mobileReturn(e) {
     });
 }
 
+function keyboardReturn(e) {
+    switch (e.key) {
+        case "ArrowLeft":
+            if (State.getStage() == 1) {
+                if (keyState <= -15) {
+                    return;
+                }
+                keyState += -5;
+            } else if (State.getStage() == 2) {
+                if (keyState >= 20) {
+                    return;
+                }
+                keyState += 5;
+            }
+            activePlayers.forEach(p => {
+                p.moveH(keyState, 0.4,0);
+            });
+            break;
+        case "ArrowRight":
+            if (State.getStage() == 1) {
+                if (keyState >= 20) {
+                    return;
+                }
+                keyState += 5;
+            } else if (State.getStage() == 2) {
+                if (keyState <= -15) {
+                    return;
+                }
+                keyState += -5;
+            }
+            activePlayers.forEach(p => {
+                p.moveH(keyState, 0.4,0);
+            });
+            break;
+        default:
+            break;
+    }
+}
+
 function animate() {
     if (paused) {
         return;
@@ -138,6 +185,10 @@ function animate() {
     setTimeout( function() {
         renderLoop = requestAnimationFrame( animate );
     }, 1000 / CONFIG.maxFps );
+    if (first) {
+        renderCam.updateCubeMap(renderer, scene);
+        first = false;
+    }
     renderer.render( scene, camera );
     if (CONFIG.enableControls) {
         controls.update();
@@ -150,27 +201,11 @@ function animate() {
                 action: 'getPoses',
                 video: b
             },[b]);
-        }).catch(e => {});
+        }).catch(e => {
+            // console.error(e);
+        });
     }
-    // Posenet.getPoses().then((poses) => {
-    //     if (!poses.length) {
-    //         return;
-    //     }
-        
-    //     let xPos = Posenet.getGroupMidPoint(poses);
-    //     console.log(xPos);
-        
-    //     userPosition.style.left = `${xPos}px`;
-    //     let relX = relativeXToWindowMiddle(xPos);
-    //     if (!relX) {
-    //         return;
-    //     }
-    //     let move = round_to_precision(relX, 0.01);
-    //     activePlayers.forEach(p => {
-    //         p.moveH((move * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), 0.2,0);
-    //         // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
-    //     });
-    // }).catch(error => { console.error(error) });
+
     activePlayers.forEach(p => {
         p.mesh.__dirtyPosition = true;
         p.mesh.__dirtyRotation = true;
@@ -297,23 +332,32 @@ function addShadow(o) {
 }
 
 function buildPoles() {
+    renderCam = new THREE.CubeCamera(1,100000,128);
+    scene.add(renderCam);
     let poleGeometry = new THREE.BufferGeometry().fromGeometry(new THREE.CylinderGeometry(0.7,0.7,80,32));
-    
-    let poleMaterial = Physijs.createMaterial(new THREE.MeshBasicMaterial({
-        color: 0x000000,
-        // specular: 0xffffff,
-        // shininess: 50
-    }),CONFIG.wallFriction,CONFIG.wallBounce);
-    CONFIG.poles.forEach(p => {
-        // let g = poleGeometry.clone();
-        let pole = new Physijs.CylinderMesh(poleGeometry,poleMaterial,0);
-        if (!CONFIG.mobile) {
-            pole.castShadow = true;
-        }
-        pole.receiveShadow = false;
-        pole.position.set(p.x,p.y,p.z);
-        pole.rotation.set(0, 0, 1.5708);
-        scene.add(pole);
+    let poleMaterial = new THREE.MeshBasicMaterial({
+        envMap: renderCam.renderTarget,
+    });
+    mtlLoader.load(CONFIG.pole.mtl, materials => {
+        materials.preload();
+        materials.materials['Material.001'].map = renderCam.renderTarget.texture;
+        materials.materials['Material.001'].emissive = new THREE.Color(0x111111);
+        materials.materials['Material.001'].color = null;
+        console.log(materials.materials['Material.001']);
+        // let poleMaterial = Physijs.createMaterial(materials.materials['Material.001'],CONFIG.wallFriction,CONFIG.wallBounce);
+        CONFIG.poles.forEach(p => {
+            // let g = poleGeometry.clone();
+            let pole = new Physijs.CylinderMesh(poleGeometry,poleMaterial,0);
+            if (!CONFIG.mobile) {
+                pole.castShadow = true;
+            }
+            pole.receiveShadow = false;
+            pole.position.set(p.x,p.y,p.z);
+            pole.rotation.set(0, 0, 1.5708);
+            pole.visible = false;
+            poles.push(pole);
+            scene.add(pole);
+        });
     });
 }
 
@@ -355,6 +399,7 @@ function buildStand() {
 function init() {
     if (CONFIG.mobile) {
         document.addEventListener('touchmove', mobileReturn, false);
+        document.addEventListener('keydown', keyboardReturn, false);
     } else {
         Posenet = new Worker('/dist/js/posenet.js');
         Posenet.postMessage({
@@ -371,6 +416,8 @@ function init() {
         alpha: true
     });
     gltfLoader = new GLTFLoader();
+    objLoader = new OBJLoader();
+    mtlLoader = new MTLLoader();
     imageLoader = new THREE.TextureLoader();
     renderer.shadowMap.enabled = CONFIG.drawShadows;
     renderer.shadowMap.autoUpdate = false;
@@ -428,5 +475,6 @@ export {
     scene,
     reset,
     camera,
-    stageTwo
+    stageTwo,
+    poles
 }

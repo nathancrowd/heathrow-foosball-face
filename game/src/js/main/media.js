@@ -1,4 +1,5 @@
 import CONFIG from '../helper/config';
+import * as Game from './game';
 let imageCapture = null;
 
 function captureVideo() {
@@ -27,6 +28,7 @@ function captureVideo() {
         
     }).catch(e => {
         console.error(e);
+        Game.init(false);
     });
 }
 

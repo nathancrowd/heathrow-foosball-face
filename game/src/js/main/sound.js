@@ -14,7 +14,8 @@ async function init() {
     }
     whistle = new Howl({
         src: [CONFIG.sound.whistle.src],
-        preload: true
+        preload: true,
+        volume: CONFIG.maxVolume
     });
     cheer = new Howl({
         src: [CONFIG.sound.cheer.src],
@@ -39,6 +40,7 @@ async function init() {
             attackCurve : 'exponential'
         }
     }).toMaster();
+    kickSynth.volume.value = CONFIG.maxVolume * -50;
     tuneSynth = new Tone.Synth({
         envelope: {
             attack: 0.29,
@@ -53,6 +55,7 @@ async function init() {
             type: 'sine',
         }
     }).toMaster();
+    tuneSynth.volume.value = CONFIG.maxVolume * -50;
 }
 
 function blowWhistle() {
@@ -63,9 +66,9 @@ function blowWhistle() {
 function crowdCheer() {
     cheer.stop();
     cheer.play();
-    cheer.fade(0,1,CONFIG.sound.cheer.duration);
+    cheer.fade(0,CONFIG.maxVolume,CONFIG.sound.cheer.duration);
     setTimeout(() => {
-        cheer.fade(1,0,CONFIG.sound.cheer.duration);
+        cheer.fade(CONFIG.maxVolume,0,CONFIG.sound.cheer.duration);
     }, CONFIG.sound.cheer.duration);
 }
 

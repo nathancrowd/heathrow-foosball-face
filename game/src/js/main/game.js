@@ -141,6 +141,16 @@ function detectionCallback(e) {
             Scene.characters[i].show();
             console.log(`Player ${i + 1} is: ${Scene.characters[i].team}`);
             Scene.activePlayers.push(Scene.characters[i]);
+            switch (i) {
+                case 0:
+                case 2:
+                    Scene.poles[0].visible = true;
+                    break;
+                case 1:
+                    Scene.poles[1].visible = true;
+                default:
+                    break;
+            }
         });
         score.setFaces(e.detections);
         Scene.start();
@@ -164,7 +174,7 @@ function detectionCallback(e) {
     }
 }
 
-function init() {
+function init(camera = true) {
     // runIdle
     message.hide();
     // loadPosenet (idle)
@@ -176,14 +186,26 @@ function init() {
     }
     Scene.init();
     Footballs.init();
-
+    if (camera) {
+        faces = new FaceCapture(videoEl);
+        faces.load(() => {
+            faces.startDetection(detectionCallback);
+        });
+    } else {
+        setTimeout(() => {
+            idleScreen.style.display = 'none';
+            detectionCallback({
+                detections: [[null]]
+            });
+        }, CONFIG.idleTime);
+    }
     // startFaceDetect
-    faces = new FaceCapture(videoEl);
-    faces.load(() => {
-        faces.startDetection(detectionCallback);
-    });
 
     window.addEventListener('resize', () => {location.reload()}, false);
 }
 
 videoEl.addEventListener('loadedmetadata', init, false);
+
+export {
+    init
+}

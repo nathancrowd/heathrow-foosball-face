@@ -15,8 +15,10 @@ async function init() {
         quantBytes: CONFIG.quantBytes,
         multiplier: CONFIG.posenetMult
     });
-    canvas = new OffscreenCanvas(0,0);
-    ctx = canvas.getContext('2d');
+    if (typeof(OffscreenCanvas) != 'undefined') {
+        canvas = new OffscreenCanvas(0,0);
+        ctx = canvas.getContext('2d');
+    }
     console.log('POSENET: Initialised');
 }
 
@@ -113,11 +115,13 @@ function getPoses(videoData) {
 
 onmessage = e => {
     let data = e.data;
+    
     switch (data.action) {
         case 'init':
             init();
             break;
         case 'getPoses':
+            
             getPoses(convertImageBitmapToData(data.video)).then(r => {
                 postMessage({
                     poses: r

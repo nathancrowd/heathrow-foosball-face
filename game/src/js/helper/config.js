@@ -1,6 +1,6 @@
 let isMobile = false;
 if (typeof window === 'object') {
-    isMobile = window.innerWidth < 769 ? true : false;
+    isMobile = window.innerWidth < 769 ? true : false || typeof(ImageBitmap) === 'undefined' ? true : false;
 }
 
 export default {
@@ -39,6 +39,10 @@ export default {
         {},
     ],
     faceCountdown: 15000, // milliseconds
+    pole: {
+        obj: '/models/pole/character_bar.obj',
+        mtl: '/models/pole/character_bar.mtl'
+    },
     poles: [
         {
             x: -8,
@@ -163,7 +167,7 @@ export default {
         }
     },
     keeperSpeed: 2, // Lower is faster
-    playSound: false,
+    playSound: true,
     sound: {
         whistle: {
             src: '/dist/audio/single-whistle.wav',
@@ -174,5 +178,6 @@ export default {
             duration: 5000, // milliseconds
         }
     },
+    maxVolume: 0.1,
     logo: '/dist/images/Heathrow_Logo-01.png'
 }

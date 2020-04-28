@@ -52,7 +52,9 @@ function hideBoard() {
 function setFaces(detections) {
     let facesEl = document.createElement('div');
     detections.forEach(d => {
-        facesEl.appendChild(d[0]);
+        if (d[0]) {
+            facesEl.appendChild(d[0]);
+        }
     });
     faces = facesEl;
 }

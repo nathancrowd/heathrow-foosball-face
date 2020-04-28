@@ -201,7 +201,7 @@ class Character {
             return;
         }
         this.moving = true;
-        
+
         let moveTo = this.position.x + h;
         
         gsap.to(this.mesh.position, {
@@ -289,6 +289,9 @@ class Character {
     }
 
     giveFace(canvas) {
+        if (!canvas) {
+            return;
+        }
         let glflCanv = fx.canvas();
         let texture = glflCanv.texture(canvas);
         glflCanv.draw(texture).denoise(15).ink(0.35).brightnessContrast(0.2,0).update();
