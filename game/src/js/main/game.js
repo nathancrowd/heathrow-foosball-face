@@ -10,6 +10,7 @@ import * as Sound from './sound';
 import * as Scoreboard from './scoreboard';
 import * as State from '../helper/state';
 import * as Logo from './logo';
+import * as Fireworks from './fireworks';
 /**
  * Scene
  */
@@ -118,6 +119,10 @@ function runBalls() {
                 Sound.crowdCheer();
             }
             score.display();
+            Fireworks.display();
+            setTimeout(() => {
+                Fireworks.display();
+            }, 400);
         }, CONFIG.gameTime * 1.2);
         setTimeout(() => { // Wait a bit more before resetting
             message.hide();
