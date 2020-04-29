@@ -345,7 +345,7 @@ function buildPoles() {
         materials.materials['Material.001'].color = null;
         console.log(materials.materials['Material.001']);
         // let poleMaterial = Physijs.createMaterial(materials.materials['Material.001'],CONFIG.wallFriction,CONFIG.wallBounce);
-        CONFIG.poles.forEach(p => {
+        CONFIG.poles.forEach((p, i) => {
             // let g = poleGeometry.clone();
             let pole = new Physijs.CylinderMesh(poleGeometry,poleMaterial,0);
             if (!CONFIG.mobile) {
@@ -354,7 +354,9 @@ function buildPoles() {
             pole.receiveShadow = false;
             pole.position.set(p.x,p.y,p.z);
             pole.rotation.set(0, 0, 1.5708);
-            pole.visible = false;
+            if (i != 2) {
+                pole.visible = false;
+            }
             poles.push(pole);
             scene.add(pole);
         });

@@ -54,7 +54,7 @@ export default {
             y: -3.4,
             z: -11.5,
         },
-        {
+        { // keeper
             x: -8,
             y: -3.4,
             z: 51
