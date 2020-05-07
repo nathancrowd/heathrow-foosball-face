@@ -12,6 +12,7 @@ import {gsap} from 'gsap';
 import {imageCapture} from './media';
 import * as State from '../helper/state';
 import * as Score from './score.js';
+import * as Media from './media';
 
 let scene = null;
 let camera = null;
@@ -119,12 +120,10 @@ function posenetReturn(e) {
     if (State.getStage() == 1) {
         activePlayers.forEach(p => {
             p.moveH((poses * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), CONFIG.characterMovementSpeed,CONFIG.characterMovementDelay);
-            // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
         });
     } else if (State.getStage() == 2) {
         activePlayers.forEach(p => {
             p.moveH((poses * (-2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), CONFIG.characterMovementSpeed,CONFIG.characterMovementDelay);
-            // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
         });
     }
 }
@@ -199,7 +198,8 @@ function animate() {
         imageCapture.grabFrame().then(b => {
             Posenet.postMessage({
                 action: 'getPoses',
-                video: b
+                video: b,
+                videoType: Media.videoType
             },[b]);
         }).catch(e => {
             // console.error(e);

@@ -112,8 +112,8 @@ class Character {
             this.face.geometry.computeVertexNormals();
             // this.face.material = new THREE.MeshBasicMaterial();
             this.face.name = 'Face';
-            this.face.position.set(0,4.1,1.5);
-            this.face.scale.set(1.3,1.3,1.3);
+            this.face.position.set(0,5.6,2.637);
+            this.face.scale.set(2.6,2.6,2.6);
             this.mesh.add(this.face);
         });
     }
@@ -292,9 +292,9 @@ class Character {
         if (!canvas) {
             return;
         }
-        let glflCanv = fx.canvas();
-        let texture = glflCanv.texture(canvas);
-        glflCanv.draw(texture).denoise(15).ink(0.35).brightnessContrast(0.2,0).update();
+        // let glflCanv = fx.canvas();
+        // let texture = glflCanv.texture(canvas);
+        // glflCanv.draw(texture).denoise(15).ink(0.35).brightnessContrast(0.2,0).update();
         if (!this.face) {
             console.error(errors.noface);
             return;
@@ -306,7 +306,7 @@ class Character {
             console.warn(errors.nofacemap);
         }
         this.face.material.metalness = 0;
-        let canvasT = new CanvasTexture(glflCanv);
+        let canvasT = new CanvasTexture(canvas);
         this.face.geometry.computeBoundingBox();
         this.face.material.map = canvasT;
         this.face.material.map.rotation = 1.5708;
@@ -339,6 +339,31 @@ class Character {
 
     done() {
         
+    }
+
+    transparent() {
+        this.mesh.children.forEach(c => {
+            setOpacity(c, 0.5);
+        });
+    }
+}
+
+function setOpacity(item, opacity) {
+    if (item.material) {
+        item.material.transparent = true;
+        item.material.opacity = opacity;
+        if (item.material.length) {
+            item.material.forEach(m => {
+                m.transparent = true;
+                m.opacity = opacity;
+                setOpacity(m, opacity);
+            });
+        }
+    }
+    if (item.children) {
+        item.children.forEach(i => {
+            setOpacity(i, opacity);
+        });
     }
 }
 
@@ -404,18 +429,21 @@ class GoalKeeper extends Character {
     }
 
     defend() {
-        let tl = new gsap.timeline({
-            repeat: -1,
-            yoyo: true
-        });
-        this.mesh.position.x = -1;
-        tl.to(this.mesh.position, {
-            duration: CONFIG.keeperSpeed,
-            x: -15,
-        }).to(this.mesh.position, {
-            duration: CONFIG.keeperSpeed,
-            x: -1,
-        });
+        // let tl = new gsap.timeline({
+        //     repeat: -1,
+        //     yoyo: true
+        // });
+        // this.mesh.position.x = -1;
+        // tl.to(this.mesh.position, {
+        //     duration: CONFIG.keeperSpeed,
+        //     x: -15,
+        // }).to(this.mesh.position, {
+        //     duration: CONFIG.keeperSpeed,
+        //     x: -1,
+        // });
+        setInterval(() => {
+            this.moveH(getRandomInt(-(CONFIG.maxXMovement - 2), (CONFIG.maxXMovement - 2)), CONFIG.keeperSpeed * 0.8, 0);
+        }, CONFIG.keeperSpeed * 1000);
     }
 
     loadFacemask() {

@@ -1,6 +1,6 @@
 @import './type';
 html {
-    background: linear-gradient(to bottom,  #fff 0%,#000 100%);
+    background-color: #fff;
     height: 100vh;
     width: 100vw;
     overflow: hidden;
@@ -40,3 +40,4 @@ video {
 @import './leaderboard';
 @import './logo';
 @import './particle';
+@import './button';

@@ -1,0 +1,17 @@
+button {
+    -webkit-appearance: none;
+    border-radius: none;
+    border: 0.2em solid black;
+    font-size: 2em;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-family: $type;
+    padding: 0.5em 1em;
+    cursor: pointer;
+    line-height: 1;
+
+    &:active, &:focus {
+        outline: none;
+        box-shadow: 0px 0px 0px 0.1em rgba(black, 0.2);
+    }
+}
