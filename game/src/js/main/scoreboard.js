@@ -18,7 +18,6 @@ async function postScore(score) {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'
-            // 'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: JSON.stringify(score)
     });
@@ -40,7 +39,6 @@ function showLeaderboard() {
     let title = document.createElement('h2');
     title.innerHTML = 'Leaderboard'
     frag.appendChild(title);
-    let mostRecent = null;
     scores.forEach((s,i) => {
         if (i > 9) {
             return;

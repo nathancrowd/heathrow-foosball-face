@@ -7,10 +7,8 @@ let faces = '';
 function increment() {
     score++;
     stageScore++;
-    // message.show();
     showBoard();
     updateBoard();
-    // message.add(`${score} points scored`);
 }
 
 function setTime(newTime) {

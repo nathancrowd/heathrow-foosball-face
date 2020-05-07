@@ -5,8 +5,6 @@ import {MTLLoader} from '../helper/MTLLoader.js';
 import {OrbitControls} from '../helper/OrbitControls.js';
 import {Character,GoalKeeper} from './character.js';
 import CONFIG from '../helper/config.js';
-import getRandomInt from '../helper/randomInt';
-// import * as Posenet from './posenet';
 require('../helper/physi');
 import {gsap} from 'gsap';
 import {imageCapture} from './media';
@@ -27,7 +25,6 @@ let characters = [];
 let activePlayers = [];
 let characterMidPoint = 0;
 let Posenet = null;
-let renderTarget = null;
 let paused = true;
 let keeper = null;
 let keyState = 0;
@@ -101,13 +98,7 @@ function getPosesMidPoint(poses) {
 }
 
 function getPoseXPos(pose) {
-    // let currentX = 0;
-    // let left = pose.keypoints[5].position.x;
-    // let right = pose.keypoints[6].position.x;
-    // currentX = (left + right) / 2;
-
     return pose.keypoints[0].position.x;
-    // return currentX;
 }
 
 function posenetReturn(e) {
@@ -133,7 +124,6 @@ function mobileReturn(e) {
     
     activePlayers.forEach(p => {
         p.moveH((relX * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), 0,0);
-        // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
     });
 }
 
@@ -344,9 +334,7 @@ function buildPoles() {
         materials.materials['Material.001'].emissive = new THREE.Color(0x111111);
         materials.materials['Material.001'].color = null;
         console.log(materials.materials['Material.001']);
-        // let poleMaterial = Physijs.createMaterial(materials.materials['Material.001'],CONFIG.wallFriction,CONFIG.wallBounce);
         CONFIG.poles.forEach((p, i) => {
-            // let g = poleGeometry.clone();
             let pole = new Physijs.CylinderMesh(poleGeometry,poleMaterial,0);
             if (!CONFIG.mobile) {
                 pole.castShadow = true;
@@ -372,8 +360,7 @@ function clearCharacters() {
 function buildCharacters() {
     CONFIG.characters.forEach((c,i) => {
         let character = new Character(i,() => {
-            // character.addToScene(scene);
-            // character.hide();
+
         },c);
         characters.push(character);
     });
@@ -464,7 +451,6 @@ function stageTwo() {
     tl.play();
     activePlayers.forEach(p => {
         p.moveH((0 * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), CONFIG.characterMovementSpeed,CONFIG.characterMovementDelay);
-        // p.swing(getRandomInt(0,10)/10,getRandomInt(7,10)/10);
     });
 }
 

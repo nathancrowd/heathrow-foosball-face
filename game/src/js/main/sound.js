@@ -1,5 +1,5 @@
 import * as Tone from 'tone';
-import {Howl, Howler} from 'howler';
+import {Howl} from 'howler';
 import CONFIG from '../helper/config';
 
 let running = false;
