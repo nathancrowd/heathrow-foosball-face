@@ -3,13 +3,11 @@ import {OBJLoader} from '../helper/OBJLoader.js';
 import {GLTFLoader} from '../helper/gltfLoader.js';
 import {MTLLoader} from '../helper/MTLLoader.js';
 import {gsap} from 'gsap';
-import { CanvasTexture, Texture } from 'three';
+import { CanvasTexture } from 'three';
 import CONFIG from '../helper/config.js';
-import fx from '../helper/glfx';
 import * as score from './score';
 import getRandomInt from '../helper/randomInt';
 import * as Sound from './sound';
-import { loadTinyFaceDetectorModel } from 'face-api.js';
 require('../helper/physi');
 import * as State from '../helper/state';
 
@@ -47,7 +45,6 @@ class Character {
             materials.preload();
             loader.setMaterials( materials );
             loader.load(modelUrl, o => {
-                // this.geometry = new THREE.Geometry().fromBufferGeometry(o.children[0].geometry);
                 o.children[0].castShadow = true;
                 o.children[0].receiveShadow = false;
                 o.children[0].geometry.translate( 0, -9, 0 );
@@ -62,8 +59,6 @@ class Character {
                         m.map.wrapT = THREE.MirroredRepeatWrapping;
                         let mapping = this.getMapping();
                         m.map.flipY = mapping.flipY;
-                        
-                        // m.map.format = THREE.RGBFormat;
                         m.map.rotation = mapping.rotation;
                         m.map.offset.x = mapping.offset.x;
                         m.map.offset.y = mapping.offset.y;
@@ -73,23 +68,16 @@ class Character {
                     }
                 });
                 this.geometry = new THREE.BoxGeometry(size.x,size.y * 1.2,size.z);
-                // this.material = Physijs.createMaterial(o.children[0].material, CONFIG.wallFriction,CONFIG.wallBounce);
                 this.material = Physijs.createMaterial(new THREE.MeshLambertMaterial({
                     transparent: true,
                     opacity: 0
                 }), CONFIG.wallFriction,CONFIG.wallBounce);
                 this.mesh = new Physijs.BoxMesh(this.geometry, this.material,0);
                 this.mesh.add(o);
-                
                 this.mesh.scale.multiplyScalar(0.7);
                 this.mesh.position.set(this.position.x,this.position.y,this.position.z);
                 this.basePosition = this.mesh.position;
                 this.loadFacemask();
-                // let faceGeometry = new THREE.CircleGeometry(2,32);
-                // let faceMat = new THREE.MeshBasicMaterial({
-                // });
-                // this.face = new THREE.Mesh(faceGeometry, faceMat);
-                // o.add(this.face);
                 this.listenForCollision();
                 this.done();
                 this.createCallback();
@@ -106,11 +94,9 @@ class Character {
         const gltfLoader = new GLTFLoader();
         gltfLoader.load('/models/character/facemask.gltf', f => {
             this.face = f.scene.children[0];
-            // this.face.geometry = new THREE.Geometry().fromBufferGeometry(this.face.geometry);
             this.face.geometry.uvsNeedUpdate = true;
             this.face.geometry.computeFaceNormals();
             this.face.geometry.computeVertexNormals();
-            // this.face.material = new THREE.MeshBasicMaterial();
             this.face.name = 'Face';
             this.face.position.set(0,5.6,2.637);
             this.face.scale.set(2.6,2.6,2.6);
@@ -292,16 +278,13 @@ class Character {
         if (!canvas) {
             return;
         }
-        // let glflCanv = fx.canvas();
-        // let texture = glflCanv.texture(canvas);
-        // glflCanv.draw(texture).denoise(15).ink(0.35).brightnessContrast(0.2,0).update();
         if (!this.face) {
             console.error(errors.noface);
             return;
         }
         
         if (this.face.material.map) {
-            // this.face.material.map.dispose();
+            
         } else {
             console.warn(errors.nofacemap);
         }

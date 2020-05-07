@@ -52,13 +52,7 @@ function getGroupMidPoint(poses) {
 }
 
 function getPoseXPos(pose) {
-    // let currentX = 0;
-    // let left = pose.keypoints[5].position.x;
-    // let right = pose.keypoints[6].position.x;
-    // currentX = (left + right) / 2;
-
     return pose.keypoints[0].position.x;
-    // return currentX;
 }
 
 function orderPoses(poses) {
@@ -86,7 +80,6 @@ function convertImageBitmapToData(bitmap) {
     ctx.clearRect(0,0,bitmap.width,bitmap.height);
     ctx.drawImage(bitmap,0,0,bitmap.width,bitmap.height);
     let r = {
-        // data: ctx.getImageData(0,0,bitmap.width, bitmap.height),
         data: canvas,
         width: bitmap.width
     };

@@ -1,5 +1,4 @@
 import * as Scene from './scene';
-// import * as Posenet from './posenet';
 import FaceCapture from './capture-faces';
 import * as Footballs from './footballs';
 import getRandomInt from '../helper/randomInt';
@@ -12,28 +11,7 @@ import * as State from '../helper/state';
 import * as Logo from './logo';
 import * as Fireworks from './fireworks';
 import * as Media from './media';
-/**
- * Scene
- */
 
-// build
-    // loadModels
-
-// show
-    // showScene
-    // startPosenet
-    // playGestureSequence
-        // TODO: Decide gestures
-    // playGame (30 seconds)
-        // throwBalls
-    // showScore
-
-// hide
-
-// clear
-    // removeBalls
-    // removeFaces
-    // stopPosenet
 let isInit = false;
 let faces = null;
 
@@ -47,7 +25,6 @@ function reset() {
     State.setStage(1);
     idleScreen.style.display = 'flex';
     setTimeout(() => {
-        // faces.startDetection(detectionCallback);
         Media.init();
     }, CONFIG.idleTime); // Some time to allow for character reload
 }
@@ -64,8 +41,6 @@ function scoreGoal() {
 }
 
 function runBalls() {
-    // message.add(`0 points scored`);
-    // message.show();
     score.showBoard();
     let timeElapsed = 0;
     let gameLoop = setInterval(() => {
@@ -188,7 +163,6 @@ function playGame(faces) {
     }
     score.setFaces(faces);
     Scene.start();
-    // Logo.show();
     movementIcon.classList.remove('fade');
     if (Sound.running) {
     }
@@ -224,9 +198,6 @@ function init(camera = true) {
         return;
     }
     isInit = true;
-    // runIdle
-    // message.hide();
-    // loadPosenet (idle)
     Scoreboard.init();
 
     // buildScene
