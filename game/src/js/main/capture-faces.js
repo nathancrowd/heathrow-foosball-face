@@ -3,6 +3,7 @@ import CONFIG from '../helper/config';
 import 'regenerator-runtime/runtime';
 import * as Sound from './sound';
 import * as message from './message';
+import getRandomInt from '../helper/randomInt';
 
 
 export default class FaceCapture {
@@ -76,6 +77,7 @@ export default class FaceCapture {
         await faceapi.loadFaceRecognitionModel(this.MODEL_URL);
         await faceapi.loadAgeGenderModel(this.MODEL_URL);
         this.detections = [];
+        this.zoomFaces = [];
         console.log('FaceCapture: Reading Faces...');
         callback();
     }
@@ -100,7 +102,7 @@ export default class FaceCapture {
     startTimer() {        
         this.startTime = Date.now();
         setTimeout(() => {
-            this.deleteFaceFrames();
+            // this.deleteFaceFrames();
             this.endDetection();
             this.res(this);
         },CONFIG.faceCountdown);
@@ -108,9 +110,10 @@ export default class FaceCapture {
 
     showDetection() {
         this.idle = false;
-        this.addFaceFrames();
+        // this.addFaceFrames();
         videoEl.classList.remove('hide');
         idleScreen.style.display = 'none';
+        message.popup();
         message.show();
         this.startTimer();
     }
@@ -127,10 +130,12 @@ export default class FaceCapture {
         if (this.end) {
             return;
         }
-        if (!this.idle) {
+        if (!this.idle && CONFIG.videoType == 'webcam') {
             // calulate time
             message.add(`<h2>${this.count} player${this.count == 1 ? '' : 's'}<br><br>${(CONFIG.faceCountdown / 1000) - Math.floor((Date.now() - this.startTime) / 1000)}<small>s</small> until kickoff!</h2>`);
             // this.counter.innerHTML = (CONFIG.faceCountdown / 1000) - Math.floor((Date.now() - this.startTime) / 1000);
+        } else if (!this.idle && CONFIG.videoType == 'zoom') {
+            message.add(`<h2>${(CONFIG.faceCountdown / 1000) - Math.floor((Date.now() - this.startTime) / 1000)}<small>s</small> until kickoff!<br/><br/>Get your game faces ready!</h2>`);
         }
         this.loop = requestAnimationFrame(this.detect.bind(this));
         let detections = await faceapi.detectAllFaces(this.videoEl);
@@ -141,21 +146,45 @@ export default class FaceCapture {
         if (this.idle && !this.end) {
             this.showDetection();
         }
-        detections.forEach(d => {
-            let faceFrame = this.isFaceInFrame(d);
-            if (faceFrame) {
-                if (faceFrame.frameEl.classList.contains('wait')) {
-                    return;
-                } else {
-                    faceFrame.frameEl.classList.add('wait');
+        detections.forEach((d,i) => {
+            switch (CONFIG.videoType) {
+                case 'webcam':
+                    let faceFrame = this.isFaceInFrame(d);
+                    if (faceFrame) {
+                        if (faceFrame.frameEl.classList.contains('wait')) {
+                            return;
+                        } else {
+                            faceFrame.frameEl.classList.add('wait');
+                            faceapi.extractFaces(this.videoEl, [d]).then((c) => {
+                                faceFrame.frameEl.classList.add('active');
+                                this.detections[faceFrame.frameIndex] = c;
+                                console.log('FaceCapture: Face Captured');
+                                Sound.bell();
+                                this.count++;
+                            });
+                        }
+                    }
+                    break;
+                case 'zoom':
                     faceapi.extractFaces(this.videoEl, [d]).then((c) => {
-                        faceFrame.frameEl.classList.add('active');
-                        this.detections[faceFrame.frameIndex] = c;
+                        // let facesCanv = [].slice.call(document.querySelectorAll('.zoom-face'));
+                        // if (facesCanv) {
+                        //     facesCanv.forEach(fc => {
+                        //         document.body.removeChild(fc);
+                        //     });
+                        // }
+                        this.zoomFaces[i] = c;
+                        // c[0].classList.add('zoom-face');
+                        // c[0].style.top = `${getRandomInt(window.innerWidth * 0.2, window.innerWidth * 0.8)}px`;
+                        // c[0].style.left = `${getRandomInt(window.innerHeight * 0.2, window.innerHeight * 0.8)}px`;
+                        // document.body.appendChild(c[0]);
                         console.log('FaceCapture: Face Captured');
-                        Sound.bell();
+                        // Sound.bell();
                         this.count++;
                     });
-                }
+                    break;
+                default:
+                    break;
             }
         });
     }

@@ -76,17 +76,31 @@ export default {
             y: -3.3,
             z: 0
         },
+        { // Back Left
+            x: -18,
+            y: -3.3,
+            z: -11.5
+        },
+        { // Back Right
+            x: 2,
+            y: -3.3,
+            z: -11.5
+        },
     ],
     characterSpacing: 4,
     posenetArchitecture: 'MobileNetV1',
     outputStride: 16,
     quantBytes: 2,
     posenetMult: 0.75,
-    maxPlayers: 3,
+    maxPlayers: {
+        'webcam': 3,
+        'zoom': 5
+    },
     maxFps: 60,
     drawShadows: !isMobile, // Set to false for better performance
     scoreThreshold: 0.3,
     maxXMovement: 16,
+    maxPoseRange: 150,
     characterMovementSpeed: 0.1,
     characterMovementDelay: 0,
     ballFriction: 0.4,
@@ -110,7 +124,7 @@ export default {
     mobile: isMobile,
     teams: [
         {
-            object:'/models/character/kits/Blue/foosball_player_blue_v2.obj',
+            object:'/models/character/foosball_player.obj',
             material:'/models/character/kits/Blue/foosball_player_blue_v2.mtl',
             image:'/models/character/kits/Blue/Blue Kit 1/shirt_1_bl.jpg',
             mapping: {
@@ -127,7 +141,7 @@ export default {
             }
         },
         {
-            object:'/models/character/kits/Red/foosball_player_red_v2.obj',
+            object:'/models/character/foosball_player.obj',
             material:'/models/character/kits/Red/foosball_player_red_v2.mtl',
             image:'/models/character/kits/Red/Red Kit 3/shirt_3_red-01.jpg',
             mapping: {
@@ -167,7 +181,7 @@ export default {
         }
     },
     keeperSpeed: 2, // Lower is faster
-    playSound: true,
+    playSound: false,
     sound: {
         whistle: {
             src: '/dist/audio/single-whistle.wav',
@@ -179,5 +193,7 @@ export default {
         }
     },
     maxVolume: 0.1,
-    logo: '/dist/images/Heathrow_Logo-01.png'
+    logo: '/dist/images/Heathrow_Logo-01.png',
+    videoType: 'zoom',
+    groupPlay: false
 }

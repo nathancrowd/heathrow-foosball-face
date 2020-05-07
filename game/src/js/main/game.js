@@ -11,6 +11,7 @@ import * as Scoreboard from './scoreboard';
 import * as State from '../helper/state';
 import * as Logo from './logo';
 import * as Fireworks from './fireworks';
+import * as Media from './media';
 /**
  * Scene
  */
@@ -33,7 +34,7 @@ import * as Fireworks from './fireworks';
     // removeBalls
     // removeFaces
     // stopPosenet
-
+let isInit = false;
 let faces = null;
 
 function reset() {
@@ -46,7 +47,8 @@ function reset() {
     State.setStage(1);
     idleScreen.style.display = 'flex';
     setTimeout(() => {
-        faces.startDetection(detectionCallback);
+        // faces.startDetection(detectionCallback);
+        Media.init();
     }, CONFIG.idleTime); // Some time to allow for character reload
 }
 
@@ -68,27 +70,27 @@ function runBalls() {
     let timeElapsed = 0;
     let gameLoop = setInterval(() => {
         timeElapsed += CONFIG.ballFrequency;
-        new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)}, State.getStage() == 1);
+        new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)}, false);
         score.setTime((CONFIG.gameTime - timeElapsed) / 1000);
         if (score.stageScore > CONFIG.frenzyBallCount) {
             setTimeout(() => {
                 if (!gameLoop) {
                     return;
                 }
-                new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)}, State.getStage() == 1);
+                new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)}, false);
             }, CONFIG.ballFrequency / 3);
             setTimeout(() => {
                 if (!gameLoop) {
                     return;
                 }
-                new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)}, State.getStage() == 1);
+                new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)}, false);
             }, CONFIG.ballFrequency / 2);
         } else if (score.stageScore > CONFIG.mediumBallCount) {
             setTimeout(() => {
                 if (!gameLoop) {
                     return;
                 }
-                new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)}, State.getStage() == 1);
+                new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)}, false);
             }, CONFIG.ballFrequency / 3);
         }
     },CONFIG.ballFrequency);
@@ -105,6 +107,9 @@ function runBalls() {
         }, CONFIG.gameTime);
     } else if (State.getStage() == 2) {
         score.newStage();
+        Scene.characters.forEach(c => {
+            c.transparent();
+        });
         setTimeout(() => { // Stop throwing balls
             clearInterval(gameLoop);
             gameLoop = null;
@@ -135,41 +140,76 @@ function runBalls() {
     }
 }
 
+function playGame(faces) {
+    faces.forEach((d,i) => {
+        if (typeof(Scene.characters[i]) == 'undefined') {
+            return;
+        }
+        Scene.characters[i].addToScene(Scene.scene);
+        Scene.characters[i].giveFace(d[0]);
+        Scene.characters[i].show();
+        console.log(`Player ${i + 1} is: ${Scene.characters[i].team}`);
+        Scene.activePlayers.push(Scene.characters[i]);
+        switch (i) {
+            case 0:
+            case 2:
+                Scene.poles[0].visible = true;
+                break;
+            case 1:
+                Scene.poles[1].visible = true;
+            default:
+                break;
+        }
+    });
+    if (Media.videoType == 'zoom') {
+        let remainingChars = CONFIG.characters.length - faces.length;
+        if (remainingChars > 0) {
+            for (let i = faces.length;i < faces.length + remainingChars; i++) {
+                Scene.characters[i].addToScene(Scene.scene);
+                Scene.characters[i].giveFace(faces[getRandomInt(0, faces.length - 1)][0]);
+                Scene.characters[i].show();
+                console.log(`Player ${i + 1} is: ${Scene.characters[i].team}`);
+                Scene.activePlayers.push(Scene.characters[i]);
+                    switch (i) {
+                        case 0:
+                        case 2:
+                            Scene.poles[0].visible = true;
+                            break;
+                        case 1:
+                            Scene.poles[1].visible = true;
+                        default:
+                            break;
+                    }
+                }
+        }
+    }
+    if (!CONFIG.groupPlay) {
+        Media.captureVideo(null, 'webcam');
+    }
+    score.setFaces(faces);
+    Scene.start();
+    // Logo.show();
+    movementIcon.classList.remove('fade');
+    if (Sound.running) {
+    }
+    setTimeout(() => {
+        movementIcon.classList.add('fade');
+        if (Sound.running) {
+            Sound.blowWhistle();
+        }
+        runBalls();
+    }, CONFIG.preGameTimer);
+}
+
 function detectionCallback(e) {
     e.idle = true;
     videoEl.classList.add('hide');
     message.hide();
     if (e.detections.length) {
-        e.detections.forEach((d,i) => {
-            Scene.characters[i].addToScene(Scene.scene);
-            Scene.characters[i].giveFace(d[0]);
-            Scene.characters[i].show();
-            console.log(`Player ${i + 1} is: ${Scene.characters[i].team}`);
-            Scene.activePlayers.push(Scene.characters[i]);
-            switch (i) {
-                case 0:
-                case 2:
-                    Scene.poles[0].visible = true;
-                    break;
-                case 1:
-                    Scene.poles[1].visible = true;
-                default:
-                    break;
-            }
-        });
-        score.setFaces(e.detections);
-        Scene.start();
-        Logo.show();
-        movementIcon.classList.remove('fade');
-        if (Sound.running) {
-        }
-        setTimeout(() => {
-            movementIcon.classList.add('fade');
-            if (Sound.running) {
-                Sound.blowWhistle();
-            }
-            runBalls();
-        }, CONFIG.preGameTimer);
+        playGame(e.detections);
+    } else if (e.zoomFaces.length && CONFIG.videoType == 'zoom') {
+        console.log(e.zoomFaces);
+        playGame(e.zoomFaces);
     } else {
         if (e.end) {
             // return;
@@ -180,8 +220,12 @@ function detectionCallback(e) {
 }
 
 function init(camera = true) {
+    if (isInit) {
+        return;
+    }
+    isInit = true;
     // runIdle
-    message.hide();
+    // message.hide();
     // loadPosenet (idle)
     Scoreboard.init();
 
