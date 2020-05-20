@@ -106,12 +106,20 @@ export default {
     ballFriction: 0.4,
     ballBounce: 0.5,
     ballMass: 0.6,
-    ballFrequency: 1000, // milliseconds
+    ballFrequency: 2000, // milliseconds
     mediumBallCount: 10,
     frenzyBallCount: 30,
     ballSpeed: 25,
     ballWarningDecay: 3000, // milliseconds
     ballDecay: 15000, // milliseconds
+    ballXRange: {
+        min: -16,
+        max: 3
+    },
+    ballYRange: {
+        min: -4,
+        max: 4
+    },
     kickedBallDecay: 1000, // milliseconds
     preGameTimer: 10000, // milliseconds
     gameTime: 30000, // milliseconds
@@ -159,9 +167,9 @@ export default {
         },
     ],
     keeper: {
-        object:'/models/character/kits/Keeper/foosball_keeper_v2.obj',
-        material:'/models/character/kits/Keeper/foosball_keeper_v2.mtl',
-        image:'/models/character/kits/Keeper/foosball_keeper_v2.mtl',
+        object:'/models/character/kits/Keeper/foosball_keeper_v3.obj',
+        material:'/models/character/kits/Keeper/foosball_keeper_v3.mtl',
+        image:'/models/character/kits/Keeper/foosball_keeper_v3.mtl',
         position: {
             x: -8,
             y: -3.3,

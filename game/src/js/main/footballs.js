@@ -1,16 +1,45 @@
 require('../helper/physi');
 import CONFIG from '../helper/config';
 import * as THREE from 'three';
+import { CanvasTexture, MeshBasicMaterial, SpriteMaterial, Plane } from 'three';
+import getRandomInt from '../helper/randomInt';
 import {scene, camera} from './scene';
 
 let footballGeometry = null;
+let innerGeometry = null;
 let footballMaterial = null;
+let invisibleMaterial = null;
 let loader = null;
 let balls = [];
+let faces = [];
 
 class Ball {
     constructor(position, warning) {
         this.mesh = new Physijs.SphereMesh(footballGeometry, footballMaterial,CONFIG.ballMass);
+        if (getRandomInt(0,10) < 2) {
+            let ref = Date.now();
+            let plainMaterial = new THREE.MeshLambertMaterial({
+                transparent: true,
+                opacity: 0,
+                stencilWrite: true,
+                stencilRef: ref,
+                stencilZPass: THREE.ReplaceStencilOp,
+                renderOrder: 1,
+            });
+            let innerFootball = new THREE.Mesh(footballGeometry, plainMaterial);
+            let faceBall = new THREE.Sprite(new SpriteMaterial({
+                map: new CanvasTexture(faces[getRandomInt(0, faces.length - 1)][0]),
+                stencilWrite: true,
+                stencilRef: ref,
+                stencilFunc: THREE.EqualStencilFunc,
+                depthTest: false,
+                renderOrder: 1
+            }));
+            faceBall.scale.set(2, 2, 1.0);
+            faceBall.position.set(0, 0, 0);
+            this.mesh.add(innerFootball);
+            this.mesh.add(faceBall);
+        }
         this.mesh.castShadow = true;
         this.mesh.receiveShadow = true;
         this.mesh.position.x = position.x;
@@ -89,9 +118,16 @@ function getWindowCoords(object) {
 function init() {
     loader = new THREE.TextureLoader();
     footballGeometry = new THREE.BufferGeometry().fromGeometry(new THREE.SphereGeometry(1,32,32));
+    innerGeometry = new THREE.BufferGeometry().fromGeometry(new THREE.SphereGeometry(0.99,32,32));
     footballMaterial = Physijs.createMaterial(new THREE.MeshLambertMaterial({
         color: 0xffffff,
-        map: loader.load('/models/football/football.jpeg')
+        map: loader.load('/models/football/football.jpeg'),
+        renderOrder: 0
+    }),CONFIG.ballFriction,CONFIG.ballBounce);
+    invisibleMaterial = Physijs.createMaterial(new THREE.MeshLambertMaterial({
+        transparent: true,
+        opacity: 0.1,
+        depthWrite: false,
     }),CONFIG.ballFriction,CONFIG.ballBounce);
 }
 
@@ -102,8 +138,13 @@ function clearAll() {
     balls = [];
 }
 
+function setFaces(f) {
+    faces = f;
+}
+
 export {
     init,
     Ball,
-    clearAll
+    clearAll,
+    setFaces
 }

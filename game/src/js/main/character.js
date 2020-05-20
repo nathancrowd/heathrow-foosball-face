@@ -428,10 +428,6 @@ class GoalKeeper extends Character {
             this.moveH(getRandomInt(-(CONFIG.maxXMovement - 2), (CONFIG.maxXMovement - 2)), CONFIG.keeperSpeed * 0.8, 0);
         }, CONFIG.keeperSpeed * 1000);
     }
-
-    loadFacemask() {
-        return;
-    }
 }
 
 export {

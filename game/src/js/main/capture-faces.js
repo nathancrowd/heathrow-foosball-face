@@ -136,7 +136,7 @@ export default class FaceCapture {
         }
         this.loop = requestAnimationFrame(this.detect.bind(this));
         let detections = await faceapi.detectAllFaces(this.videoEl);
-        detections = faceapi.resizeResults(detections, {width: this.videoEl.width, height: this.videoEl.height});
+        // detections = faceapi.resizeResults(detections, {width: this.videoEl.width, height: this.videoEl.height});
         if (!detections.length || this.end) {
             return;
         }

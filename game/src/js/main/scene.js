@@ -402,7 +402,8 @@ function init() {
     scene.setGravity(new THREE.Vector3( 0, -29.43, 0 ));
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
     renderer = new THREE.WebGLRenderer({
-        alpha: true
+        alpha: true,
+        localClippingEnabled: true
     });
     gltfLoader = new GLTFLoader();
     objLoader = new OBJLoader();
@@ -464,5 +465,6 @@ export {
     reset,
     camera,
     stageTwo,
-    poles
+    poles,
+    keeper
 }
