@@ -113,6 +113,9 @@ class Character {
             this.kick();
             if (co.userData.isFaceball) {
                 score.decrement();
+                if (this.scene) {
+                    this.scene.remove(co);
+                }
             } else if (State.getStage() == 1) {
                 score.increment();
             }

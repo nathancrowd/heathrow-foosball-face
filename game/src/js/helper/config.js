@@ -46,8 +46,8 @@ export default {
     poles: [
         {
             x: -8,
-            y: -3.4,
-            z: 0,
+            y: -3.2,
+            z: -6.5,
         },
         {
             x: -8,
@@ -63,22 +63,22 @@ export default {
     characters: [
         { // Front Right
             x: -4,
-            y: -3.3,
-            z: 0
+            y: -3.1,
+            z: -6.5
         },
         { // Back Middle
             x: -8,
-            y: -3.3,
+            y: -3.1,
             z: -11.5
         },
         { // Front Left
             x: -12,
             y: -3.3,
-            z: 0
+            z: -6.5
         },
         { // Back Left
             x: -18,
-            y: -3.3,
+            y: -3.1,
             z: -11.5
         },
         { // Back Right
