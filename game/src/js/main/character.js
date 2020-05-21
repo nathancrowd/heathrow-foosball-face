@@ -46,16 +46,15 @@ class Character {
             box.getSize(size);
             this.geometry = new THREE.BoxGeometry(size.x,size.y,size.z);
             this.material = Physijs.createMaterial(new THREE.MeshLambertMaterial({
-                transparent: false,
+                transparent: true,
                 opacity: 0
             }), CONFIG.wallFriction,CONFIG.wallBounce);
             this.mesh = new Physijs.BoxMesh(this.geometry, this.material,0);
             this.mesh.position.set(this.position.x,this.position.y,this.position.z);
             this.mesh.add(car);
-            this.done();
             this.listenForCollision();
             this.createCallback();
-        }, error => console.error(error));
+        }, xhr => {}, error => console.error(error));
         // matload.load(materialUrl, materials => {
         //     materials.preload();
         //     loader.setMaterials( materials );
@@ -111,15 +110,13 @@ class Character {
             if (Sound.running) {
                 Sound.kick();
             }
-            if (State.getStage() == 1) {
-                score.increment();
+            if (this.scene) {
+                this.scene.remove(co);
             }
-            co.setLinearVelocity(new THREE.Vector3(0,15,-CONFIG.ballSpeed));
-            setTimeout(() => {
-                if (this.scene && State.getStage() == 1) {
-                    this.scene.remove(co);
-                }
-            }, CONFIG.kickedBallDecay);
+            score.decrement();
+            if (score.score == 0) {
+                this.crash(() => {});
+            }
         });
     }
 
@@ -133,24 +130,21 @@ class Character {
     }
 
     crash(cb) {
-        if (this.moving) {
-            this.crash(cb);
-        }
         this.moving = true;
-        gsap.to(this.mesh.position, {
-            duration: 1,
-            delay: 0,
-            x: 0,
-            ease: 'expo.inOut',
-            onComplete: () => {
-                this.moving  = false;
-                cb();
-            }
-        });
+        // gsap.to(this.mesh.position, {
+        //     duration: 1,
+        //     delay: 0,
+        //     x: 0,
+        //     ease: 'expo.inOut',
+        //     onComplete: () => {
+        //         this.moving = false;
+        //         cb();
+        //     }
+        // });
         gsap.to(this.mesh.rotation, {
             duration: 1,
             delay: 0,
-            z: 1.2,
+            y: 2.7,
             ease: 'expo.inOut'
         });
     }
@@ -173,7 +167,7 @@ class Character {
             x: moveTo,
             ease: 'expo.inOut',
             onComplete: () => {
-                this.moving  = false;
+                this.moving = false;
             }
         });
     }

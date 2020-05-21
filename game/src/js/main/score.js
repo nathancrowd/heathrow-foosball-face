@@ -1,5 +1,8 @@
 import * as message from './message';
-let score = 0;
+import CONFIG from '../helper/config';
+import convertMs from '../helper/convertMs';
+
+let score = CONFIG.lives;
 let stageScore = 0;
 let time = '0:00';
 let faces = '';
@@ -11,8 +14,17 @@ function increment() {
     updateBoard();
 }
 
+function decrement() {
+    if (score > 0) {
+        score--;
+        stageScore--;
+    }
+    showBoard();
+    updateBoard();
+}
+
 function setTime(newTime) {
-    time = `0:${newTime < 10 ? 0 : ''}${newTime}`;
+    time = `${convertMs(newTime).minute}:${convertMs(newTime).seconds < 10 ? `0${convertMs(newTime).seconds}` : convertMs(newTime).seconds}`;
     updateBoard();
 }
 
@@ -40,25 +52,15 @@ function showBoard() {
 
 function updateBoard() {
     scoreboard.innerHTML = `<span>${time}</span><span>${score}</span>`;
-    scoreboard.appendChild(faces);
 }
 
 function hideBoard() {
     scoreboard.style.display = 'none';
 }
 
-function setFaces(detections) {
-    let facesEl = document.createElement('div');
-    detections.forEach(d => {
-        if (d[0]) {
-            facesEl.appendChild(d[0]);
-        }
-    });
-    faces = facesEl;
-}
-
 export {
     increment,
+    decrement,
     score,
     stageScore,
     newStage,
@@ -67,5 +69,5 @@ export {
     display,
     reset,
     setTime,
-    setFaces
+    time
 }

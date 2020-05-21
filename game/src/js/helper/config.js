@@ -32,7 +32,7 @@ export default {
             }
         }
     },
-    enableControls: true,
+    enableControls: false,
     faceSlots: [
         {},
         {},
@@ -66,26 +66,6 @@ export default {
             y: 0,
             z: 20
         },
-        { // Back Middle
-            x: -8,
-            y: -3.3,
-            z: -11.5
-        },
-        { // Front Left
-            x: -12,
-            y: -3.3,
-            z: 0
-        },
-        { // Back Left
-            x: -18,
-            y: -3.3,
-            z: -11.5
-        },
-        { // Back Right
-            x: 2,
-            y: -3.3,
-            z: -11.5
-        },
     ],
     characterSpacing: 4,
     posenetArchitecture: 'MobileNetV1',
@@ -106,19 +86,19 @@ export default {
     ballFriction: 0.4,
     ballBounce: 0.5,
     ballMass: 0.6,
-    ballFrequency: 2000, // milliseconds
-    mediumBallCount: 10,
-    frenzyBallCount: 30,
+    ballFrequency: 1000, // milliseconds
+    mediumBallCount: 30000,
+    frenzyBallCount: 60000,
     ballSpeed: 25,
     ballWarningDecay: 3000, // milliseconds
     ballDecay: 15000, // milliseconds
     ballXRange: {
-        min: -16,
-        max: 3
+        min: -6,
+        max: 6
     },
     ballYRange: {
-        min: -4,
-        max: 4
+        min: 1,
+        max: 1
     },
     kickedBallDecay: 1000, // milliseconds
     preGameTimer: 10000, // milliseconds
@@ -205,10 +185,11 @@ export default {
     videoType: 'zoom',
     groupPlay: false,
     road: {
-        radius: 500,
+        radius: 2000,
         texture: 'models/road/texture.png',
     },
     car: {
         model: 'models/car/scene.gltf'
-    }
+    },
+    lives: 3
 }

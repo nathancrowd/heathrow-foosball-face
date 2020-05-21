@@ -32,11 +32,20 @@ function reset() {
 function runBalls() {
     score.showBoard();
     let timeElapsed = 0;
+    let timeLoop = setInterval(() => {
+        timeElapsed += 10;
+        score.setTime(timeElapsed);
+    },10);
     let gameLoop = setInterval(() => {
-        timeElapsed += CONFIG.ballFrequency;
         new Footballs.Ball({x:getRandomInt(CONFIG.ballXRange.min,CONFIG.ballXRange.max), y:getRandomInt(CONFIG.ballYRange.min,CONFIG.ballYRange.max)}, false);
-        score.setTime((CONFIG.gameTime - timeElapsed) / 1000);
-        if (score.stageScore > CONFIG.frenzyBallCount) {
+        if (score.score <= 0) {
+            window.clearInterval(gameLoop);
+            window.clearInterval(timeLoop);
+            setTimeout(() => {
+                Scene.stopDriving();
+            },1000);
+        }
+        if (score.time > CONFIG.frenzyBallCount) {
             setTimeout(() => {
                 if (!gameLoop) {
                     return;
@@ -49,7 +58,7 @@ function runBalls() {
                 }
                 new Footballs.Ball({x:getRandomInt(CONFIG.ballXRange.min,CONFIG.ballXRange.max), y:getRandomInt(CONFIG.ballYRange.min,CONFIG.ballYRange.max)}, false);
             }, CONFIG.ballFrequency / 2);
-        } else if (score.stageScore > CONFIG.mediumBallCount) {
+        } else if (score.time > CONFIG.mediumBallCount) {
             setTimeout(() => {
                 if (!gameLoop) {
                     return;
@@ -58,50 +67,50 @@ function runBalls() {
             }, CONFIG.ballFrequency / 3);
         }
     },CONFIG.ballFrequency);
-    if (State.getStage() == 1) {
-        setTimeout(() => { // Stop throwing balls
-            if (Sound.running) {
-                Sound.blowWhistle();
-            }
-            clearInterval(gameLoop);
-            gameLoop = null;
-            Footballs.clearAll();
-            score.hideBoard();
-            scoreGoal();
-        }, CONFIG.gameTime);
-    } else if (State.getStage() == 2) {
-        score.newStage();
-        Scene.characters.forEach(c => {
-            c.transparent();
-        });
-        setTimeout(() => { // Stop throwing balls
-            clearInterval(gameLoop);
-            gameLoop = null;
-            if (Sound.running) {
-                Sound.blowWhistle();
-            }
-            Footballs.clearAll();
-        }, CONFIG.gameTime);
-        setTimeout(() => { // Wait a bit before showing score
-            Logo.hide();
-            if (Sound.running) {
-                Sound.crowdCheer();
-            }
-            score.display();
-            Fireworks.display();
-            setTimeout(() => {
-                Fireworks.display();
-            }, 400);
-        }, CONFIG.gameTime * 1.2);
-        setTimeout(() => { // Wait a bit more before resetting
-            message.hide();
-            Scoreboard.addToLeaderboard(score.score);
-            Scoreboard.showLeaderboard();
-        }, CONFIG.postGameTime + (CONFIG.gameTime * 1.5));
-        setTimeout(() => { // Wait a bit more before resetting
-            reset();
-        }, CONFIG.postGameTime + (CONFIG.gameTime * 3));
-    }
+    // if (State.getStage() == 1) {
+    //     setTimeout(() => { // Stop throwing balls
+    //         if (Sound.running) {
+    //             Sound.blowWhistle();
+    //         }
+    //         clearInterval(gameLoop);
+    //         gameLoop = null;
+    //         Footballs.clearAll();
+    //         score.hideBoard();
+    //         scoreGoal();
+    //     }, CONFIG.gameTime);
+    // } else if (State.getStage() == 2) {
+    //     score.newStage();
+    //     Scene.characters.forEach(c => {
+    //         c.transparent();
+    //     });
+    //     setTimeout(() => { // Stop throwing balls
+    //         clearInterval(gameLoop);
+    //         gameLoop = null;
+    //         if (Sound.running) {
+    //             Sound.blowWhistle();
+    //         }
+    //         Footballs.clearAll();
+    //     }, CONFIG.gameTime);
+    //     setTimeout(() => { // Wait a bit before showing score
+    //         Logo.hide();
+    //         if (Sound.running) {
+    //             Sound.crowdCheer();
+    //         }
+    //         score.display();
+    //         Fireworks.display();
+    //         setTimeout(() => {
+    //             Fireworks.display();
+    //         }, 400);
+    //     }, CONFIG.gameTime * 1.2);
+    //     setTimeout(() => { // Wait a bit more before resetting
+    //         message.hide();
+    //         Scoreboard.addToLeaderboard(score.score);
+    //         Scoreboard.showLeaderboard();
+    //     }, CONFIG.postGameTime + (CONFIG.gameTime * 1.5));
+    //     setTimeout(() => { // Wait a bit more before resetting
+    //         reset();
+    //     }, CONFIG.postGameTime + (CONFIG.gameTime * 3));
+    // }
 }
 
 function playGame(faces) {
@@ -145,13 +154,12 @@ function playGame(faces) {
     if (!CONFIG.groupPlay) {
         Media.captureVideo(null, 'webcam');
     }
-    score.setFaces(faces);
     Scene.start();
     movementIcon.classList.remove('fade');
     if (Sound.running) {
     }
     setTimeout(() => {
-    //     movementIcon.classList.add('fade');
+        movementIcon.classList.add('fade');
     //     if (Sound.running) {
     //         Sound.blowWhistle();
     //     }

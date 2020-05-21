@@ -135,7 +135,9 @@ export default class FaceCapture {
             message.add(`<h2>${(CONFIG.faceCountdown / 1000) - Math.floor((Date.now() - this.startTime) / 1000)}<small>s</small> until kickoff!<br/><br/>Get your game faces ready!</h2>`);
         }
         this.loop = requestAnimationFrame(this.detect.bind(this));
-        let detections = await faceapi.detectAllFaces(this.videoEl);
+        let detections = await faceapi.detectAllFaces(this.videoEl, new faceapi.SsdMobilenetv1Options({
+            maxResults: CONFIG.maxPlayers.zoom
+        }));
         // detections = faceapi.resizeResults(detections, {width: this.videoEl.width, height: this.videoEl.height});
         if (!detections.length || this.end) {
             return;

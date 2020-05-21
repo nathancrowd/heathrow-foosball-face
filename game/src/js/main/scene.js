@@ -60,6 +60,7 @@ function round_to_precision(x, precision) {
  * Gets the midpoint of the character's group.
  */
 function getGroupMidPoint() {
+    return 0;
     let returnArr = [];
     characters.forEach(c => {
         if (c.mesh.parent) {
@@ -68,6 +69,7 @@ function getGroupMidPoint() {
             returnArr.push(false);
         }
     });
+    
     if (returnArr[0] == true && returnArr[1] == true && returnArr[2] == true) {
         return 0;
     } else if(returnArr[0] == true && returnArr[1] == true && returnArr[2] == false) {
@@ -111,13 +113,9 @@ function posenetReturn(e) {
     } else {
         return;
     }
-    if (State.getStage() == 1 && driving) {
+    if (driving) {
         activePlayers.forEach(p => {
             p.moveH((poses * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), CONFIG.characterMovementSpeed,CONFIG.characterMovementDelay);
-        });
-    } else if (State.getStage() == 2 && driving) {
-        activePlayers.forEach(p => {
-            p.moveH((poses * (-2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), CONFIG.characterMovementSpeed,CONFIG.characterMovementDelay);
         });
     }
 }
@@ -201,6 +199,10 @@ function animate() {
     if (road && driving) {
         road.rotation.x += roadSpeed;
     }
+    activePlayers.forEach(p => {
+        p.mesh.__dirtyPosition = true;
+        p.mesh.__dirtyRotation = true;
+    });
 }
 
 function pause() {
@@ -384,7 +386,7 @@ function buildStand() {
 
 function buildRoad() {
     imageLoader.load(CONFIG.road.texture, i => {
-        let roadGeom = new THREE.SphereGeometry(CONFIG.road.radius, 40,40);
+        let roadGeom = new THREE.SphereGeometry(CONFIG.road.radius, 200,200);
         let roadMat = new THREE.MeshLambertMaterial({
             color: 0xffffff,
             map: i
@@ -399,7 +401,7 @@ function buildRoad() {
     let boundingMat = Physijs.createMaterial(new THREE.MeshLambertMaterial(), CONFIG.wallFriction,CONFIG.wallBounce);
     // Floor
     let tableFloor = new Physijs.BoxMesh(
-        new THREE.PlaneGeometry(200, 200, 32),
+        new THREE.PlaneGeometry(200, 400, 32),
         boundingMat,
         0
     );
@@ -473,6 +475,7 @@ function startDriving() {
 
 function stopDriving() {
     driving = false;
+    pause();
 }
 
 export {
