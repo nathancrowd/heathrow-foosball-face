@@ -31,6 +31,9 @@ let keyState = 0;
 let poles = [];
 let renderCam = null;
 let first = true;
+let road = null;
+let roadSpeed = 0.01;
+let driving = false;
 
 /**
  * 
@@ -108,11 +111,11 @@ function posenetReturn(e) {
     } else {
         return;
     }
-    if (State.getStage() == 1) {
+    if (State.getStage() == 1 && driving) {
         activePlayers.forEach(p => {
             p.moveH((poses * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), CONFIG.characterMovementSpeed,CONFIG.characterMovementDelay);
         });
-    } else if (State.getStage() == 2) {
+    } else if (State.getStage() == 2 && driving) {
         activePlayers.forEach(p => {
             p.moveH((poses * (-2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), CONFIG.characterMovementSpeed,CONFIG.characterMovementDelay);
         });
@@ -174,10 +177,10 @@ function animate() {
     setTimeout( function() {
         renderLoop = requestAnimationFrame( animate );
     }, 1000 / CONFIG.maxFps );
-    if (first) {
-        renderCam.updateCubeMap(renderer, scene);
-        first = false;
-    }
+    // if (first) {
+    //     renderCam.updateCubeMap(renderer, scene);
+    //     first = false;
+    // }
     renderer.render( scene, camera );
     if (CONFIG.enableControls) {
         controls.update();
@@ -195,15 +198,9 @@ function animate() {
             // console.error(e);
         });
     }
-
-    activePlayers.forEach(p => {
-        p.mesh.__dirtyPosition = true;
-        p.mesh.__dirtyRotation = true;
-    });
-    if (keeper) {
-        keeper.mesh.__dirtyPosition = true;
+    if (road && driving) {
+        road.rotation.x += roadSpeed;
     }
-    renderer.shadowMap.needsUpdate = true;
 }
 
 function pause() {
@@ -385,6 +382,32 @@ function buildStand() {
     })
 }
 
+function buildRoad() {
+    imageLoader.load(CONFIG.road.texture, i => {
+        let roadGeom = new THREE.SphereGeometry(CONFIG.road.radius, 40,40);
+        let roadMat = new THREE.MeshLambertMaterial({
+            color: 0xffffff,
+            map: i
+        });
+        roadMat.map.repeat.y = 10;
+        roadMat.map.repeat.x = 10;
+        roadMat.map.wrapS = roadMat.map.wrapT = THREE.RepeatWrapping;
+        road = new THREE.Mesh(roadGeom, roadMat);
+        road.position.y = CONFIG.road.radius * -1;
+        scene.add(road);
+    })
+    let boundingMat = Physijs.createMaterial(new THREE.MeshLambertMaterial(), CONFIG.wallFriction,CONFIG.wallBounce);
+    // Floor
+    let tableFloor = new Physijs.BoxMesh(
+        new THREE.PlaneGeometry(200, 200, 32),
+        boundingMat,
+        0
+    );
+    tableFloor.rotation.x = 1.5708;
+    tableFloor.position.y = 0;
+    scene.add(tableFloor);
+}
+
 function init() {
     if (CONFIG.mobile) {
         document.addEventListener('touchmove', mobileReturn, false);
@@ -428,11 +451,12 @@ function init() {
         controls.update();
     }
     setupLight();
-    buildTable();
-    buildPoles();
+    // buildTable();
+    // buildPoles();
     buildCharacters();
-    buildKeeper();
-    buildStand();
+    // buildKeeper();
+    // buildStand();
+    buildRoad();
 }
 
 function start() {
@@ -440,19 +464,15 @@ function start() {
     characterMidPoint = getGroupMidPoint();
     renderer.domElement.style.display = 'block';
     animate();
+    startDriving();
 }
 
-function stageTwo() {
-    keeper.addToScene(scene);
-    keeper.show();
-    let tl = new gsap.timeline();
-    tl.to(camera.rotation, CONFIG.cameraPosition.stageTwo.rotation, 0);
-    tl.to(camera.position, CONFIG.cameraPosition.stageTwo.position[0], 0);
-    tl.to(camera.position, CONFIG.cameraPosition.stageTwo.position[1], 2);
-    tl.play();
-    activePlayers.forEach(p => {
-        p.moveH((0 * (2 * CONFIG.maxXMovement)) + (CONFIG.characterSpacing * characterMidPoint), CONFIG.characterMovementSpeed,CONFIG.characterMovementDelay);
-    });
+function startDriving() {
+    driving = true;
+}
+
+function stopDriving() {
+    driving = false;
 }
 
 export {
@@ -464,7 +484,6 @@ export {
     scene,
     reset,
     camera,
-    stageTwo,
-    poles,
-    keeper
+    startDriving,
+    stopDriving
 }

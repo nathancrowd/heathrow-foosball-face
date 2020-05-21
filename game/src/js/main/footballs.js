@@ -44,7 +44,7 @@ class Ball {
         this.mesh.receiveShadow = true;
         this.mesh.position.x = position.x;
         this.mesh.position.y = position.y;
-        this.mesh.position.z = 50;
+        this.mesh.position.z = -100;
         let name = Date.now();
         this.mesh.name = name;
         scene.add(this.mesh);
@@ -56,7 +56,7 @@ class Ball {
     }
 
     throw() {
-        this.mesh.setLinearVelocity(new THREE.Vector3(0,0,-CONFIG.ballSpeed));
+        this.mesh.setLinearVelocity(new THREE.Vector3(0,0,CONFIG.ballSpeed));
     }
 
     createWarning() {

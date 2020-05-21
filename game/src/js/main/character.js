@@ -37,71 +37,72 @@ class Character {
     }
 
     load() {
-        const loader = new OBJLoader();
-        const matload = new MTLLoader();
-        let modelUrl = this.getModel();
-        let materialUrl = this.getMaterial();
-        matload.load(materialUrl, materials => {
-            materials.preload();
-            loader.setMaterials( materials );
-            loader.load(modelUrl, o => {
-                o.children[0].castShadow = true;
-                o.children[0].receiveShadow = false;
-                o.children[0].geometry.translate( 0, -9, 0 );
-                o.children[0].geometry.computeBoundingBox();
-                o.children[0].name = 'Player';
-                let size = new THREE.Vector3();
-                o.children[0].geometry.boundingBox.getSize(size)
-                o.children[0].material.forEach(m => {
-                    if (m.name == 'Material') {
-                        m.opacity = 1;
-                        m.alphaMap = null;
-                        m.map.wrapT = THREE.MirroredRepeatWrapping;
-                        let mapping = this.getMapping();
-                        m.map.flipY = mapping.flipY;
-                        m.map.rotation = mapping.rotation;
-                        m.map.offset.x = mapping.offset.x;
-                        m.map.offset.y = mapping.offset.y;
-                        m.map.repeat.x = mapping.repeat.x;
-                        m.map.repeat.x = mapping.repeat.x;
-                        m.map.needsUpdate = true;
-                    }
-                });
-                this.geometry = new THREE.BoxGeometry(size.x,size.y * 1.2,size.z);
-                this.material = Physijs.createMaterial(new THREE.MeshLambertMaterial({
-                    transparent: true,
-                    opacity: 0
-                }), CONFIG.wallFriction,CONFIG.wallBounce);
-                this.mesh = new Physijs.BoxMesh(this.geometry, this.material,0);
-                this.mesh.add(o);
-                this.mesh.scale.multiplyScalar(0.7);
-                this.mesh.position.set(this.position.x,this.position.y,this.position.z);
-                this.basePosition = this.mesh.position;
-                this.loadFacemask();
-                this.listenForCollision();
-                this.done();
-                this.createCallback();
-            }, null, error => {});
+        const gltfLoader = new GLTFLoader();
+        gltfLoader.load(CONFIG.car.model, gltf => {
+            let car = gltf.scene.children[0];
+            car.rotation.z = 3.14159;
+            let box = new THREE.Box3().setFromObject(car);
+            let size = new THREE.Vector3();
+            box.getSize(size);
+            this.geometry = new THREE.BoxGeometry(size.x,size.y,size.z);
+            this.material = Physijs.createMaterial(new THREE.MeshLambertMaterial({
+                transparent: false,
+                opacity: 0
+            }), CONFIG.wallFriction,CONFIG.wallBounce);
+            this.mesh = new Physijs.BoxMesh(this.geometry, this.material,0);
+            this.mesh.position.set(this.position.x,this.position.y,this.position.z);
+            this.mesh.add(car);
+            this.done();
+            this.listenForCollision();
+            this.createCallback();
+        }, error => console.error(error));
+        // matload.load(materialUrl, materials => {
+        //     materials.preload();
+        //     loader.setMaterials( materials );
+        //     loader.load(modelUrl, o => {
+        //         o.children[0].castShadow = true;
+        //         o.children[0].receiveShadow = false;
+        //         o.children[0].geometry.translate( 0, -9, 0 );
+        //         o.children[0].geometry.computeBoundingBox();
+        //         o.children[0].name = 'Player';
+        //         let size = new THREE.Vector3();
+        //         o.children[0].geometry.boundingBox.getSize(size)
+        //         o.children[0].material.forEach(m => {
+        //             if (m.name == 'Material') {
+        //                 m.opacity = 1;
+        //                 m.alphaMap = null;
+        //                 m.map.wrapT = THREE.MirroredRepeatWrapping;
+        //                 let mapping = this.getMapping();
+        //                 m.map.flipY = mapping.flipY;
+        //                 m.map.rotation = mapping.rotation;
+        //                 m.map.offset.x = mapping.offset.x;
+        //                 m.map.offset.y = mapping.offset.y;
+        //                 m.map.repeat.x = mapping.repeat.x;
+        //                 m.map.repeat.x = mapping.repeat.x;
+        //                 m.map.needsUpdate = true;
+        //             }
+        //         });
+        //         this.geometry = new THREE.BoxGeometry(size.x,size.y * 1.2,size.z);
+        //         this.material = Physijs.createMaterial(new THREE.MeshLambertMaterial({
+        //             transparent: true,
+        //             opacity: 0
+        //         }), CONFIG.wallFriction,CONFIG.wallBounce);
+        //         this.mesh = new Physijs.BoxMesh(this.geometry, this.material,0);
+        //         this.mesh.add(o);
+        //         this.mesh.scale.multiplyScalar(0.7);
+        //         this.mesh.position.set(this.position.x,this.position.y,this.position.z);
+        //         this.basePosition = this.mesh.position;
+        //         this.loadFacemask();
+        //         this.listenForCollision();
+        //         this.done();
+        //         this.createCallback();
+        //     }, null, error => {});
 
-        }, null, error => {});
+        // }, null, error => {});
     }
 
     done() {
 
-    }
-
-    loadFacemask() {
-        const gltfLoader = new GLTFLoader();
-        gltfLoader.load('/models/character/facemask.gltf', f => {
-            this.face = f.scene.children[0];
-            this.face.geometry.uvsNeedUpdate = true;
-            this.face.geometry.computeFaceNormals();
-            this.face.geometry.computeVertexNormals();
-            this.face.name = 'Face';
-            this.face.position.set(0,5.6,2.637);
-            this.face.scale.set(2.6,2.6,2.6);
-            this.mesh.add(this.face);
-        });
     }
 
     listenForCollision() {
@@ -110,11 +111,10 @@ class Character {
             if (Sound.running) {
                 Sound.kick();
             }
-            this.kick();
             if (State.getStage() == 1) {
                 score.increment();
             }
-            co.setLinearVelocity(new THREE.Vector3(0,15,CONFIG.ballSpeed));
+            co.setLinearVelocity(new THREE.Vector3(0,15,-CONFIG.ballSpeed));
             setTimeout(() => {
                 if (this.scene && State.getStage() == 1) {
                     this.scene.remove(co);
@@ -132,50 +132,27 @@ class Character {
         this.scene = scene;
     }
 
-    swing(duration, intensity) {
-        if (!this.mesh) {
-            console.error(errors.nomesh);
-            return;
+    crash(cb) {
+        if (this.moving) {
+            this.crash(cb);
         }
-        let tl = new gsap.timeline();
-        tl.to(this.mesh.rotation, {
-            duration: duration / 5,
-            x: -intensity
-        }).to(this.mesh.rotation, {
-            duration: duration / 5,
-            x: intensity * 0.75
-        }).to(this.mesh.rotation, {
-            duration: duration / 5,
-            x: -intensity * 0.5
-        }).to(this.mesh.rotation, {
-            duration: duration / 5,
-            x: intensity * 0.25
-        }).to(this.mesh.rotation, {
-            duration: duration / 5,
-            x: intensity * 0
+        this.moving = true;
+        gsap.to(this.mesh.position, {
+            duration: 1,
+            delay: 0,
+            x: 0,
+            ease: 'expo.inOut',
+            onComplete: () => {
+                this.moving  = false;
+                cb();
+            }
         });
-        tl.play();
-        this.mesh.__dirtyRotation = true;
-    }
-
-    kick() {
-        if (!this.mesh) {
-            console.error(errors.nomesh);
-            return;
-        }
-        let tl = new gsap.timeline();
-        tl.to(this.mesh.rotation, {
-            duration: 0.1,
-            x: 0.0523599
-        }).to(this.mesh.rotation, {
-            duration: 0.3,
-            x: -0.785398
-        }).to(this.mesh.rotation, {
-            duration: 0.2,
-            x: 0
+        gsap.to(this.mesh.rotation, {
+            duration: 1,
+            delay: 0,
+            z: 1.2,
+            ease: 'expo.inOut'
         });
-        tl.play();
-        this.mesh.__dirtyRotation = true;
     }
 
     moveH(h, duration, delay) {
@@ -201,62 +178,11 @@ class Character {
         });
     }
 
-    isSpinning() {
-        return this.spinPlaying;
-    }
-    
-    spinChar(direction) {
-        if (!this.mesh) {
-            console.error(errors.nomesh);
-            return;
-        }
-        let angle = null;
-        switch (direction) {
-            case 'forwards':
-                angle = 6.28319
-                break;
-            case 'backwards':
-                angle = -6.28319
-                break;
-            default:
-                break;
-        }
-        let tl = new gsap.timeline({
-            onComplete: () => {
-                this.spinPlaying = false;
-            }
-        });
-        tl.to(this.mesh.rotation, {
-            duration: 0.5,
-            x: angle
-        }).to(this.mesh.rotation, {
-            duration: 0,
-            x: 0
-        }).to(this.mesh.rotation, {
-            duration: 0.5,
-            x: angle
-        }).to(this.mesh.rotation, {
-            duration: 0,
-            x: 0
-        }).to(this.mesh.rotation, {
-            duration: 0.5,
-            x: angle
-        }).to(this.mesh.rotation, {
-            duration: 0,
-            x: 0
-        });
-    
-        tl.play();
-        this.spinPlaying = true;
-    }
-
     hide() {
         if (!this.mesh){
             console.error(errors.nomesh);
             return;
         }
-        this.mesh.setAngularFactor(blankVector);
-        this.mesh.setLinearFactor(blankVector);
         this.mesh.visible = false;
     }
 
@@ -265,8 +191,6 @@ class Character {
             console.error(errors.nomesh);
             return;
         }
-        this.mesh.setAngularFactor(fullVector);
-        this.mesh.setLinearFactor(fullVector);
         this.mesh.visible = true;
     }
 

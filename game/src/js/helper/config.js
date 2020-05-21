@@ -7,7 +7,7 @@ export default {
     wallFriction: 0.4,
     wallBounce: 0.5,
     cameraPosition: {
-        x:-8,
+        x: 0,
         y: 5,
         z: 30,
         stageTwo: {
@@ -32,7 +32,7 @@ export default {
             }
         }
     },
-    enableControls: false,
+    enableControls: true,
     faceSlots: [
         {},
         {},
@@ -62,9 +62,9 @@ export default {
     ],
     characters: [
         { // Front Right
-            x: -4,
-            y: -3.3,
-            z: 0
+            x: 0,
+            y: 0,
+            z: 20
         },
         { // Back Middle
             x: -8,
@@ -203,5 +203,12 @@ export default {
     maxVolume: 0.1,
     logo: '/dist/images/Heathrow_Logo-01.png',
     videoType: 'zoom',
-    groupPlay: false
+    groupPlay: false,
+    road: {
+        radius: 500,
+        texture: 'models/road/texture.png',
+    },
+    car: {
+        model: 'models/car/scene.gltf'
+    }
 }

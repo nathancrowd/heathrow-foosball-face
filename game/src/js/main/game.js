@@ -29,17 +29,6 @@ function reset() {
     }, CONFIG.idleTime); // Some time to allow for character reload
 }
 
-function scoreGoal() {
-    State.setStage(2);
-    Scene.stageTwo();
-    setTimeout(() => {
-        if (Sound.running) {
-            Sound.blowWhistle();
-        }
-        runBalls();
-    }, CONFIG.gameTime * 0.2);
-}
-
 function runBalls() {
     score.showBoard();
     let timeElapsed = 0;
@@ -125,23 +114,9 @@ function playGame(faces) {
         }
         if (i == 0) {
             Scene.characters[i].addToScene(Scene.scene);
-            Scene.characters[i].giveFace(d[0]);
             Scene.characters[i].show();
             console.log(`Player ${i + 1} is: ${Scene.characters[i].team}`);
             Scene.activePlayers.push(Scene.characters[i]);
-            switch (i) {
-                case 0:
-                case 2:
-                    Scene.poles[0].visible = true;
-                    break;
-                case 1:
-                    Scene.poles[1].visible = true;
-                default:
-                    break;
-            }
-        }
-        if (i == 1) {
-            Scene.keeper.giveFace(d[0]);
         }
     });
     Footballs.setFaces(faces.slice(1, faces.length - 1));
@@ -176,10 +151,10 @@ function playGame(faces) {
     if (Sound.running) {
     }
     setTimeout(() => {
-        movementIcon.classList.add('fade');
-        if (Sound.running) {
-            Sound.blowWhistle();
-        }
+    //     movementIcon.classList.add('fade');
+    //     if (Sound.running) {
+    //         Sound.blowWhistle();
+    //     }
         runBalls();
     }, CONFIG.preGameTimer);
 }
