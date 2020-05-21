@@ -43,7 +43,7 @@ function runBalls() {
             window.clearInterval(timeLoop);
             setTimeout(() => {
                 Scene.stopDriving();
-            },1000);
+            },500);
         }
         if (score.time > CONFIG.frenzyBallCount) {
             setTimeout(() => {

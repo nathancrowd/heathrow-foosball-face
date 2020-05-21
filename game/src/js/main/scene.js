@@ -32,7 +32,7 @@ let poles = [];
 let renderCam = null;
 let first = true;
 let road = null;
-let roadSpeed = 0.01;
+let roadSpeed = 0.001;
 let driving = false;
 
 /**
@@ -386,7 +386,7 @@ function buildStand() {
 
 function buildRoad() {
     imageLoader.load(CONFIG.road.texture, i => {
-        let roadGeom = new THREE.SphereGeometry(CONFIG.road.radius, 200,200);
+        let roadGeom = new THREE.CylinderGeometry(CONFIG.road.radius,CONFIG.road.radius,CONFIG.road.radius, 200,200);
         let roadMat = new THREE.MeshLambertMaterial({
             color: 0xffffff,
             map: i
@@ -395,6 +395,7 @@ function buildRoad() {
         roadMat.map.repeat.x = 10;
         roadMat.map.wrapS = roadMat.map.wrapT = THREE.RepeatWrapping;
         road = new THREE.Mesh(roadGeom, roadMat);
+        road.rotation.set(0,0,1.5708);
         road.position.y = CONFIG.road.radius * -1;
         scene.add(road);
     })

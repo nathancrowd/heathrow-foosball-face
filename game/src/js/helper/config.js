@@ -185,7 +185,7 @@ export default {
     videoType: 'zoom',
     groupPlay: false,
     road: {
-        radius: 2000,
+        radius: 4000,
         texture: 'models/road/texture.png',
     },
     car: {
