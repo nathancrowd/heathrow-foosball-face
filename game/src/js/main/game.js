@@ -44,31 +44,33 @@ function runBalls() {
     score.showBoard();
     let timeElapsed = 0;
     let gameLoop = setInterval(() => {
-        timeElapsed += CONFIG.ballFrequency;
-        new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)}, false);
-        score.setTime((CONFIG.gameTime - timeElapsed) / 1000);
+        new Footballs.Ball({x:getRandomInt(CONFIG.ballXRange.min,CONFIG.ballXRange.max), y:getRandomInt(CONFIG.ballYRange.min,CONFIG.ballYRange.max)}, false);
         if (score.stageScore > CONFIG.frenzyBallCount) {
             setTimeout(() => {
                 if (!gameLoop) {
                     return;
                 }
-                new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)}, false);
+                new Footballs.Ball({x:getRandomInt(CONFIG.ballXRange.min,CONFIG.ballXRange.max), y:getRandomInt(CONFIG.ballYRange.min,CONFIG.ballYRange.max)}, false);
             }, CONFIG.ballFrequency / 3);
             setTimeout(() => {
                 if (!gameLoop) {
                     return;
                 }
-                new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)}, false);
+                new Footballs.Ball({x:getRandomInt(CONFIG.ballXRange.min,CONFIG.ballXRange.max), y:getRandomInt(CONFIG.ballYRange.min,CONFIG.ballYRange.max)}, false);
             }, CONFIG.ballFrequency / 2);
         } else if (score.stageScore > CONFIG.mediumBallCount) {
             setTimeout(() => {
                 if (!gameLoop) {
                     return;
                 }
-                new Footballs.Ball({x:getRandomInt(-13,0), y:getRandomInt(-4,4)}, false);
+                new Footballs.Ball({x:getRandomInt(CONFIG.ballXRange.min,CONFIG.ballXRange.max), y:getRandomInt(CONFIG.ballYRange.min,CONFIG.ballYRange.max)}, false);
             }, CONFIG.ballFrequency / 3);
         }
     },CONFIG.ballFrequency);
+    let timeLoop = setInterval(() => {
+        timeElapsed += 1000;
+        score.setTime((CONFIG.gameTime - timeElapsed) / 1000);
+    }, 1000);
     if (State.getStage() == 1) {
         setTimeout(() => { // Stop throwing balls
             if (Sound.running) {
@@ -76,6 +78,8 @@ function runBalls() {
             }
             clearInterval(gameLoop);
             gameLoop = null;
+            clearInterval(timeLoop);
+            timeLoop = null;
             Footballs.clearAll();
             score.hideBoard();
             scoreGoal();
@@ -88,6 +92,8 @@ function runBalls() {
         setTimeout(() => { // Stop throwing balls
             clearInterval(gameLoop);
             gameLoop = null;
+            clearInterval(timeLoop);
+            timeLoop = null;
             if (Sound.running) {
                 Sound.blowWhistle();
             }
@@ -120,43 +126,52 @@ function playGame(faces) {
         if (typeof(Scene.characters[i]) == 'undefined') {
             return;
         }
-        Scene.characters[i].addToScene(Scene.scene);
-        Scene.characters[i].giveFace(d[0]);
-        Scene.characters[i].show();
-        console.log(`Player ${i + 1} is: ${Scene.characters[i].team}`);
-        Scene.activePlayers.push(Scene.characters[i]);
-        switch (i) {
-            case 0:
-            case 2:
-                Scene.poles[0].visible = true;
-                break;
-            case 1:
-                Scene.poles[1].visible = true;
-            default:
-                break;
+        if (i + 1 > CONFIG.maxPlayers[Media.videoType]) {
+            return;
+        }
+        if (i == 0) {
+            Scene.characters[i].addToScene(Scene.scene);
+            Scene.characters[i].giveFace(d[0]);
+            Scene.characters[i].show();
+            console.log(`Player ${i + 1} is: ${Scene.characters[i].team}`);
+            Scene.activePlayers.push(Scene.characters[i]);
+            switch (i) {
+                case 0:
+                case 2:
+                    Scene.poles[0].visible = true;
+                    break;
+                case 1:
+                    Scene.poles[1].visible = true;
+                default:
+                    break;
+            }
+        }
+        if (i == 1) {
+            Scene.keeper.giveFace(d[0]);
         }
     });
+    Footballs.setFaces(faces.slice(1, faces.length - 1));
     if (Media.videoType == 'zoom') {
         let remainingChars = CONFIG.characters.length - faces.length;
-        if (remainingChars > 0) {
-            for (let i = faces.length;i < faces.length + remainingChars; i++) {
-                Scene.characters[i].addToScene(Scene.scene);
-                Scene.characters[i].giveFace(faces[getRandomInt(0, faces.length - 1)][0]);
-                Scene.characters[i].show();
-                console.log(`Player ${i + 1} is: ${Scene.characters[i].team}`);
-                Scene.activePlayers.push(Scene.characters[i]);
-                    switch (i) {
-                        case 0:
-                        case 2:
-                            Scene.poles[0].visible = true;
-                            break;
-                        case 1:
-                            Scene.poles[1].visible = true;
-                        default:
-                            break;
-                    }
-                }
-        }
+        // if (remainingChars > 0) {
+        //     for (let i = faces.length;i < faces.length + remainingChars; i++) {
+        //         Scene.characters[i].addToScene(Scene.scene);
+        //         Scene.characters[i].giveFace(faces[getRandomInt(0, faces.length - 1)][0]);
+        //         Scene.characters[i].show();
+        //         console.log(`Player ${i + 1} is: ${Scene.characters[i].team}`);
+        //         Scene.activePlayers.push(Scene.characters[i]);
+        //             switch (i) {
+        //                 case 0:
+        //                 case 2:
+        //                     Scene.poles[0].visible = true;
+        //                     break;
+        //                 case 1:
+        //                     Scene.poles[1].visible = true;
+        //                 default:
+        //                     break;
+        //             }
+        //         }
+        // }
     }
     if (!CONFIG.groupPlay) {
         Media.captureVideo(null, 'webcam');

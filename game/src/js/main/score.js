@@ -5,10 +5,26 @@ let time = '0:00';
 let faces = '';
 
 function increment() {
+    scoreboard.classList.add('inc');
     score++;
     stageScore++;
     showBoard();
     updateBoard();
+    setTimeout(() => {
+        scoreboard.classList.remove('inc');
+    }, 300);
+}
+
+function decrement() {
+    scoreboard.classList.add('dec');
+    score--;
+    stageScore--;
+    showBoard();
+    updateBoard();
+    setTimeout(() => {
+        scoreboard.classList.remove('dec');
+    }, 300);
+
 }
 
 function setTime(newTime) {
@@ -59,6 +75,7 @@ function setFaces(detections) {
 
 export {
     increment,
+    decrement,
     score,
     stageScore,
     newStage,

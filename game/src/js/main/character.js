@@ -111,7 +111,12 @@ class Character {
                 Sound.kick();
             }
             this.kick();
-            if (State.getStage() == 1) {
+            if (co.userData.isFaceball) {
+                score.decrement();
+                if (this.scene) {
+                    this.scene.remove(co);
+                }
+            } else if (State.getStage() == 1) {
                 score.increment();
             }
             co.setLinearVelocity(new THREE.Vector3(0,15,CONFIG.ballSpeed));
@@ -427,10 +432,6 @@ class GoalKeeper extends Character {
         setInterval(() => {
             this.moveH(getRandomInt(-(CONFIG.maxXMovement - 2), (CONFIG.maxXMovement - 2)), CONFIG.keeperSpeed * 0.8, 0);
         }, CONFIG.keeperSpeed * 1000);
-    }
-
-    loadFacemask() {
-        return;
     }
 }
 

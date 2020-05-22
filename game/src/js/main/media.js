@@ -34,6 +34,8 @@ async function captureVideo(e, type = (type ? type : null)) {
             videoEl.srcObject = await navigator.mediaDevices.getDisplayMedia({
                 cursor: 'never',
                 audio: false
+            }).catch(e => {
+                console.error(e);
             });
             videoEl.style.opacity = 0;
             setupTrack();
@@ -50,7 +52,9 @@ function setupTrack() {
         imageCapture = new ImageCapture(track);
     }
     videoEl.onloadedmetadata = () => {
-        videoEl.play();
+        videoEl.play().catch(e => {
+            console.error(e);
+        });
     };
 }
 

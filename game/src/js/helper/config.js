@@ -46,8 +46,8 @@ export default {
     poles: [
         {
             x: -8,
-            y: -3.4,
-            z: 0,
+            y: -3.2,
+            z: -6.5,
         },
         {
             x: -8,
@@ -63,22 +63,22 @@ export default {
     characters: [
         { // Front Right
             x: -4,
-            y: -3.3,
-            z: 0
+            y: -3.1,
+            z: -6.5
         },
         { // Back Middle
             x: -8,
-            y: -3.3,
+            y: -3.1,
             z: -11.5
         },
         { // Front Left
             x: -12,
             y: -3.3,
-            z: 0
+            z: -6.5
         },
         { // Back Left
             x: -18,
-            y: -3.3,
+            y: -3.1,
             z: -11.5
         },
         { // Back Right
@@ -106,12 +106,20 @@ export default {
     ballFriction: 0.4,
     ballBounce: 0.5,
     ballMass: 0.6,
-    ballFrequency: 1000, // milliseconds
+    ballFrequency: 2000, // milliseconds
     mediumBallCount: 10,
-    frenzyBallCount: 30,
+    frenzyBallCount: 15,
     ballSpeed: 25,
     ballWarningDecay: 3000, // milliseconds
     ballDecay: 15000, // milliseconds
+    ballXRange: {
+        min: -16,
+        max: 3
+    },
+    ballYRange: {
+        min: -4,
+        max: 4
+    },
     kickedBallDecay: 1000, // milliseconds
     preGameTimer: 10000, // milliseconds
     gameTime: 30000, // milliseconds
@@ -159,9 +167,9 @@ export default {
         },
     ],
     keeper: {
-        object:'/models/character/kits/Keeper/foosball_keeper_v2.obj',
-        material:'/models/character/kits/Keeper/foosball_keeper_v2.mtl',
-        image:'/models/character/kits/Keeper/foosball_keeper_v2.mtl',
+        object:'/models/character/kits/Keeper/foosball_keeper_v3.obj',
+        material:'/models/character/kits/Keeper/foosball_keeper_v3.mtl',
+        image:'/models/character/kits/Keeper/foosball_keeper_v3.mtl',
         position: {
             x: -8,
             y: -3.3,

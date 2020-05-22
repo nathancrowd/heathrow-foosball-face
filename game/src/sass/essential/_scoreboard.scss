@@ -17,6 +17,7 @@
         min-width:33.3%;
         flex: 1 0 auto;
         text-align: center;
+        transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
         &:first-child {
             margin-left: auto;
         }
@@ -38,6 +39,19 @@
             max-width:1em;
             margin: 0;
             padding: 0.1em;
+        }
+    }
+
+    &.inc {
+        span:nth-child(2) {
+            color: $green;
+            transform: scale(1.2);
+        }
+    }
+    &.dec {
+        span:nth-child(2) {
+            color: red;
+            transform: scale(1.2);
         }
     }
 }
