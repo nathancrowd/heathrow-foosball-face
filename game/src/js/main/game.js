@@ -44,9 +44,7 @@ function runBalls() {
     score.showBoard();
     let timeElapsed = 0;
     let gameLoop = setInterval(() => {
-        timeElapsed += CONFIG.ballFrequency;
         new Footballs.Ball({x:getRandomInt(CONFIG.ballXRange.min,CONFIG.ballXRange.max), y:getRandomInt(CONFIG.ballYRange.min,CONFIG.ballYRange.max)}, false);
-        score.setTime((CONFIG.gameTime - timeElapsed) / 1000);
         if (score.stageScore > CONFIG.frenzyBallCount) {
             setTimeout(() => {
                 if (!gameLoop) {
@@ -69,6 +67,10 @@ function runBalls() {
             }, CONFIG.ballFrequency / 3);
         }
     },CONFIG.ballFrequency);
+    let timeLoop = setInterval(() => {
+        timeElapsed += 1000;
+        score.setTime((CONFIG.gameTime - timeElapsed) / 1000);
+    }, 1000);
     if (State.getStage() == 1) {
         setTimeout(() => { // Stop throwing balls
             if (Sound.running) {
@@ -76,6 +78,8 @@ function runBalls() {
             }
             clearInterval(gameLoop);
             gameLoop = null;
+            clearInterval(timeLoop);
+            timeLoop = null;
             Footballs.clearAll();
             score.hideBoard();
             scoreGoal();
@@ -88,6 +92,8 @@ function runBalls() {
         setTimeout(() => { // Stop throwing balls
             clearInterval(gameLoop);
             gameLoop = null;
+            clearInterval(timeLoop);
+            timeLoop = null;
             if (Sound.running) {
                 Sound.blowWhistle();
             }
