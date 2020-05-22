@@ -10,6 +10,7 @@ import getRandomInt from '../helper/randomInt';
 import * as Sound from './sound';
 require('../helper/physi');
 import * as State from '../helper/state';
+import {explode} from './scene';
 
 const errors = {
     nomesh: 'ERROR: Character Mesh has not been created. Try calling load()',
@@ -39,8 +40,7 @@ class Character {
     load() {
         const gltfLoader = new GLTFLoader();
         gltfLoader.load(CONFIG.car.model, gltf => {
-            let car = gltf.scene.children[0];
-            car.rotation.z = 3.14159;
+            let car = gltf.scene;
             let box = new THREE.Box3().setFromObject(car);
             let size = new THREE.Vector3();
             box.getSize(size);
@@ -113,9 +113,14 @@ class Character {
             if (this.scene) {
                 this.scene.remove(co);
             }
-            score.decrement();
-            if (score.score == 0) {
-                this.crash(() => {});
+            if (co.userData.isCoin) {
+                score.setTime(parseInt(score.time) + CONFIG.coinValue);
+            } else {
+                score.decrement();
+                explode();
+                if (score.score == 0) {
+                    this.crash(() => {});
+                }
             }
         });
     }

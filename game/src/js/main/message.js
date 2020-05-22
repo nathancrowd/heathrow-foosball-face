@@ -22,11 +22,11 @@ function popup() {
 function gameType() {
     messageBox.classList.add('popup');
     add(`
-        <h2>Let's play Foosball!</h2>
+        <h2>Zoomracer</h2>
         <ol style='text-align: left;'>
             <li>Share your screen in zoom<br /><br /></li>
-            <li>Click start<br /><br /></li>
-            <li>After the game starts, blindfold the host player (person sharing their screen) & direct them to move the players by leaning left/right<br /><br /></li>
+            <li>Click start, allow Chrome to share your screen<br /><br /></li>
+            <li>Steer the car by leaning left/right, avoiding obstacles as you do.<br /><br /></li>
         </ol>
         <button id='solo' style='display: none;'>Solo Game</button>
         <button id='multi'>Start!</button>

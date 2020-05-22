@@ -189,7 +189,22 @@ export default {
         texture: 'models/road/texture.png',
     },
     car: {
-        model: 'models/car/scene.gltf'
+        model: 'models/car/TEST2.gltf'
     },
-    lives: 3
+    coin: {
+        model: 'models/coin/scene.gltf'
+    },
+    lives: 3,
+    explosionPower: 1.1,
+    firebase:  {
+        apiKey: "AIzaSyBci3zbP3qxCTz95DSWyf8S3GbOiCbR7AA",
+        authDomain: "zoomheadz.firebaseapp.com",
+        databaseURL: "https://zoomheadz.firebaseio.com",
+        projectId: "zoomheadz",
+        storageBucket: "zoomheadz.appspot.com",
+        messagingSenderId: "782260740380",
+        appId: "1:782260740380:web:cee07ec772e21330e29ad9"
+    },
+    dbCollection: 'outrun',
+    coinValue: 10000
 }

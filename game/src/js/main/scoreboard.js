@@ -1,31 +1,43 @@
 let scores = [];
 let board = null;
 let currentScoreTimestamp = null;
-const DATAURL = 'https://www.sfpanel.com/foosball/data/';
+import CONFIG from '../helper/config';
+const firebase = require("firebase");
+// Required for side-effects
+require("firebase/firestore");
+let db = null;
 
 async function getScores() {
-    let data = await fetch(DATAURL).then(res => {
-        return res.json();
-    }).then(data => {
-        return data;
+    scores = [];
+    db.collection(CONFIG.dbCollection).get().then(s => {
+        s.forEach(d => {
+            scores.push(d.data());
+        });
+    }).catch(e => {
+        console.error(e);
     });
-
-    scores = data.scores;
 }
 
 async function postScore(score) {
-    await fetch(DATAURL, {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(score)
+    db.collection(CONFIG.dbCollection).add(score).then(() => {
+        console.log('Score saved');
+    }).catch(e => {
+        console.error(e);
     });
+    // await fetch(DATAURL, {
+    //     method: "POST",
+    //     headers: {
+    //         'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify(score)
+    // });
 }
 
 import * as Blur from './blur';
 
 function init() {
+    firebase.initializeApp(CONFIG.firebase);
+    db = firebase.firestore();
     getScores();
 }
 
@@ -49,7 +61,7 @@ function showLeaderboard() {
                 scoreItem.classList.add('new');
             }
         }
-        scoreItem.innerHTML = `<p class='index'>#${i + 1}</p><p class='score'>${s.score} goals</p>`;
+        scoreItem.innerHTML = `<p class='index'>#${i + 1}</p><p class='score'>${s.score}</p>`;
         frag.appendChild(scoreItem);
     });
     board.appendChild(frag);
@@ -73,7 +85,7 @@ function sortScores() {
         }
         return 0;
     });
-    localStorage.setItem('foosballLeaderboard', JSON.stringify(scores));
+    // localStorage.setItem('foosballLeaderboard', JSON.stringify(scores));
 }
 
 /**

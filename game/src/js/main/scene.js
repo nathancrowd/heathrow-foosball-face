@@ -34,6 +34,10 @@ let first = true;
 let road = null;
 let roadSpeed = 0.001;
 let driving = false;
+let particleGeometry;
+let particleCount=20;
+let explosionPower =CONFIG.explosionPower;
+let particles;
 
 /**
  * 
@@ -108,6 +112,9 @@ function getPoseXPos(pose) {
 
 function posenetReturn(e) {
     let poses = null;
+    if (!driving) {
+        return;
+    }
     if (e.data.poses) {
         poses = e.data.poses;
     } else {
@@ -199,6 +206,7 @@ function animate() {
     if (road && driving) {
         road.rotation.x += roadSpeed;
     }
+    doExplosionLogic();
     activePlayers.forEach(p => {
         p.mesh.__dirtyPosition = true;
         p.mesh.__dirtyRotation = true;
@@ -425,6 +433,7 @@ function init() {
     Physijs.scripts.worker = '../../physics/physijs_worker.js';
 	Physijs.scripts.ammo = '../../physics/ammo.js';
     scene = new Physijs.Scene();
+    scene.fog = new THREE.FogExp2( 0xf0fff0, 0.01 );
     scene.setGravity(new THREE.Vector3( 0, -29.43, 0 ));
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
     renderer = new THREE.WebGLRenderer({
@@ -460,6 +469,7 @@ function init() {
     // buildKeeper();
     // buildStand();
     buildRoad();
+    addExplosion();
 }
 
 function start() {
@@ -467,7 +477,6 @@ function start() {
     characterMidPoint = getGroupMidPoint();
     renderer.domElement.style.display = 'block';
     animate();
-    startDriving();
 }
 
 function startDriving() {
@@ -477,6 +486,47 @@ function startDriving() {
 function stopDriving() {
     driving = false;
     pause();
+}
+
+function addExplosion(){
+    particleGeometry = new THREE.Geometry();
+    for (var i = 0; i < particleCount; i ++ ) {
+        var vertex = new THREE.Vector3();
+        particleGeometry.vertices.push( vertex );
+    }
+    var pMaterial = new THREE.ParticleBasicMaterial({
+      color: 0xff9d3b,
+      size: 0.7
+    });
+    particles = new THREE.Points( particleGeometry, pMaterial );
+    scene.add( particles );
+    particles.visible=false;
+}
+function explode(){
+    particles.position.y=characters[0].mesh.position.y;
+    particles.position.z=characters[0].mesh.position.z;
+    particles.position.x=characters[0].mesh.position.x;
+    for (var i = 0; i < particleCount; i ++ ) {
+        var vertex = new THREE.Vector3();
+        vertex.x = -0.2+Math.random() * 0.4;
+        vertex.y = -0.2+Math.random() * 0.4;
+        // vertex.z = -0.2+Math.random() * 0.4;
+        particleGeometry.vertices[i]=vertex;
+    }
+    explosionPower=CONFIG.explosionPower;
+    particles.visible=true;
+}
+function doExplosionLogic(){//called in update
+    if(!particles.visible)return;
+    for (var i = 0; i < particleCount; i ++ ) {
+        particleGeometry.vertices[i].multiplyScalar(explosionPower);
+    }
+    if(explosionPower>1.005){
+        explosionPower-=0.001;
+    }else{
+        particles.visible=false;
+    }
+    particleGeometry.verticesNeedUpdate = true;
 }
 
 export {
@@ -489,5 +539,6 @@ export {
     reset,
     camera,
     startDriving,
-    stopDriving
+    stopDriving,
+    explode
 }

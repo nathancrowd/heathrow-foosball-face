@@ -11,6 +11,7 @@
     "autoprefixer": "^9.7.4",
     "babel-loader": "^8.0.6",
     "face-api.js": "^0.22.1",
+    "firebase": "^7.14.5",
     "fs": "0.0.1-security",
     "glob": "^7.1.6",
     "gsap": "^3.1.1",

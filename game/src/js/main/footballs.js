@@ -2,8 +2,11 @@ require('../helper/physi');
 import CONFIG from '../helper/config';
 import * as THREE from 'three';
 import { CanvasTexture, MeshBasicMaterial, SpriteMaterial, Plane } from 'three';
+import {GLTFLoader} from '../helper/gltfLoader.js';
 import getRandomInt from '../helper/randomInt';
 import {scene, camera} from './scene';
+import convertMs from '../helper/convertMs';
+import { score } from './score';
 
 let footballGeometry = null;
 let innerGeometry = null;
@@ -12,6 +15,7 @@ let invisibleMaterial = null;
 let loader = null;
 let balls = [];
 let faces = [];
+let gltfLoader;
 
 class Ball {
     constructor(position, warning) {
@@ -39,6 +43,37 @@ class Ball {
             faceBall.position.set(0, 0, 0);
             this.mesh.add(innerFootball);
             this.mesh.add(faceBall);
+        } else if (getRandomInt(0,10) < 1) {
+            this.mesh.material = footballMaterial.clone();
+            gltfLoader.load(CONFIG.coin.model, gltf => {
+                this.coin = gltf.scene;
+                this.coinMixer = new THREE.AnimationMixer(gltf.scene);
+                let clips = gltf.animations;
+                this.coin.fog = null;
+                let coinBox = new THREE.Box3().setFromObject(this.coin);
+                let meshBox = new THREE.Box3().setFromObject(this.mesh);
+                let coinSize = new THREE.Vector3();
+                let meshSize = new THREE.Vector3();
+                coinBox.getSize(coinSize);
+                meshBox.getSize(meshSize);
+                let scale = {
+                    x: meshSize.x / coinSize.x,
+                    y: meshSize.y / coinSize.x,
+                    z: meshSize.z / coinSize.z
+                };
+                this.coin.scale.set(scale.y,scale.y,scale.y);
+                clips.forEach( clip => {
+                    this.coinMixer.clipAction( clip ).play();
+                } );
+                this.timestamp = Date.now();
+                this.updatePosition();
+                scene.add(this.coin);
+                this.mesh.material.transparent = true;
+                this.mesh.material.opacity = 0;
+                this.mesh.userData = {
+                    isCoin: true
+                }
+            });
         }
         this.mesh.castShadow = true;
         this.mesh.receiveShadow = true;
@@ -53,6 +88,19 @@ class Ball {
         }
         balls.push(this);
         this.throw();
+    }
+
+    updatePosition() {
+        let currentTs = Date.now();
+        let deltaSeconds = (currentTs - this.timestamp) / 1000;
+        if (!this.mesh.parent) {
+            scene.remove(this.coin);
+            return;
+        }
+        this.coin.position.setFromMatrixPosition( this.mesh.matrixWorld );
+        this.coinMixer.update( deltaSeconds );
+        this.timestamp = currentTs;
+        requestAnimationFrame( this.updatePosition.bind(this) );
     }
 
     throw() {
@@ -117,6 +165,7 @@ function getWindowCoords(object) {
 
 function init() {
     loader = new THREE.TextureLoader();
+    gltfLoader = new GLTFLoader();
     footballGeometry = new THREE.BufferGeometry().fromGeometry(new THREE.SphereGeometry(1,32,32));
     innerGeometry = new THREE.BufferGeometry().fromGeometry(new THREE.SphereGeometry(0.99,32,32));
     footballMaterial = Physijs.createMaterial(new THREE.MeshLambertMaterial({

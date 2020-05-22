@@ -4,7 +4,7 @@ import convertMs from '../helper/convertMs';
 
 let score = CONFIG.lives;
 let stageScore = 0;
-let time = '0:00';
+let time = 0;
 let faces = '';
 
 function increment() {
@@ -24,7 +24,7 @@ function decrement() {
 }
 
 function setTime(newTime) {
-    time = `${convertMs(newTime).minute}:${convertMs(newTime).seconds < 10 ? `0${convertMs(newTime).seconds}` : convertMs(newTime).seconds}`;
+    time = `${newTime < 1000000 ? '0' : ''}${newTime < 100000 ? '0' : ''}${newTime < 10000 ? '0' : ''}${newTime < 1000 ? '0' : ''}${newTime < 100 ? '0' : ''}${newTime < 10 ? '0' : ''}${newTime < 1 ? '0' : ''}${newTime}`;
     updateBoard();
 }
 
@@ -32,7 +32,7 @@ function display() {
     hideBoard();
     message.show();
     message.popup();
-    message.add(`<h2 class='final'>And that's the final whistle!</h2><p>You scored</p><span class='number'>${score}</span><p>Goals</p><h2>Well done!</h2>`);
+    message.add(`<h2 class='final'>you crashed out!</h2><p>Score: </p><span class='number'>${time}</span><h2>Well done!</h2>`);
 }
 
 function newStage() {

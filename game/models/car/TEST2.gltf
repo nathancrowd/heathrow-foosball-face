@@ -1,0 +1,410 @@
+{
+    "asset": {
+        "copyright": "2019 (c) Adobe Inc.",
+        "generator": "Adobe Dimension - 0897bb3786688dd8ac0e16e7ca439aa83b5dca11",
+        "version": "2.0"
+    },
+    "accessors": [
+        {
+            "bufferView": 0,
+            "componentType": 5126,
+            "count": 3606,
+            "type": "VEC3",
+            "max": [
+                1.3390295505523682,
+                0.6336705684661865,
+                1.901409387588501
+            ],
+            "min": [
+                -0.3709617257118225,
+                -0.4916999638080597,
+                -1.856223225593567
+            ]
+        },
+        {
+            "bufferView": 1,
+            "componentType": 5126,
+            "count": 3606,
+            "type": "VEC3"
+        },
+        {
+            "bufferView": 2,
+            "componentType": 5126,
+            "count": 3606,
+            "type": "VEC2"
+        },
+        {
+            "bufferView": 3,
+            "componentType": 5125,
+            "count": 3606,
+            "type": "SCALAR",
+            "max": [
+                3605.0
+            ],
+            "min": [
+                0.0
+            ]
+        },
+        {
+            "bufferView": 4,
+            "componentType": 5126,
+            "count": 840,
+            "type": "VEC3",
+            "max": [
+                0.23759999871253968,
+                0.10607945919036865,
+                0.23164287209510804
+            ],
+            "min": [
+                -0.23759999871253968,
+                -0.24280211329460145,
+                -0.23164287209510804
+            ]
+        },
+        {
+            "bufferView": 5,
+            "componentType": 5126,
+            "count": 840,
+            "type": "VEC3"
+        },
+        {
+            "bufferView": 6,
+            "componentType": 5126,
+            "count": 840,
+            "type": "VEC2"
+        },
+        {
+            "bufferView": 7,
+            "componentType": 5125,
+            "count": 840,
+            "type": "SCALAR",
+            "max": [
+                839.0
+            ],
+            "min": [
+                0.0
+            ]
+        },
+        {
+            "bufferView": 8,
+            "componentType": 5126,
+            "count": 1680,
+            "type": "VEC3",
+            "max": [
+                0.23759999871253968,
+                0.10607945919036865,
+                0.23164287209510804
+            ],
+            "min": [
+                -0.23759999871253968,
+                -1.6952815055847169,
+                -0.23164287209510804
+            ]
+        },
+        {
+            "bufferView": 9,
+            "componentType": 5126,
+            "count": 1680,
+            "type": "VEC3"
+        },
+        {
+            "bufferView": 10,
+            "componentType": 5126,
+            "count": 1680,
+            "type": "VEC2"
+        },
+        {
+            "bufferView": 11,
+            "componentType": 5125,
+            "count": 1680,
+            "type": "SCALAR",
+            "max": [
+                1679.0
+            ],
+            "min": [
+                0.0
+            ]
+        }
+    ],
+    "bufferViews": [
+        {
+            "buffer": 0,
+            "byteOffset": 0,
+            "byteLength": 43272,
+            "target": 34962
+        },
+        {
+            "buffer": 0,
+            "byteOffset": 43272,
+            "byteLength": 43272,
+            "target": 34962
+        },
+        {
+            "buffer": 0,
+            "byteOffset": 86544,
+            "byteLength": 28848,
+            "target": 34962
+        },
+        {
+            "buffer": 0,
+            "byteOffset": 115392,
+            "byteLength": 14424,
+            "target": 34963
+        },
+        {
+            "buffer": 0,
+            "byteOffset": 129816,
+            "byteLength": 10080,
+            "target": 34962
+        },
+        {
+            "buffer": 0,
+            "byteOffset": 139896,
+            "byteLength": 10080,
+            "target": 34962
+        },
+        {
+            "buffer": 0,
+            "byteOffset": 149976,
+            "byteLength": 6720,
+            "target": 34962
+        },
+        {
+            "buffer": 0,
+            "byteOffset": 156696,
+            "byteLength": 3360,
+            "target": 34963
+        },
+        {
+            "buffer": 0,
+            "byteOffset": 160056,
+            "byteLength": 20160,
+            "target": 34962
+        },
+        {
+            "buffer": 0,
+            "byteOffset": 180216,
+            "byteLength": 20160,
+            "target": 34962
+        },
+        {
+            "buffer": 0,
+            "byteOffset": 200376,
+            "byteLength": 13440,
+            "target": 34962
+        },
+        {
+            "buffer": 0,
+            "byteOffset": 213816,
+            "byteLength": 6720,
+            "target": 34963
+        }
+    ],
+    "buffers": [
+        {
+            "byteLength": 220536,
+            "uri": "TEST2_binary.bin"
+        }
+    ],
+    "cameras": [
+        {
+            "perspective": {
+                "znear": 0.00008756877650739625,
+                "yfov": 0.6024156808853149,
+                "zfar": 4.816282749176025,
+                "aspectRatio": 1.3333333730697632
+            },
+            "type": "perspective",
+            "name": "render_camera"
+        }
+    ],
+    "materials": [
+        {
+            "pbrMetallicRoughness": {
+                "baseColorFactor": [
+                    0.6038274168968201,
+                    0.6038274168968201,
+                    0.6038274168968201,
+                    1.0
+                ],
+                "metallicFactor": 0.0,
+                "roughnessFactor": 0.24253562092781068
+            }
+        }
+    ],
+    "meshes": [
+        {
+            "name": "Car_Sport_1_2",
+            "primitives": [
+                {
+                    "attributes": {
+                        "POSITION": 0,
+                        "NORMAL": 1,
+                        "TEXCOORD_0": 2
+                    },
+                    "indices": 3,
+                    "material": 0
+                }
+            ]
+        },
+        {
+            "name": "Wheels_6",
+            "primitives": [
+                {
+                    "attributes": {
+                        "TEXCOORD_0": 6,
+                        "NORMAL": 5,
+                        "POSITION": 4
+                    },
+                    "indices": 7,
+                    "material": 0
+                }
+            ]
+        },
+        {
+            "name": "wheels_6",
+            "primitives": [
+                {
+                    "attributes": {
+                        "POSITION": 8,
+                        "NORMAL": 9,
+                        "TEXCOORD_0": 10
+                    },
+                    "indices": 11,
+                    "material": 0
+                }
+            ]
+        },
+        {
+            "name": "Wheels_1_6",
+            "primitives": [
+                {
+                    "attributes": {
+                        "POSITION": 4,
+                        "NORMAL": 5,
+                        "TEXCOORD_0": 6
+                    },
+                    "indices": 7,
+                    "material": 0
+                }
+            ]
+        }
+    ],
+    "nodes": [
+        {
+            "translation": [
+                0.5,
+                0.29999998211860659,
+                0.5
+            ],
+            "rotation": [
+                -0.12059047073125839,
+                0.379409521818161,
+                0.04995020851492882,
+                0.9159756302833557
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                0.9999999403953552
+            ],
+            "camera": 0,
+            "name": "render_camera_n3d"
+        },
+        {
+            "children": [
+                2
+            ],
+            "translation": [
+                0.0000013351440202313825,
+                -8.66009521484375,
+                -3.0517577442878976e-7
+            ],
+            "name": "Polygonia_City_Cars_Pack"
+        },
+        {
+            "children": [
+                3,
+                4,
+                5,
+                6
+            ],
+            "translation": [
+                -0.000001220703097715159,
+                9.476933479309082,
+                -0.022592773661017419
+            ],
+            "rotation": [
+                0.0,
+                4.340524384360833e-9,
+                0.0,
+                1.0
+            ],
+            "name": "Car_Sport_1"
+        },
+        {
+            "translation": [
+                -0.4840339124202728,
+                -0.1066252589225769,
+                -5.3453099724265488e-8
+            ],
+            "mesh": 0,
+            "name": "Car_Sport_1_2"
+        },
+        {
+            "translation": [
+                -0.7611212730407715,
+                -0.5851954221725464,
+                -0.9814448952674866
+            ],
+            "rotation": [
+                -0.5,
+                0.5,
+                0.4999999701976776,
+                0.5000000596046448
+            ],
+            "mesh": 1,
+            "name": "Wheels_6"
+        },
+        {
+            "translation": [
+                -0.7946011424064636,
+                -0.5808528661727905,
+                0.9524176716804504
+            ],
+            "rotation": [
+                -0.5,
+                0.5,
+                0.4999999701976776,
+                0.5000000596046448
+            ],
+            "mesh": 2,
+            "name": "wheels_6"
+        },
+        {
+            "translation": [
+                0.7578353881835938,
+                -0.5851954221725464,
+                -0.9814448356628418
+            ],
+            "rotation": [
+                -0.5000000596046448,
+                -0.4999999701976776,
+                -0.5,
+                0.5
+            ],
+            "mesh": 3,
+            "name": "Wheels_1_6"
+        }
+    ],
+    "scenes": [
+        {
+            "nodes": [
+                0,
+                1
+            ],
+            "name": "scene"
+        }
+    ],
+    "scene": 0
+}

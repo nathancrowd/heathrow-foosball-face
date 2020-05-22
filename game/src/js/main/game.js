@@ -34,7 +34,7 @@ function runBalls() {
     let timeElapsed = 0;
     let timeLoop = setInterval(() => {
         timeElapsed += 10;
-        score.setTime(timeElapsed);
+        score.setTime(parseInt(score.time) + 10);
     },10);
     let gameLoop = setInterval(() => {
         new Footballs.Ball({x:getRandomInt(CONFIG.ballXRange.min,CONFIG.ballXRange.max), y:getRandomInt(CONFIG.ballYRange.min,CONFIG.ballYRange.max)}, false);
@@ -43,6 +43,24 @@ function runBalls() {
             window.clearInterval(timeLoop);
             setTimeout(() => {
                 Scene.stopDriving();
+                score.hideBoard();
+                setTimeout(() => { // Wait a bit more before resetting
+                    Footballs.clearAll();
+                    Logo.hide();
+                    if (Sound.running) {
+                        Sound.crowdCheer();
+                    }
+                    score.display();
+                    Fireworks.display();
+                }, CONFIG.postGameTime);
+                setTimeout(() => { // Wait a bit more before resetting
+                    message.hide();
+                    Scoreboard.addToLeaderboard(score.time);
+                    Scoreboard.showLeaderboard();
+                }, CONFIG.postGameTime + (CONFIG.gameTime * 1.5));
+                setTimeout(() => { // Wait a bit more before resetting
+                    reset();
+                }, CONFIG.postGameTime + (CONFIG.gameTime * 3));
             },500);
         }
         if (score.time > CONFIG.frenzyBallCount) {
@@ -158,12 +176,17 @@ function playGame(faces) {
     movementIcon.classList.remove('fade');
     if (Sound.running) {
     }
+    message.add('<h2>Start your engines!</h2>');
+    message.show();
     setTimeout(() => {
+        message.add('<h2>GO!</h2>');
         movementIcon.classList.add('fade');
     //     if (Sound.running) {
     //         Sound.blowWhistle();
     //     }
+        Scene.startDriving();
         runBalls();
+        setTimeout(message.hide, 1000);
     }, CONFIG.preGameTimer);
 }
 
