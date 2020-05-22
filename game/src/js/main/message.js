@@ -24,9 +24,10 @@ function gameType() {
     add(`
         <h2>Let's play Foosball!</h2>
         <ol style='text-align: left;'>
-            <li>Share your screen in zoom<br /><br /></li>
-            <li>Click start<br /><br /></li>
-            <li>After the game starts, blindfold the host player (person sharing their screen) & direct them to move the players by leaning left/right<br /><br /></li>
+            <li>Share your screen in zoom, and make sure the overlay with other people's video feeds is visible.<br /><br /></li>
+            <li>Click start, and allow Chrome to share your screen.<br /><br /></li>
+            <li>After loading, get everyone ready to make their game faces!<br /><br /></li>
+            <li>After the game starts, move the players by leaning left/right. Keep an eye out for your friends on the pitch...<br /><br /></li>
         </ol>
         <button id='solo' style='display: none;'>Solo Game</button>
         <button id='multi'>Start!</button>
