@@ -191,6 +191,7 @@ export default {
     car: {
         model: 'models/car/TEST2.gltf'
     },
+    roadCars: [],
     coin: {
         model: 'models/coin/scene.gltf'
     },

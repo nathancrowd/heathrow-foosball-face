@@ -74,6 +74,23 @@ class Ball {
                     isCoin: true
                 }
             });
+        } else {
+            this.mesh.material = footballMaterial.clone();
+            gltfLoader.load(CONFIG.roadCars[getRandomInt(0, CONFIG.roadCars.length - 1)], gltf => {
+                this.car = gltf.scene;
+                let carBox = new THREE.Box3().setFromObject(this.car);
+                let meshBox = new THREE.Box3().setFromObject(this.mesh);
+                let carsize = new THREE.Vector3();
+                let meshSize = new THREE.Vector3();
+                carBox.getSize(carSize);
+                meshBox.getSize(meshSize);
+                let scale = {
+                    x: meshSize.x / carSize.x,
+                    y: meshSize.y / carSize.x,
+                    z: meshSize.z / carSize.z
+                };
+                this.car.scale.set(scale.y,scale.y,scale.y);
+            });
         }
         this.mesh.castShadow = true;
         this.mesh.receiveShadow = true;
