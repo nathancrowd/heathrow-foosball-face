@@ -11,7 +11,7 @@
     "face-api.js": "^0.22.1",
     "gl-shader": "^4.2.1",
     "glob": "^7.1.6",
-    "gsap": "^3.1.1",
+    "gsap": "^3.6.0",
     "gulp": "^4.0.2",
     "gulp-changed": "^4.0.2",
     "gulp-debug": "^4.0.0",
